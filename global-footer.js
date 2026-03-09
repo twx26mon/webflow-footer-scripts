@@ -97,6 +97,14 @@
 
     /* Parts container */
     "#qr-parts-container{padding-top:8px}",
+
+    /* Cart Clear Button (Premium Minimalistic) */
+    "#cart-clearall{margin-top:4px;margin-bottom:12px;background:transparent;border:none;color:#666;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;padding:8px;width:100%;cursor:pointer;transition:color 0.2s;text-decoration:underline;text-align:center}",
+    "#cart-clearall:hover{color:#c2934a}",
+    /* Proceed Button Radius */
+    "#cart-proceed-btn{border-radius:8px!important}",
+    /* Quote Info */
+    ".quote-cart-info{margin-top:16px;font-size:11px;color:#666;text-align:center;line-height:1.4}",
   ].join("\n");
 
   var style = document.createElement("style");
@@ -493,7 +501,11 @@
     if (!summary) {
       summary = document.createElement("div");
       summary.id = "cart-pricing-summary";
-      DOM.cartItems.parentNode.insertBefore(summary, DOM.cartItems.nextSibling);
+      // Insert summary AFTER the clear button (so clear button stays under items)
+      const ref = DOM.clearBtn
+        ? DOM.clearBtn.nextSibling
+        : DOM.cartItems.nextSibling;
+      DOM.cartItems.parentNode.insertBefore(summary, ref);
     }
 
     if (allPriced && subtotal > 0) {
@@ -525,6 +537,12 @@
       summary.parentNode.insertBefore(proceedBtn, summary.nextSibling);
     }
     proceedBtn.href = "/quote-review";
+
+    // Move quote-cart-info to sit under proceed button
+    const info = DOM.cart ? DOM.cart.querySelector(".quote-cart-info") : null;
+    if (info && proceedBtn && info.previousElementSibling !== proceedBtn) {
+      proceedBtn.parentNode.insertBefore(info, proceedBtn.nextSibling);
+    }
 
     updateButtons();
   }
@@ -1193,7 +1211,7 @@
       </div>
       <div class="cart-section-header">Your Order</div>
       <div id="cart-items" class="quote-cart-items"></div>
-      <button id="cart-clearall"></button>
+      <button id="cart-clearall">Clear All</button>
       <div id="cart-form-slot"></div>
       <div class="quote-cart-info"></div>
     </div>
