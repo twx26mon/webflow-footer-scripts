@@ -1,123 +1,3 @@
-<style>
- .qr-qty-controls { display:flex; align-items:center; gap:6px; }
- .qr-qty-btn {
- width:28px; height:28px; border:none; background:transparent;
- border-radius:4px; font-size:18px; font-weight:700; line-height:1; cursor:pointer;
- display:flex; align-items:center; justify-content:center;
- color:#c2934a; transition:color 0.15s, transform 0.1s, opacity 0.15s;
- }
- .qr-qty-btn:hover { color:#a87a38; opacity:0.85; }
- .qr-qty-btn:active { transform:scale(0.88); opacity:0.7; }
- .qr-qty-value { min-width:24px; text-align:center; font-weight:600; }
-
- .qr-remove-btn {
- background:none; border:none; color:#c2934a; font-size:16px; font-weight:700; cursor:pointer;
- padding:4px 6px; border-radius:4px; transition:color 0.15s, transform 0.1s, opacity 0.15s;
- line-height:1;
- }
- .qr-remove-btn:hover { color:#a87a38; opacity:0.85; }
- .qr-remove-btn:active { transform:scale(0.88); opacity:0.7; }
-
- .qr-browse-row { margin-top:16px; }
- .qr-browse-btn {
- display:inline-block; padding:10px 20px; background:transparent;
- border:none; color:#c2934a; font-size:14px; font-weight:700;
- text-decoration:none; transition:color 0.15s, transform 0.1s, opacity 0.15s; cursor:pointer;
- }
- .qr-browse-btn:hover { color:#a87a38; opacity:0.85; }
- .qr-browse-btn:active { transform:scale(0.97); opacity:0.7; }
-
- #qr-form-section .w-form { width:100%; }
- #qr-form-section .form-input,
- #qr-form-section input[type=text],
- #qr-form-section input[type=email],
- #qr-form-section input[type=tel],
- #qr-form-section textarea,
- #qr-form-section select {
- width:100%; box-sizing:border-box;
- background:#1a1a1a; color:#fff;
- border:1px solid #3a3a3a; border-radius:6px;
- padding:14px 16px; font-size:14px; line-height:1.4;
- transition:border-color 0.2s, box-shadow 0.2s;
- appearance:none; -webkit-appearance:none;
- margin-bottom:12px;
- }
- #qr-form-section .form-input::placeholder,
- #qr-form-section input::placeholder,
- #qr-form-section textarea::placeholder { color:#666; }
- #qr-form-section .form-input:focus,
- #qr-form-section input:focus,
- #qr-form-section textarea:focus,
- #qr-form-section select:focus {
- outline:none; border-color:#c2934a;
- box-shadow:0 0 0 3px rgba(194,147,74,0.15);
- }
- #qr-form-section label {
- display:block; font-size:11px; font-weight:700;
- letter-spacing:0.08em; text-transform:uppercase;
- color:#c2934a; margin-bottom:5px; margin-top:4px;
- }
- #qr-form-section textarea { min-height:100px; resize:vertical; }
- #qr-form-section select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c2934a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; color:#fff; }
- #qr-form-section select option { background:#1a1a1a; color:#fff; }
- #qr-form-section .w-checkbox { display:flex; align-items:flex-start; gap:10px; margin-top:8px; }
- #qr-form-section .w-checkbox input[type=checkbox] { margin-top:2px; accent-color:#c2934a; width:16px; height:16px; flex-shrink:0; }
- .qr-name-row, .qr-contact-row, .qr-delivery-row { display:flex !important; gap:16px !important; width:100% !important; }
- .qr-name-row > *, .qr-contact-row > *, .qr-delivery-row > * { flex:1 1 0% !important; min-width:0 !important; width:0 !important; }
- .qr-name-row > * > *, .qr-contact-row > * > *,
- .qr-name-row input, .qr-name-row .w-input,
- .qr-name-row .input-container, .qr-name-row .form-field-wrapper { width:100% !important; max-width:none !important; min-width:0 !important; box-sizing:border-box !important; }
- .qr-same-address-row { display:flex; align-items:center; gap:8px; margin-bottom:4px; margin-top:-4px; }
- .qr-same-address-row label { font-size:12px; font-weight:600; color:#aaa; text-transform:none; letter-spacing:0; margin:0; cursor:pointer; }
- .qr-same-address-row input[type=checkbox] { accent-color:#c2934a; width:15px; height:15px; cursor:pointer; flex-shrink:0; }
- #qr-form-section h3.qr-form-heading {
-  font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
-  color:#c2934a; border-bottom:1px solid #2a2a2a; padding-bottom:12px; margin-bottom:20px;
- }
- #qr-submit-btn {
-  width:100% !important;
-  background:linear-gradient(135deg, #b8833e 0%, #d4a55c 40%, #e8b86d 60%, #c2934a 100%) !important;
-  background-size:200% auto !important;
-  color:#111 !important; font-size:14px !important; font-weight:800 !important;
-  letter-spacing:0.12em !important; text-transform:uppercase !important;
-  border:none !important; border-radius:8px !important;
-  padding:18px 24px !important; cursor:pointer !important; margin-top:16px !important;
-  transition:background-position 0.4s, transform 0.15s, box-shadow 0.2s !important;
-  box-shadow:0 4px 20px rgba(194,147,74,0.4), inset 0 1px 0 rgba(255,255,255,0.15) !important;
- }
- #qr-submit-btn:hover {
-  background-position:right center !important;
-  box-shadow:0 6px 28px rgba(194,147,74,0.55), inset 0 1px 0 rgba(255,255,255,0.2) !important;
-  transform:translateY(-1px) !important;
- }
- #qr-submit-btn:active {
-  transform:scale(0.98) translateY(0) !important;
-  box-shadow:0 2px 8px rgba(194,147,74,0.3) !important;
- }
-
- .qr-freight-disclaimer {
-  margin-top:16px;
-  padding:16px 20px;
-  background:rgba(194,147,74,0.06);
-  border-left:3px solid #c2934a;
-  border-radius:0 6px 6px 0;
-  color:#bbb;
-  font-size:13px;
-  line-height:1.7;
- }
- .qr-freight-disclaimer .qr-freight-phone {
-  display:inline-block; margin-top:10px;
-  font-weight:700; color:#c2934a; font-size:13px; letter-spacing:0.03em;
- }
-
- .qr-delivery-input-wrapper { display:none; margin-top:10px; }
- .qr-delivery-input-wrapper.visible { display:block; }
- #qr-address ~ label, label[for="qr-address"] { display:none !important; }
-
- #qr-parts-container { padding-top:8px; }
-</style>
-<script>
-
 (function() {
  'use strict';
 
@@ -1494,9 +1374,6 @@ function renderQuoteReview() {
   initQRForm();
  });
 })();
-</script>
-
-<script>
 (function(){
   var nav = document.querySelector('.navbar');
   if (!nav) return;
@@ -1519,5 +1396,3 @@ function renderQuoteReview() {
   }
   window.addEventListener('scroll', onScroll, { passive: true });
 })();
-</script>
-
