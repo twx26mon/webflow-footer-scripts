@@ -753,6 +753,12 @@
     const machineContextStr =
       `${activeModel.brand} ${activeModel.family} ${activeModel.variant || ""} ${config.size}`.trim();
 
+    const disclaimer = document.createElement("div");
+    disclaimer.className = "wiz-disclaimer";
+    disclaimer.innerHTML =
+      "ℹ️ Quantities shown are based on standard OEM machine configurations. Please verify quantities required for your specific machine setup.";
+    DOM.activeStep.appendChild(disclaimer);
+
     const addAllBtn = document.createElement("button");
     addAllBtn.className = "wiz-add-all-btn";
     addAllBtn.textContent = "Add All Items to Order";
@@ -760,12 +766,6 @@
       addAllPartsToCart(matchingParts, config, machineContextStr),
     );
     DOM.activeStep.appendChild(addAllBtn);
-
-    const disclaimer = document.createElement("div");
-    disclaimer.className = "wiz-disclaimer";
-    disclaimer.innerHTML =
-      "ℹ️ Quantities shown are based on standard OEM machine configurations. Please verify quantities required for your specific machine setup.";
-    DOM.activeStep.appendChild(disclaimer);
 
     const listDiv = document.createElement("div");
     listDiv.className = "wiz-results-list";
