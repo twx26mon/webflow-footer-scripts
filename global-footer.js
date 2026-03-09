@@ -638,11 +638,12 @@
       titleText = "";
 
     switch (step) {
-      case "brand":
+      case "brand": {
         options = getUniqueSorted(indexes.familiesByBrand.keys());
         titleText = "Select Brand";
         break;
-      case "family":
+      }
+      case "family": {
         const families =
           indexes.familiesByBrand.get(state.wizState.brand) || new Set();
         options = getUniqueSorted(families);
@@ -652,7 +653,8 @@
           );
         titleText = "Select Machine";
         break;
-      case "variant":
+      }
+      case "variant": {
         const familyKey = `${state.wizState.brand}|${state.wizState.family}`;
         const variants = indexes.variantsByFamily.get(familyKey) || new Set();
         options = getUniqueSorted(variants).filter((v) => v);
@@ -667,7 +669,8 @@
           );
         titleText = "Select Model Type";
         break;
-      case "size":
+      }
+      case "size": {
         const activeModel = data.modelMenu.find(
           (d) =>
             d.brand === state.wizState.brand &&
@@ -681,6 +684,7 @@
         }
         titleText = "Select Working Width";
         break;
+      }
     }
 
     if (options.length === 0 && step !== "size") {
@@ -1219,6 +1223,7 @@
     setOpenButtonIcon();
     setTimeout(bindHomepageButtons, 100);
     renderCart();
+    updateButtons(); // ensure injected open button is visible on load
 
     const observer = new MutationObserver(() => {
       const items = document.querySelectorAll(".part-data-item");
