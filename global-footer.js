@@ -1982,10 +1982,25 @@
     });
   }
 
+  function waitForRoot(callback, maxWait) {
+    var start = Date.now();
+    var interval = setInterval(function () {
+      var el = document.getElementById(ROOT_ID);
+      if (el) {
+        clearInterval(interval);
+        callback();
+      } else if (Date.now() - start > (maxWait || 5000)) {
+        clearInterval(interval); // give up after 5s
+      }
+    }, 50);
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", function () {
+      waitForRoot(init);
+    });
   } else {
-    init();
+    waitForRoot(init);
   }
 })();
 
