@@ -11,7 +11,8 @@
      4. Quote Form     — restructures Webflow form fields (side-by-side rows,
                          delivery address toggle, invoicing address field)
      5. Navbar scroll  — hides navbar on scroll-down, reveals on scroll-up
-
+     6. BROWSE BRANDS  — animated brand filter with live CMS fetch
+     
    DOM dependencies (Webflow CMS embeds / elements):
      .wizard-model-item .model-data-payload   — brand/family/variant data
      .config-data-item .config-data-payload   — machine size/qty configs
@@ -1609,4 +1610,338 @@
   }
 
   window.addEventListener("scroll", onScroll, { passive: true });
+})();
+
+/* ── 6. BROWSE BRANDS — animated brand filter with live CMS fetch ── */
+(function () {
+  var ROOT_ID = "twx-brand-filter-root";
+  var PARTS_COLLECTION = "66e72d542414abaeaf2d4174";
+
+  var BRANDS = {
+    H: {
+      id: "66e72d7c0bbd4c0179ba3144",
+      name: "HORSCH",
+      link: "/brands/to-fit-horsch",
+    },
+    V: {
+      id: "66e72d74d8f0ae732556e943",
+      name: "VADERSTAD",
+      link: "/brands/to-fit-vaderstad",
+    },
+  };
+
+  var FEAT = {
+    H: [
+      {
+        name: "Tillageworx REAPER to fit Horsch Tiger",
+        code: "REAPER80",
+        fit: "Fits Horsch Tiger, Terrano, Joker",
+        img: "https://cdn.prod.website-files.com/66e72d532d8394657be50c64/6923df961b9a1b858cc2dbc9_REAPER-min.png",
+        price: "$228.00",
+        stock: "In stock NOW",
+        slug: "tillageworx-reaper",
+      },
+      {
+        name: "Tillageworx Disc to fit Horsch Tiger",
+        code: "HD684",
+        fit: "Fits Horsch Tiger",
+        img: "https://cdn.prod.website-files.com/66e72d532d8394657be50c64/67891e63e4f7590df7474cd1_TIGER%20DISC%20(3).png",
+        price: "$240.00",
+        stock: "In stock NOW",
+        slug: "tillageworx-tiger-disc",
+      },
+      {
+        name: "TUFF-CORE Disc to fit Joker/Terrano",
+        code: "HD520-5",
+        fit: "Fits Horsch Joker & Terrano",
+        img: "https://cdn.prod.website-files.com/66e72d532d8394657be50c64/67891d800e7cffbdf18b107d_JOKER%20DISC.png",
+        price: "$135.00",
+        stock: "In stock NOW",
+        slug: "tillageworx-tuff-core-disc-to-fit-joker",
+      },
+      {
+        name: "Full Tungsten Wing (R) for Horsch Tiger",
+        code: "HWR200",
+        fit: "Fits Horsch Tiger & Terrano",
+        img: "https://cdn.prod.website-files.com/66e72d532d8394657be50c64/67892435e5d5686cc38d3048_horsch%20tungsten%20wings%20L.png",
+        price: "$190.00",
+        stock: "In stock NOW",
+        slug: "200mm-full-tungsten-wing-to-fit-tiger-r-3m2g7",
+      },
+    ],
+    V: [
+      {
+        name: "Tillageworx TAIPAN 80 to fit Vaderstad Topdown",
+        code: "TAIPAN80",
+        fit: "Fits Topdown, Opus, Swift & Cultus",
+        img: "https://cdn.prod.website-files.com/66e72d532d8394657be50c64/6923e0155d3519742cb522e0_AVATAR%20DISC%20(425%20x%20500%20px)-min.png",
+        price: "$196.00",
+        stock: "In stock NOW",
+        slug: "taipan80",
+      },
+      {
+        name: "Tillageworx TAIPAN 50 to fit Vaderstad Topdown",
+        code: "TAIPAN50",
+        fit: "Fits Topdown, Opus, Swift & Cultus",
+        img: "https://cdn.prod.website-files.com/66e72d532d8394657be50c64/673a9a46a2e46cbceb5ac044_TAIPAN50RENDER1.png",
+        price: "$179.00",
+        stock: "In stock NOW",
+        slug: "taipan50",
+      },
+      {
+        name: "470mm Disc to fit Vaderstad Topdown & Carrier",
+        code: "VD470",
+        fit: "Fits Vaderstad Topdown & Carrier",
+        img: "https://cdn.prod.website-files.com/66e72d532d8394657be50c64/67a184267d798c0cc0ac7454_TOPDOWN%20DISC%20(2).png",
+        price: "$88.50",
+        stock: "Contact us",
+        slug: "tillageworx-topdown-disc",
+      },
+      {
+        name: "50mm Mixing Shin to fit Vaderstad Topdown",
+        code: "VT-50-S",
+        fit: "Fits Topdown",
+        img: "https://cdn.prod.website-files.com/66e72d532d8394657be50c64/67bea86424e4d57b7bd0c5ac_50mm%20td%20shin.png",
+        price: "$51.00",
+        stock: "In stock NOW",
+        slug: "50mm-mixing-shin-to-fit-topdown",
+      },
+    ],
+  };
+
+  var CSS = [
+    "#twx-bf{width:100%;background:#000;padding:64px 0 80px;box-sizing:border-box}",
+    "#twx-bfh{text-align:center;margin:0 0 20px;padding:0 20px;font-family:Oswald,sans-serif;font-weight:700;font-size:70px;line-height:1.1;text-transform:uppercase;color:#fff}",
+    "#twx-bfh .twx-bn{color:#c2934a;cursor:pointer;transition:all .4s cubic-bezier(.22,1,.36,1);display:inline-block;position:relative}",
+    "#twx-bfh .twx-bn::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:#c2934a;transform:scaleX(0);transition:transform .35s ease;transform-origin:center}",
+    "#twx-bfh .twx-bn:hover::after{transform:scaleX(1)}",
+    "#twx-bfh .twx-bn:hover{color:#e8b06a;text-shadow:0 0 35px rgba(194,147,74,.6);transform:scale(1.05)}",
+    "#twx-bfh .twx-bn.twx-dim{color:#2a2a2a;transform:scale(.87)!important;text-shadow:none!important}",
+    "#twx-bfh .twx-bn.twx-dim::after{display:none}",
+    "#twx-bfh .twx-bn.twx-act{color:#c2934a;transform:scale(1.09)!important;text-shadow:0 0 40px rgba(194,147,74,.45)!important}",
+    "#twx-hint{text-align:center;display:block;width:fit-content;margin:0 auto 52px;color:#c2934a;font-family:Oswald,sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;padding:9px 22px;border:1px solid rgba(194,147,74,.4);border-radius:2px}",
+    "#twx-feat-lbl{text-align:center;font-family:Oswald,sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:3px;text-transform:uppercase;margin-bottom:36px;padding-bottom:14px;border-bottom:1px solid #1e1e1e}",
+    "#twx-wrap{max-width:1380px;margin:0 auto;padding:0 32px}",
+    "@media(max-width:700px){#twx-bfh{font-size:40px}#twx-wrap{padding:0 16px}}",
+    ".twx-grp{transition:all .5s cubic-bezier(.22,1,.36,1);overflow:hidden}",
+    ".twx-grp.twx-hide{opacity:0;max-height:0!important;transform:translateY(16px) scale(.98);pointer-events:none;margin:0;padding:0}",
+    ".twx-grp.twx-show{opacity:1;max-height:9999px;transform:none}",
+    ".twx-lbl{font-family:Oswald,sans-serif;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.38);text-transform:uppercase;margin:0 0 14px}",
+    ".twx-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:28px}",
+    "@media(max-width:1100px){.twx-grid{grid-template-columns:repeat(3,1fr)}}",
+    "@media(max-width:750px){.twx-grid{grid-template-columns:repeat(2,1fr)}}",
+    "@media(max-width:460px){.twx-grid{grid-template-columns:1fr}}",
+    ".twx-card{background:#0e0e0e;border:1px solid #1c1c1c;border-radius:4px;overflow:hidden;text-decoration:none;display:block;transition:all .3s ease}",
+    ".twx-card:hover{border-color:#c2934a;transform:translateY(-4px);box-shadow:0 12px 36px rgba(194,147,74,.14)}",
+    ".twx-img{width:100%;aspect-ratio:1/1;object-fit:contain;background:#080808;padding:14px;box-sizing:border-box;display:block}",
+    ".twx-body{padding:12px 14px 14px}",
+    ".twx-code{font-family:Oswald,sans-serif;font-size:10px;letter-spacing:2px;color:#c2934a;text-transform:uppercase;margin-bottom:4px}",
+    ".twx-name{font-family:Oswald,sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1.25;margin-bottom:5px}",
+    ".twx-fit{font-size:12px;color:rgba(255,255,255,.38);margin-bottom:8px}",
+    ".twx-price{font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:#c2934a}",
+    ".twx-stk{display:inline-block;font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:2px;margin-top:6px}",
+    ".twx-ins{background:rgba(80,180,80,.1);color:#5db85d;border:1px solid rgba(80,180,80,.2)}",
+    ".twx-ord{background:rgba(194,147,74,.1);color:#c2934a;border:1px solid rgba(194,147,74,.25)}",
+    ".twx-cta{text-align:center;margin-top:8px;margin-bottom:48px}",
+    ".twx-va{display:inline-flex;align-items:center;gap:10px;font-family:Oswald,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#c2934a;border:1px solid rgba(194,147,74,.4);padding:12px 28px;text-decoration:none;border-radius:2px;transition:all .3s}",
+    ".twx-va:hover{background:rgba(194,147,74,.08);border-color:#c2934a;letter-spacing:3px}",
+    ".twx-loading{text-align:center;padding:40px;font-family:Oswald,sans-serif;font-size:13px;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase}",
+  ].join("");
+
+  function injectCSS() {
+    if (document.getElementById("twx-bf-style")) return;
+    var s = document.createElement("style");
+    s.id = "twx-bf-style";
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }
+
+  function card(p) {
+    var si = p.stock && p.stock.toLowerCase().indexOf("in stock") > -1;
+    return (
+      '<a href="/parts/' +
+      p.slug +
+      '" class="twx-card">' +
+      '<img class="twx-img" src="' +
+      (p.img || "") +
+      '" alt="' +
+      p.name +
+      '" loading="lazy">' +
+      '<div class="twx-body">' +
+      '<div class="twx-code">' +
+      (p.code || "") +
+      "</div>" +
+      '<div class="twx-name">' +
+      p.name +
+      "</div>" +
+      '<div class="twx-fit">' +
+      (p.fit || "") +
+      "</div>" +
+      (p.price ? '<div class="twx-price">' + p.price + "</div>" : "") +
+      '<span class="twx-stk ' +
+      (si ? "twx-ins" : "twx-ord") +
+      '">' +
+      (si ? "IN STOCK" : "ORDER NOW") +
+      "</span>" +
+      "</div></a>"
+    );
+  }
+
+  function grp(key, parts, lbl, vis) {
+    return (
+      '<div class="twx-grp ' +
+      (vis ? "twx-show" : "twx-hide") +
+      '" data-brand="' +
+      key +
+      '">' +
+      '<div class="twx-lbl">' +
+      lbl +
+      "</div>" +
+      '<div class="twx-grid">' +
+      parts.map(card).join("") +
+      "</div>" +
+      '<div class="twx-cta"><a href="' +
+      BRANDS[key].link +
+      '" class="twx-va">VIEW ALL ' +
+      BRANDS[key].name +
+      " PARTS &rarr;</a></div>" +
+      "</div>"
+    );
+  }
+
+  function fetchAndRender(brandKey, containerEl) {
+    containerEl.innerHTML =
+      '<div class="twx-loading">Loading all ' +
+      BRANDS[brandKey].name +
+      " parts\u2026</div>";
+    fetch(
+      "https://api.webflow.com/v2/collections/" +
+        PARTS_COLLECTION +
+        "/items?limit=100",
+      {
+        headers: { accept: "application/json" },
+      },
+    )
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (data) {
+        var brandId = BRANDS[brandKey].id;
+        var items = (data.items || []).filter(function (item) {
+          var b = item.fieldData && item.fieldData.brand;
+          return b && b.indexOf(brandId) > -1 && !item.isArchived;
+        });
+        if (!items.length) {
+          containerEl.innerHTML =
+            '<div class="twx-loading">No parts found.</div>';
+          return;
+        }
+        var cards = items.map(function (item) {
+          var f = item.fieldData;
+          return card({
+            name: f.name,
+            code: f["part-description"],
+            fit: f["to-fit"],
+            img:
+              f["part-image"] && f["part-image"].url ? f["part-image"].url : "",
+            price: f["price-2"],
+            stock: f["stock-levels"],
+            slug: f.slug,
+          });
+        });
+        containerEl.innerHTML =
+          '<div class="twx-grid">' +
+          cards.join("") +
+          "</div>" +
+          '<div class="twx-cta"><a href="' +
+          BRANDS[brandKey].link +
+          '" class="twx-va">VIEW ALL ' +
+          BRANDS[brandKey].name +
+          " PARTS &rarr;</a></div>";
+      })
+      .catch(function () {
+        containerEl.innerHTML =
+          '<div class="twx-loading">Couldn\'t load parts. <a href="' +
+          BRANDS[brandKey].link +
+          '" style="color:#c2934a">View them here &rarr;</a></div>';
+      });
+  }
+
+  function init() {
+    var root = document.getElementById(ROOT_ID);
+    if (!root) return;
+
+    // Hide the Webflow page heading section above
+    var headSec = document.querySelector(".page-heading-container");
+    if (headSec) headSec.style.display = "none";
+
+    injectCSS();
+
+    var active = null;
+    var loaded = {};
+
+    root.innerHTML =
+      '<div id="twx-bf">' +
+      '<div id="twx-bfh">' +
+      "BROWSE OUR PARTS TO FIT<br>" +
+      '<span class="twx-bn" data-b="H">HORSCH</span>' +
+      '<span style="color:#c2934a;font-family:Oswald,sans-serif;font-weight:700;font-size:inherit"> &amp; </span>' +
+      '<span class="twx-bn" data-b="V">VADERSTAD</span>' +
+      "</div>" +
+      '<span id="twx-hint">&#9654; CLICK A BRAND TO VIEW PARTS</span>' +
+      '<div id="twx-wrap">' +
+      '<div id="twx-feat-lbl">FEATURED PARTS</div>' +
+      grp("H", FEAT.H, "TO FIT HORSCH", true) +
+      grp("V", FEAT.V, "TO FIT VADERSTAD", true) +
+      "</div>" +
+      "</div>";
+
+    root.querySelectorAll(".twx-bn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var b = btn.getAttribute("data-b");
+        var brand = BRANDS[b];
+
+        if (active === b) {
+          active = null;
+          root.querySelectorAll(".twx-bn").forEach(function (x) {
+            x.classList.remove("twx-act", "twx-dim");
+          });
+          root.querySelectorAll(".twx-grp").forEach(function (g) {
+            g.classList.remove("twx-hide");
+            g.classList.add("twx-show");
+          });
+          document.getElementById("twx-feat-lbl").textContent =
+            "FEATURED PARTS";
+        } else {
+          active = b;
+          root.querySelectorAll(".twx-bn").forEach(function (x) {
+            var isA = x.getAttribute("data-b") === b;
+            x.classList.toggle("twx-act", isA);
+            x.classList.toggle("twx-dim", !isA);
+          });
+          root.querySelectorAll(".twx-grp").forEach(function (g) {
+            var match = g.getAttribute("data-brand") === b;
+            g.classList.toggle("twx-show", match);
+            g.classList.toggle("twx-hide", !match);
+          });
+          document.getElementById("twx-feat-lbl").textContent =
+            "ALL PARTS TO FIT " + brand.name;
+
+          if (!loaded[b]) {
+            loaded[b] = true;
+            var activeGrp = root.querySelector(
+              '.twx-grp[data-brand="' + b + '"]',
+            );
+            if (activeGrp) fetchAndRender(b, activeGrp);
+          }
+        }
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();
