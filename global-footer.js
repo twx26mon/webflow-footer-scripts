@@ -98,6 +98,33 @@
 
     /* Parts container */
     "#qr-parts-container{padding-top:8px}",
+
+    /* Quote/Order review table */
+    ".qr-parts-table{width:100%;border-collapse:collapse;font-size:14px}",
+    ".qr-parts-table th{text-align:left;padding:10px 12px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#c2934a;border-bottom:1px solid #2a2a2a}",
+    ".qr-parts-table td{padding:14px 12px;border-bottom:1px solid #1a1a1a;vertical-align:middle;color:#fff}",
+    ".qr-item-img{width:56px;height:56px;object-fit:contain;background:#111;border-radius:4px;margin-bottom:6px;display:block}",
+    ".qr-item-name{font-weight:600;font-size:14px;line-height:1.3}",
+    ".qr-item-code{font-size:11px;color:#888;margin-top:2px;letter-spacing:0.04em}",
+    ".qr-summary-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1e1e1e;font-size:14px;color:#ccc}",
+    ".qr-summary-total{font-weight:700;font-size:16px;color:#fff;border-bottom:none;padding-top:14px}",
+    ".qr-summary-note{font-size:12px;color:#888;margin-top:8px;font-style:italic}",
+
+    /* Mobile: quote-review stacks vertically */
+    "@media(max-width:767px){",
+    "#qr-flex-row{flex-direction:column!important;gap:24px!important}",
+    "#qr-right-col{width:100%!important;flex:none!important}",
+    "#qr-form-section{width:100%!important;flex:none!important}",
+    ".qr-parts-table th:nth-child(2),.qr-parts-table td:nth-child(2){display:none}",
+    ".qr-parts-table th:last-child,.qr-parts-table td:last-child{width:40px;padding:14px 4px}",
+    ".qr-name-row,.qr-contact-row,.qr-delivery-row{flex-direction:column!important;gap:0!important}",
+    ".qr-name-row>*,.qr-contact-row>*,.qr-delivery-row>*{flex:none!important;width:100%!important}",
+    "}",
+
+    /* Partner cards — always visible, responsive grid */
+    ".partner-grid{display:flex!important;flex-wrap:wrap!important;gap:16px!important;justify-content:center!important}",
+    ".partner-card-link{display:block!important;visibility:visible!important;opacity:1!important}",
+    "@media(max-width:767px){.partner-grid{gap:12px!important}.partner-card-link{width:calc(50% - 8px)!important;min-width:120px!important}}",
   ].join("\n");
 
   var style = document.createElement("style");
@@ -106,7 +133,7 @@
   document.head.appendChild(style);
 })();
 
-/* ── 2. QUOTE CART + MACHINE WIZARD ──────────────────────── */
+/* ── 2. ORDER CART + MACHINE WIZARD ──────────────────────── */
 (function () {
   "use strict";
 
@@ -523,7 +550,7 @@
     if (!proceedBtn) {
       proceedBtn = document.createElement("a");
       proceedBtn.id = "cart-proceed-btn";
-      proceedBtn.textContent = "PROCEED TO QUOTE →";
+      proceedBtn.textContent = "PROCEED TO ORDER →";
       summary.parentNode.insertBefore(proceedBtn, summary.nextSibling);
     }
     proceedBtn.href = "/quote-review";
@@ -1253,7 +1280,7 @@
   }
 })();
 
-/* ── 3. QUOTE REVIEW — cart table + summary on /quote-review ─ */
+/* ── 3. ORDER REVIEW — cart table + summary on /quote-review ─ */
 (function () {
   const CART_KEY = "tillageworx_quote_cart";
 
@@ -1304,17 +1331,17 @@
     if (flexRow)
       flexRow.setAttribute(
         "style",
-        "display:flex;flex-direction:row;align-items:flex-start;gap:40px;width:100%;flex-wrap:nowrap",
+        "display:flex;flex-direction:row;align-items:flex-start;gap:40px;width:100%;flex-wrap:wrap",
       );
     if (formSection)
       formSection.setAttribute(
         "style",
-        "flex:1 1 0%;min-width:0;display:block",
+        "flex:1 1 320px;min-width:0;display:block",
       );
     if (rightCol)
       rightCol.setAttribute(
         "style",
-        "flex:1 1 0%;min-width:0;display:flex;flex-direction:column;gap:24px",
+        "flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:24px",
       );
     if (heroLeft) heroLeft.setAttribute("style", "width:100%;max-width:none");
 
@@ -1444,7 +1471,7 @@
     }
   }
 
-  /* ── 4. QUOTE FORM — restructures Webflow form fields ─── */
+  /* ── 4. ORDER FORM — restructures Webflow form fields ─── */
   function initQRForm() {
     const sec = document.getElementById("qr-form-section");
     if (!sec || sec.dataset.qrFormInit) return;
@@ -1943,5 +1970,75 @@
     document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
+  }
+})();
+
+/* ── 7. MOBILE NAV SYNC — match hamburger menu to desktop nav ── */
+(function () {
+  var DESKTOP_NAV = [
+    { text: "HOME", href: "/" },
+    { text: "ABOUT US", href: "/about-us" },
+    { text: "PARTS", href: "/browse-brands" },
+    { text: "TOOLBOX", href: "/toolbox" },
+    { text: "MERCH", href: "/merchandise" },
+    { text: "FAQs", href: "/faqs" },
+    { text: "CONTACT", href: "/contact" },
+  ];
+
+  function syncMobileNav() {
+    var mobileMenu = document.querySelector(".nav-menu-mobile");
+    if (!mobileMenu) return;
+
+    // Get current mobile link texts
+    var currentTexts = Array.from(mobileMenu.querySelectorAll("a")).map(
+      function (a) {
+        return a.textContent.trim().toUpperCase();
+      },
+    );
+
+    // Check if already matches desktop
+    var desktopTexts = DESKTOP_NAV.map(function (n) {
+      return n.text.toUpperCase();
+    });
+    var alreadySynced = desktopTexts.every(function (t) {
+      return currentTexts.indexOf(t) > -1;
+    });
+    if (alreadySynced) return;
+
+    // Find the ORDER / GET A QUOTE button to insert before it
+    var orderBtn = mobileMenu.querySelector(".open-quote-cart");
+
+    // Remove old plain nav links (not dropdowns, not the order button)
+    Array.from(
+      mobileMenu.querySelectorAll(
+        "a.nav-link:not(.open-quote-cart):not(.w-dropdown-link)",
+      ),
+    ).forEach(function (a) {
+      if (a.parentElement) a.parentElement.removeChild(a);
+    });
+
+    // Rebuild in desktop order
+    DESKTOP_NAV.forEach(function (item) {
+      var a = document.createElement("a");
+      a.href = item.href;
+      a.textContent = item.text;
+      a.className = "nav-link w-nav-link";
+      a.style.cssText =
+        "display:block;padding:12px 24px;color:#fff;font-family:Oswald,sans-serif;font-size:14px;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid #1a1a1a;";
+      if (orderBtn && orderBtn.parentElement === mobileMenu) {
+        mobileMenu.insertBefore(a, orderBtn);
+      } else {
+        mobileMenu.appendChild(a);
+      }
+    });
+
+    // Fix ORDER button text
+    if (orderBtn) orderBtn.textContent = "ORDER";
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", syncMobileNav);
+  } else {
+    syncMobileNav();
   }
 })();
