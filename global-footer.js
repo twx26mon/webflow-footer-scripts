@@ -1886,9 +1886,14 @@
       if (!brandMatch && brandAttr)
         brandMatch = brandAttr.indexOf(brandName) > -1;
 
+      // Also check the new brand link label attribute from the CMS
+      var brandLabelAttr = normalize(payload.dataset.brandLabel);
+      if (!brandMatch && brandLabelAttr)
+        brandMatch = brandLabelAttr.indexOf(brandName) > -1;
+
       if (!brandMatch) {
         // Optional: Uncomment to debug why specific items fail
-        // console.log("No match for:", payload.dataset.name, "Refs:", modelRefs, "Attr:", brandAttr);
+        console.log("[BrowseBrands] No match for:", payload.dataset.name, "| Refs:", modelRefs, "| Attr:", brandAttr, "| Label Attr:", brandLabelAttr);
         return;
       }
 
