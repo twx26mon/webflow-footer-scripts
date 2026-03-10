@@ -1751,6 +1751,8 @@
     "#twx-bfh .twx-bn.twx-dim{color:#2a2a2a;transform:scale(.87)!important;text-shadow:none!important}",
     "#twx-bfh .twx-bn.twx-dim::after{display:none}",
     "#twx-bfh .twx-bn.twx-act{color:#c2934a;transform:scale(1.09)!important;text-shadow:0 0 40px rgba(194,147,74,.45)!important}",
+    "@keyframes twx-glow{0%,100%{text-shadow:0 0 5px rgba(194,147,74,0.1)}50%{text-shadow:0 0 20px rgba(194,147,74,0.6)}}",
+    "#twx-bfh .twx-bn:not(.twx-dim):not(.twx-act){animation:twx-glow 3s infinite ease-in-out}",
     "#twx-hint{text-align:center;display:block;width:fit-content;margin:0 auto 52px;color:#c2934a;font-family:Oswald,sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;padding:9px 22px;border:1px solid rgba(194,147,74,.4);border-radius:2px}",
     "#twx-feat-lbl{text-align:center;font-family:Oswald,sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:3px;text-transform:uppercase;margin-bottom:36px;padding-bottom:14px;border-bottom:1px solid #1e1e1e}",
     "#twx-wrap{max-width:1380px;margin:0 auto;padding:0 32px}",
@@ -1893,7 +1895,6 @@
 
       if (!brandMatch) {
         // Optional: Uncomment to debug why specific items fail
-        console.log("[BrowseBrands] No match for:", payload.dataset.name, "| Refs:", modelRefs, "| Attr:", brandAttr, "| Label Attr:", brandLabelAttr);
         return;
       }
 
@@ -1970,7 +1971,7 @@
       '<span style="color:#c2934a;font-family:Oswald,sans-serif;font-weight:700;font-size:inherit"> &amp; </span>' +
       '<span class="twx-bn" data-b="V">VADERSTAD</span>' +
       "</div>" +
-      '<span id="twx-hint">&#9654; CLICK A BRAND TO VIEW PARTS</span>' +
+      '<span id="twx-hint">&#9650; CLICK A BRAND ABOVE TO VIEW RELATED PARTS</span>' +
       '<div id="twx-wrap">' +
       '<div id="twx-feat-lbl">FEATURED PARTS</div>' +
       grp("H", FEAT.H, "TO FIT HORSCH", true) +
