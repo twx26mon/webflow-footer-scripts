@@ -1910,7 +1910,10 @@
       Array.from(headSec.children).forEach(function (child) {
         if (child.id !== ROOT_ID) child.style.display = "none";
       });
-      headSec.style.removeProperty("display");
+      setTimeout(function () {
+        headSec.style.removeProperty("display");
+        headSec.style.setProperty("display", "flex", "important");
+      }, 50);
       headSec.style.padding = "0";
       headSec.style.margin = "0";
     }
