@@ -52,6 +52,7 @@
     ".qr-remove-btn{display:block;margin-top:6px;background:none;border:1px solid #c2934a;color:#c2934a;font-size:10px;font-weight:700;letter-spacing:0.08em;cursor:pointer;padding:3px 7px;border-radius:3px;transition:color 0.15s,background 0.15s,opacity 0.15s;line-height:1.4;white-space:nowrap}",
     ".qr-remove-btn:hover{background:#c2934a;color:#1a1a1a;opacity:1}",
     ".qr-remove-btn:active{opacity:0.7}",
+    "#cart-clearall{color:#c2934a!important;font-size:13px!important;font-weight:700!important;letter-spacing:0.08em!important;text-align:right!important;display:block!important;width:100%!important;padding:10px 16px!important;cursor:pointer!important;background:none!important;border:none!important;}",
 
     /* Quote Cart: Browse button */
     ".qr-browse-row{margin-top:16px}",
@@ -1841,61 +1842,68 @@
   }
 
   function fetchAndRender(brandKey, containerEl) {
-    containerEl.innerHTML =
-      '<div class="twx-loading">Loading all ' +
-      BRANDS[brandKey].name +
-      " parts\u2026</div>";
-    fetch(
-      "https://api.webflow.com/v2/collections/" +
-        PARTS_COLLECTION +
-        "/items?limit=100",
-      {
-        headers: { accept: "application/json" },
-      },
-    )
-      .then(function (r) {
-        return r.json();
-      })
-      .then(function (data) {
-        var brandId = BRANDS[brandKey].id;
-        var items = (data.items || []).filter(function (item) {
-          var b = item.fieldData && item.fieldData.brand;
-          return b && b.indexOf(brandId) > -1 && !item.isArchived;
-        });
-        if (!items.length) {
-          containerEl.innerHTML =
-            '<div class="twx-loading">No parts found.</div>';
-          return;
-        }
-        var cards = items.map(function (item) {
-          var f = item.fieldData;
-          return card({
-            name: f.name,
-            code: f["part-description"],
-            fit: f["to-fit"],
-            img:
-              f["part-image"] && f["part-image"].url ? f["part-image"].url : "",
-            price: f["price-2"],
-            stock: f["stock-levels"],
-            slug: f.slug,
-          });
-        });
-        containerEl.innerHTML =
-          '<div class="twx-grid">' +
-          cards.join("") +
-          "</div>" +
-          '<div class="twx-cta"><a href="' +
-          BRANDS[brandKey].link +
-          '" class="twx-va">VIEW ALL ' +
-          BRANDS[brandKey].name +
-          " PARTS &rarr;</a></div>";
-      })
-      .catch(function () {
-        containerEl.innerHTML =
-          '<div class="twx-loading">Couldn\'t load parts. <a href="' +
-          BRANDS[brandKey].link +
-          '" style="color:#c2934a">View them here &rarr;</a></div>';
+    var brandName = BRANDS[brandKey].name; // "HORSCH" or "VADERSTAD"
+
+    // Scrape part-data-items already rendered on the page by Webflow CMS
+    var allParts = document.querySelectorAll(".part-data-item");
+    var matched = [];
+
+    allParts.forEach(function (item) {
+      var payload = item.querySelector(".part-data-payload");
+      if (!payload) return;
+
+      // Check if any model-ref text contains this brand name
+      var modelRefs = Array.from(item.querySelectorAll(".part-model-ref")).map(
+        function (el) {
+          return el.textContent.trim().toUpperCase();
+        },
+      );
+      var brandMatch = modelRefs.some(function (ref) {
+        return ref.indexOf(brandName) > -1;
       });
+      // Also check brand data attribute on payload if present
+      var brandAttr = (payload.dataset.brand || "").toUpperCase();
+      if (!brandMatch && brandAttr)
+        brandMatch = brandAttr.indexOf(brandName) > -1;
+
+      if (!brandMatch) return;
+
+      var priceEl = item.querySelector(".part-data-price");
+      var codeEl = item.querySelector(".part-data-code");
+
+      matched.push(
+        card({
+          name: payload.dataset.name || "",
+          code:
+            payload.dataset.code || (codeEl ? codeEl.textContent.trim() : ""),
+          fit: payload.dataset.fit || "",
+          img: payload.dataset.image || "",
+          price:
+            payload.dataset.price ||
+            (priceEl ? priceEl.textContent.trim() : ""),
+          stock: payload.dataset.stock || "",
+          slug: payload.dataset.id || "",
+        }),
+      );
+    });
+
+    if (!matched.length) {
+      containerEl.innerHTML =
+        '<div class="twx-loading">No parts found. <a href="' +
+        BRANDS[brandKey].link +
+        '" style="color:#c2934a">View them here &rarr;</a></div>';
+      return;
+    }
+
+    containerEl.innerHTML =
+      '<div class="twx-grid">' +
+      matched.join("") +
+      "</div>" +
+      '<div class="twx-cta"><a href="' +
+      BRANDS[brandKey].link +
+      '" class="twx-va">VIEW ALL ' +
+      brandName +
+      " PARTS &rarr;</a></div>";
   }
 
   function init() {
