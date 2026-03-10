@@ -1850,9 +1850,22 @@
 
   function fetchAndRender(brandKey, containerEl) {
     var brandName = normalize(BRANDS[brandKey].name); // "HORSCH" or "VADERSTAD"
+    console.log("[BrowseBrands] 🔍 Searching for brand:", brandName);
 
     // Scrape part-data-items already rendered on the page by Webflow CMS
     var allParts = document.querySelectorAll(".part-data-item");
+    console.log(
+      "[BrowseBrands] Found " +
+        allParts.length +
+        " total .part-data-item elements on page.",
+    );
+
+    if (allParts.length === 0) {
+      console.warn(
+        "[BrowseBrands] ⚠️ No parts found in DOM. Ensure a Collection List with class 'part-data-item' is present on this page (it can be hidden).",
+      );
+    }
+
     var matched = [];
 
     allParts.forEach(function (item) {
@@ -1873,10 +1886,15 @@
       if (!brandMatch && brandAttr)
         brandMatch = brandAttr.indexOf(brandName) > -1;
 
-      if (!brandMatch) return;
+      if (!brandMatch) {
+        // Optional: Uncomment to debug why specific items fail
+        // console.log("No match for:", payload.dataset.name, "Refs:", modelRefs, "Attr:", brandAttr);
+        return;
+      }
 
       var priceEl = item.querySelector(".part-data-price");
       var codeEl = item.querySelector(".part-data-code");
+      // console.log("Match found:", payload.dataset.name);
 
       matched.push(
         card({
@@ -1899,6 +1917,7 @@
     });
 
     if (!matched.length) {
+      console.log("[BrowseBrands] 0 matches found for " + brandName);
       containerEl.innerHTML =
         '<div class="twx-loading">No parts found. <a href="' +
         BRANDS[brandKey].link +
@@ -1909,6 +1928,7 @@
     // No VIEW ALL CTA here — user is already viewing all parts for this brand
     containerEl.innerHTML =
       '<div class="twx-grid">' + matched.join("") + "</div>";
+    console.log("[BrowseBrands] Rendered " + matched.length + " parts.");
     return matched.length;
   }
 
