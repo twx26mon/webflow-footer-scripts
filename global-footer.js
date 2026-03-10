@@ -1841,8 +1841,12 @@
     );
   }
 
+  function normalize(str) {
+    return (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+  }
+
   function fetchAndRender(brandKey, containerEl) {
-    var brandName = BRANDS[brandKey].name; // "HORSCH" or "VADERSTAD"
+    var brandName = normalize(BRANDS[brandKey].name); // "HORSCH" or "VADERSTAD"
 
     // Scrape part-data-items already rendered on the page by Webflow CMS
     var allParts = document.querySelectorAll(".part-data-item");
@@ -1855,14 +1859,14 @@
       // Check if any model-ref text contains this brand name
       var modelRefs = Array.from(item.querySelectorAll(".part-model-ref")).map(
         function (el) {
-          return el.textContent.trim().toUpperCase();
+          return normalize(el.textContent);
         },
       );
       var brandMatch = modelRefs.some(function (ref) {
         return ref.indexOf(brandName) > -1;
       });
       // Also check brand data attribute on payload if present
-      var brandAttr = (payload.dataset.brand || "").toUpperCase();
+      var brandAttr = normalize(payload.dataset.brand);
       if (!brandMatch && brandAttr)
         brandMatch = brandAttr.indexOf(brandName) > -1;
 
@@ -1896,12 +1900,13 @@
         '<div class="twx-loading">No parts found. <a href="' +
         BRANDS[brandKey].link +
         '" style="color:#c2934a">View them here &rarr;</a></div>';
-      return;
+      return 0;
     }
 
     // No VIEW ALL CTA here — user is already viewing all parts for this brand
     containerEl.innerHTML =
       '<div class="twx-grid">' + matched.join("") + "</div>";
+    return matched.length;
   }
 
   function init() {
@@ -1977,11 +1982,13 @@
             "ALL PARTS TO FIT " + brand.name;
 
           if (!loaded[b]) {
-            loaded[b] = true;
             var activeGrp = root.querySelector(
               '.twx-grp[data-brand="' + b + '"]',
             );
-            if (activeGrp) fetchAndRender(b, activeGrp);
+            if (activeGrp) {
+              var count = fetchAndRender(b, activeGrp);
+              if (count > 0) loaded[b] = true;
+            }
           }
         }
       });
