@@ -1773,7 +1773,7 @@
     ".twx-price{font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:#c2934a}",
     ".twx-stk{display:inline-block;font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:2px;margin-top:6px}",
     ".twx-ins{background:rgba(80,180,80,.1);color:#5db85d;border:1px solid rgba(80,180,80,.2)}",
-    ".twx-ord{background:rgba(194,147,74,.1);color:#c2934a;border:1px solid rgba(194,147,74,.25)}",
+    ".twx-ord{background:rgba(255,255,255,.06);color:#999;border:1px solid rgba(255,255,255,.15)}",
     ".twx-cta{text-align:center;margin-top:8px;margin-bottom:48px}",
     ".twx-va{display:inline-flex;align-items:center;gap:10px;font-family:Oswald,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#c2934a;border:1px solid rgba(194,147,74,.4);padding:12px 28px;text-decoration:none;border-radius:2px;transition:all .3s}",
     ".twx-va:hover{background:rgba(194,147,74,.08);border-color:#c2934a;letter-spacing:3px}",
@@ -1844,21 +1844,6 @@
   function fetchAndRender(brandKey, containerEl) {
     var brandName = BRANDS[brandKey].name; // "HORSCH" or "VADERSTAD"
 
-    // Machine names that belong to each brand
-    var BRAND_MACHINES = {
-      HORSCH: ["HORSCH", "TIGER", "TERRANO", "JOKER", "MAESTRO", "SERTO"],
-      VADERSTAD: [
-        "VADERSTAD",
-        "TOPDOWN",
-        "CARRIER",
-        "OPUS",
-        "SWIFT",
-        "CULTUS",
-        "TEMPO",
-      ],
-    };
-    var keywords = BRAND_MACHINES[brandName] || [brandName];
-
     // Scrape part-data-items already rendered on the page by Webflow CMS
     var allParts = document.querySelectorAll(".part-data-item");
     var matched = [];
@@ -1867,34 +1852,19 @@
       var payload = item.querySelector(".part-data-payload");
       if (!payload) return;
 
-      var partName = (payload.dataset.name || "").toUpperCase();
-
-      // 1. Match on part name containing brand or machine keywords
-      var brandMatch = keywords.some(function (kw) {
-        return partName.indexOf(kw) > -1;
-      });
-
-      // 2. Match on model-ref machine names
-      if (!brandMatch) {
-        var modelRefs = Array.from(
-          item.querySelectorAll(".part-model-ref"),
-        ).map(function (el) {
+      // Check if any model-ref text contains this brand name
+      var modelRefs = Array.from(item.querySelectorAll(".part-model-ref")).map(
+        function (el) {
           return el.textContent.trim().toUpperCase();
-        });
-        brandMatch = modelRefs.some(function (ref) {
-          return keywords.some(function (kw) {
-            return ref.indexOf(kw) > -1;
-          });
-        });
-      }
-
-      // 3. Match on explicit data-brand attribute
-      if (!brandMatch) {
-        var brandAttr = (payload.dataset.brand || "").toUpperCase();
-        brandMatch = keywords.some(function (kw) {
-          return brandAttr.indexOf(kw) > -1;
-        });
-      }
+        },
+      );
+      var brandMatch = modelRefs.some(function (ref) {
+        return ref.indexOf(brandName) > -1;
+      });
+      // Also check brand data attribute on payload if present
+      var brandAttr = (payload.dataset.brand || "").toUpperCase();
+      if (!brandMatch && brandAttr)
+        brandMatch = brandAttr.indexOf(brandName) > -1;
 
       if (!brandMatch) return;
 
@@ -1911,7 +1881,11 @@
           price:
             payload.dataset.price ||
             (priceEl ? priceEl.textContent.trim() : ""),
-          stock: payload.dataset.stock || "",
+          stock:
+            payload.dataset.stock ||
+            (item.querySelector(".part-data-stock")
+              ? item.querySelector(".part-data-stock").textContent.trim()
+              : "In stock NOW"),
           slug: payload.dataset.id || "",
         }),
       );
@@ -1925,15 +1899,9 @@
       return;
     }
 
+    // No VIEW ALL CTA here — user is already viewing all parts for this brand
     containerEl.innerHTML =
-      '<div class="twx-grid">' +
-      matched.join("") +
-      "</div>" +
-      '<div class="twx-cta"><a href="' +
-      BRANDS[brandKey].link +
-      '" class="twx-va">VIEW ALL ' +
-      brandName +
-      " PARTS &rarr;</a></div>";
+      '<div class="twx-grid">' + matched.join("") + "</div>";
   }
 
   function init() {
