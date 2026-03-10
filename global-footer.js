@@ -1844,6 +1844,21 @@
   function fetchAndRender(brandKey, containerEl) {
     var brandName = BRANDS[brandKey].name; // "HORSCH" or "VADERSTAD"
 
+    // Machine names that belong to each brand
+    var BRAND_MACHINES = {
+      HORSCH: ["HORSCH", "TIGER", "TERRANO", "JOKER", "MAESTRO", "SERTO"],
+      VADERSTAD: [
+        "VADERSTAD",
+        "TOPDOWN",
+        "CARRIER",
+        "OPUS",
+        "SWIFT",
+        "CULTUS",
+        "TEMPO",
+      ],
+    };
+    var keywords = BRAND_MACHINES[brandName] || [brandName];
+
     // Scrape part-data-items already rendered on the page by Webflow CMS
     var allParts = document.querySelectorAll(".part-data-item");
     var matched = [];
@@ -1852,19 +1867,34 @@
       var payload = item.querySelector(".part-data-payload");
       if (!payload) return;
 
-      // Check if any model-ref text contains this brand name
-      var modelRefs = Array.from(item.querySelectorAll(".part-model-ref")).map(
-        function (el) {
-          return el.textContent.trim().toUpperCase();
-        },
-      );
-      var brandMatch = modelRefs.some(function (ref) {
-        return ref.indexOf(brandName) > -1;
+      var partName = (payload.dataset.name || "").toUpperCase();
+
+      // 1. Match on part name containing brand or machine keywords
+      var brandMatch = keywords.some(function (kw) {
+        return partName.indexOf(kw) > -1;
       });
-      // Also check brand data attribute on payload if present
-      var brandAttr = (payload.dataset.brand || "").toUpperCase();
-      if (!brandMatch && brandAttr)
-        brandMatch = brandAttr.indexOf(brandName) > -1;
+
+      // 2. Match on model-ref machine names
+      if (!brandMatch) {
+        var modelRefs = Array.from(
+          item.querySelectorAll(".part-model-ref"),
+        ).map(function (el) {
+          return el.textContent.trim().toUpperCase();
+        });
+        brandMatch = modelRefs.some(function (ref) {
+          return keywords.some(function (kw) {
+            return ref.indexOf(kw) > -1;
+          });
+        });
+      }
+
+      // 3. Match on explicit data-brand attribute
+      if (!brandMatch) {
+        var brandAttr = (payload.dataset.brand || "").toUpperCase();
+        brandMatch = keywords.some(function (kw) {
+          return brandAttr.indexOf(kw) > -1;
+        });
+      }
 
       if (!brandMatch) return;
 
