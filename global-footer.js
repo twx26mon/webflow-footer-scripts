@@ -128,7 +128,7 @@
 
     /* Partner cards — always visible, responsive grid */
     ".partner-grid{display:flex!important;flex-wrap:wrap!important;gap:16px!important;justify-content:center!important}",
-    ".partner-card-link{display:block!important;visibility:visible!important;opacity:1!important}",
+    ".partner-card-link{display:block!important;visibility:visible!important;opacity:1!important;width:auto!important;flex:1 1 180px!important;max-width:280px!important}",
     "@media(max-width:767px){.partner-grid{gap:12px!important}.partner-card-link{width:calc(50% - 8px)!important;min-width:120px!important}}",
   ].join("\n");
 
@@ -1842,7 +1842,10 @@
   }
 
   function normalize(str) {
-    return (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+    return (str || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase();
   }
 
   function fetchAndRender(brandKey, containerEl) {
