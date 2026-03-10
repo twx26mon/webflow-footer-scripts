@@ -49,9 +49,9 @@
     ".qr-qty-value{min-width:24px;text-align:center;font-weight:600}",
 
     /* Quote Cart: Remove button */
-    ".qr-remove-btn{background:none;border:none;color:#c2934a;font-size:16px;font-weight:700;cursor:pointer;padding:4px 6px;border-radius:4px;transition:color 0.15s,transform 0.1s,opacity 0.15s;line-height:1}",
-    ".qr-remove-btn:hover{color:#a87a38;opacity:0.85}",
-    ".qr-remove-btn:active{transform:scale(0.88);opacity:0.7}",
+    ".qr-remove-btn{display:block;margin-top:6px;background:none;border:1px solid #c2934a;color:#c2934a;font-size:10px;font-weight:700;letter-spacing:0.08em;cursor:pointer;padding:3px 7px;border-radius:3px;transition:color 0.15s,background 0.15s,opacity 0.15s;line-height:1.4;white-space:nowrap}",
+    ".qr-remove-btn:hover{background:#c2934a;color:#1a1a1a;opacity:1}",
+    ".qr-remove-btn:active{opacity:0.7}",
 
     /* Quote Cart: Browse button */
     ".qr-browse-row{margin-top:16px}",
@@ -116,7 +116,11 @@
     "#qr-right-col{width:100%!important;flex:none!important}",
     "#qr-form-section{width:100%!important;flex:none!important}",
     ".qr-parts-table th:nth-child(2),.qr-parts-table td:nth-child(2){display:none}",
-    ".qr-parts-table th:last-child,.qr-parts-table td:last-child{width:40px;padding:14px 4px}",
+    ".qr-parts-table{font-size:12px}",
+    ".qr-parts-table td,.qr-parts-table th{padding:10px 6px}",
+    ".qr-item-img{width:36px!important;height:36px!important;margin-right:8px!important}",
+    ".qr-qty-controls{gap:4px}",
+    ".qr-qty-btn{width:22px;height:22px;font-size:15px}",
     ".qr-name-row,.qr-contact-row,.qr-delivery-row{flex-direction:column!important;gap:0!important}",
     ".qr-name-row>*,.qr-contact-row>*,.qr-delivery-row>*{flex:none!important;width:100%!important}",
     "}",
@@ -1379,9 +1383,9 @@
               <span class="qr-qty-value">${safeQty}</span>
               <button class="qr-qty-btn qr-qty-plus" data-id="${escapeHtml(item.id)}" aria-label="Increase quantity">+</button>
             </div>
+            <button class="qr-remove-btn" data-id="${escapeHtml(item.id)}" aria-label="Remove item">REMOVE</button>
           </td>
           <td>${lineTotalHtml}</td>
-          <td><button class="qr-remove-btn" data-id="${escapeHtml(item.id)}" aria-label="Remove item">✕</button></td>
         </tr>
       `;
     });
@@ -1389,7 +1393,7 @@
     tableContainer.innerHTML = `
       <table class="qr-parts-table">
         <thead>
-          <tr><th>Part</th><th>Unit Price</th><th>Qty</th><th>Total</th><th></th></tr>
+          <tr><th>Part</th><th>Unit Price</th><th>Qty</th><th>Total</th></tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>
@@ -1899,8 +1903,17 @@
     if (!root) return;
 
     // Hide the Webflow page heading section above
-    var headSec = document.querySelector(".page-heading-container");
-    if (headSec) headSec.style.display = "none";
+    // Hide sibling elements inside the heading container — NOT the container itself
+    // (the root div lives inside .page-heading-container, so hiding the parent hides everything)
+    var headSec = root.parentElement;
+    if (headSec) {
+      Array.from(headSec.children).forEach(function (child) {
+        if (child.id !== ROOT_ID) child.style.display = "none";
+      });
+      headSec.style.removeProperty("display");
+      headSec.style.padding = "0";
+      headSec.style.margin = "0";
+    }
 
     injectCSS();
 
