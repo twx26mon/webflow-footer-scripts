@@ -129,7 +129,20 @@
     /* Partner cards — always visible, responsive grid */
     ".partner-grid{display:flex!important;flex-wrap:wrap!important;gap:16px!important;justify-content:center!important}",
     ".partner-card-link{display:block!important;visibility:visible!important;opacity:1!important;width:auto!important;flex:1 1 180px!important;max-width:280px!important}",
-    "@media(max-width:767px){.partner-grid{gap:16px!important}.partner-card-link{width:100%!important;max-width:none!important}}",
+    "@media(max-width:767px){.partner-grid{gap:16px!important}.partner-card-link{width:100%!important;max-width:none!important}}",,
+
+    "/* --- Global Product Card Styles --- */",
+    ".twx-card,.product-card,.brands--product-card{background:#0e0e0e;border:1px solid #1c1c1c;border-radius:4px;overflow:hidden;text-decoration:none;display:block;transition:all .3s ease}",
+    ".twx-card:hover,.product-card:hover,.brands--product-card:hover{border-color:#c2934a;transform:translateY(-4px);box-shadow:0 12px 36px rgba(194,147,74,.14)}",
+    ".twx-img,.image-2,.brands-image{width:100%;aspect-ratio:1/1;object-fit:contain;background:#080808;padding:14px;box-sizing:border-box;display:block}",
+    ".twx-body,.product-card-details,.brands--product-content-wrapper{padding:12px 14px 14px}",
+    ".twx-code{font-family:Oswald,sans-serif;font-size:10px;letter-spacing:2px;color:#c2934a;text-transform:uppercase;margin-bottom:4px}",
+    ".twx-name,.card-title-homepage,.brands-view-all-btn-copy,.view-all-btn{font-family:Oswald,sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1.25;margin-bottom:5px;text-decoration:none}",
+    ".twx-fit,.product-details-text,.brands_product_description{font-size:12px;color:rgba(255,255,255,.38);margin-bottom:8px}",
+    ".twx-price,.text-block-24{font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:#c2934a}",
+    ".twx-stk{display:inline-block;font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:2px;margin-top:6px}",
+    ".twx-ins{background:rgba(80,180,80,.1);color:#5db85d;border:1px solid rgba(80,180,80,.2)}",
+    ".twx-ord{background:rgba(255,255,255,.06);color:#999;border:1px solid rgba(255,255,255,.15)}",
   ].join("\n");
 
   var style = document.createElement("style");
@@ -1660,6 +1673,11 @@
       name: "VADERSTAD",
       link: "/brands/to-fit-vaderstad",
     },
+    L: {
+      id: "lemken",
+      name: "LEMKEN",
+      link: "/brands/to-fit-lemken",
+    },
   };
 
   var FEAT = {
@@ -1751,12 +1769,23 @@
     "#twx-bfh .twx-bn.twx-dim{color:#2a2a2a;transform:scale(.87)!important;text-shadow:none!important}",
     "#twx-bfh .twx-bn.twx-dim::after{display:none}",
     "#twx-bfh .twx-bn.twx-act{color:#c2934a;transform:scale(1.09)!important;text-shadow:0 0 40px rgba(194,147,74,.45)!important}",
+    "#twx-nav{display:flex;justify-content:center;align-items:center;gap:20px;margin-bottom:50px;flex-wrap:wrap}",
+    ".twx-sep{color:#c2934a;font-family:Oswald,sans-serif;font-size:24px;font-weight:700;user-select:none}",
+    ".twx-bn{font-family:Oswald,sans-serif;font-weight:700;font-size:24px;color:#c2934a;cursor:pointer;transition:all .4s cubic-bezier(.22,1,.36,1);display:inline-block;position:relative;text-transform:uppercase;letter-spacing:1px}",
+    ".twx-bn::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:#c2934a;transform:scaleX(0);transition:transform .35s ease;transform-origin:center}",
+    ".twx-bn:hover::after{transform:scaleX(1)}",
+    ".twx-bn:hover{color:#e8b06a;text-shadow:0 0 20px rgba(194,147,74,.6);transform:scale(1.05)}",
+    ".twx-bn.twx-dim{color:#333;transform:scale(.9)!important;text-shadow:none!important}",
+    ".twx-bn.twx-dim::after{display:none}",
+    ".twx-bn.twx-act{color:#c2934a;transform:scale(1.15)!important;text-shadow:0 0 30px rgba(194,147,74,.45)!important}",
     "@keyframes twx-glow{0%,100%{text-shadow:0 0 5px rgba(194,147,74,0.1)}50%{text-shadow:0 0 20px rgba(194,147,74,0.6)}}",
     "#twx-bfh .twx-bn:not(.twx-dim):not(.twx-act){animation:twx-glow 3s infinite ease-in-out}",
+    ".twx-bn:not(.twx-dim):not(.twx-act){animation:twx-glow 3s infinite ease-in-out}",
     "#twx-hint{text-align:center;display:block;width:fit-content;margin:0 auto 52px;color:#c2934a;font-family:Oswald,sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;padding:9px 22px;border:1px solid rgba(194,147,74,.4);border-radius:2px}",
     "#twx-feat-lbl{text-align:center;font-family:Oswald,sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:3px;text-transform:uppercase;margin-bottom:36px;padding-bottom:14px;border-bottom:1px solid #1e1e1e}",
     "#twx-wrap{max-width:1380px;margin:0 auto;padding:0 32px}",
     "@media(max-width:700px){#twx-bfh{font-size:40px}#twx-wrap{padding:0 16px}}",
+    "@media(max-width:700px){#twx-bfh{font-size:40px}#twx-nav{gap:10px}.twx-bn{font-size:18px}.twx-sep{font-size:18px}#twx-wrap{padding:0 16px}}",
     ".twx-grp{transition:all .5s cubic-bezier(.22,1,.36,1);overflow:hidden}",
     ".twx-grp.twx-hide{opacity:0;max-height:0!important;transform:translateY(16px) scale(.98);pointer-events:none;margin:0;padding:0}",
     ".twx-grp.twx-show{opacity:1;max-height:9999px;transform:none}",
@@ -1769,9 +1798,21 @@
     ".twx-card:hover,.product-card:hover,.brands--product-card:hover{border-color:#c2934a;transform:translateY(-4px);box-shadow:0 12px 36px rgba(194,147,74,.14)}",
     ".twx-img,.image-2,.brands-image{width:100%;aspect-ratio:1/1;object-fit:contain;background:#080808;padding:14px;box-sizing:border-box;display:block}",
     ".twx-body,.product-card-details,.brands--product-content-wrapper{padding:12px 14px 14px}",
-    ".twx-code{font-family:Oswald,sans-serif;font-size:10px;letter-spacing:2px;color:#c2934a;text-transform:uppercase;margin-bottom:4    ".twx-name,.card-title-homepage,.brands-view-all-btn-copy,.view-all-btn{font-family:Oswald,sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1.25;margin-bottom:5px;text-decoration:none}",
+    ".twx-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:28px}",
+    "@media(max-width:1200px){.twx-grid{grid-template-columns:repeat(4,1fr)}}",
+    "@media(max-width:900px){.twx-grid{grid-template-columns:repeat(3,1fr)}}",
+    "@media(max-width:600px){.twx-grid{grid-template-columns:repeat(2,1fr)}}",
+    ".twx-card{background:#0e0e0e;border:1px solid #1c1c1c;border-radius:4px;overflow:hidden;text-decoration:none;display:block;transition:all .3s ease}",
+    ".twx-card:hover{border-color:#c2934a;transform:translateY(-4px);box-shadow:0 12px 36px rgba(194,147,74,.14)}",
+    ".twx-img{width:100%;aspect-ratio:1/1;object-fit:contain;background:#080808;padding:14px;box-sizing:border-box;display:block}",
+    ".twx-body{padding:12px 14px 14px}",
+    ".twx-code{font-family:Oswald,sans-serif;font-size:10px;letter-spacing:2px;color:#c2934a;text-transform:uppercase;margin-bottom:4px}",
+    ".twx-name,.card-title-homepage,.brands-view-all-btn-copy,.view-all-btn{font-family:Oswald,sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1.25;margin-bottom:5px;text-decoration:none}",
     ".twx-fit,.product-details-text,.brands_product_description{font-size:12px;color:rgba(255,255,255,.38);margin-bottom:8px}",
     ".twx-price,.text-block-24{font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:#c2934a}",
+    ".twx-name{font-family:Oswald,sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1.25;margin-bottom:5px}",
+    ".twx-fit{font-size:12px;color:rgba(255,255,255,.38);margin-bottom:8px}",
+    ".twx-price{font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:#c2934a}",
     ".twx-stk{display:inline-block;font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:2px;margin-top:6px}",
     ".twx-ins{background:rgba(80,180,80,.1);color:#5db85d;border:1px solid rgba(80,180,80,.2)}",
     ".twx-ord{background:rgba(255,255,255,.06);color:#999;border:1px solid rgba(255,255,255,.15)}",
@@ -1825,7 +1866,8 @@
       '<div class="twx-grp ' +
       (vis ? "twx-show" : "twx-hide") +
       '" data-brand="' +
-      key +
+      key + 
+      '" data-is-feat="' + (vis ? "true" : "false") +
       '">' +
       '<div class="twx-lbl">' +
       lbl +
@@ -1965,16 +2007,20 @@
     root.innerHTML =
       '<div id="twx-bf">' +
       '<div id="twx-bfh">' +
-      "BROWSE OUR PARTS TO FIT<br>" +
-      '<span class="twx-bn" data-b="H">HORSCH</span>' +
-      '<span style="color:#c2934a;font-family:Oswald,sans-serif;font-weight:700;font-size:inherit"> &amp; </span>' +
-      '<span class="twx-bn" data-b="V">VADERSTAD</span>' +
+      "BROWSE OUR QUALITY AFTERMARKET PARTS" +
       "</div>" +
-      '<span id="twx-hint">&#9650; CLICK A BRAND ABOVE TO VIEW RELATED PARTS</span>' +
+      '<div id="twx-nav">' +
+      '<span class="twx-bn" data-b="H">HORSCH</span>' +
+      '<span class="twx-sep">|</span>' +
+      '<span class="twx-bn" data-b="V">VADERSTAD</span>' +
+      '<span class="twx-sep">|</span>' +
+      '<span class="twx-bn" data-b="L">LEMKEN</span>' +
+      "</div>" +
       '<div id="twx-wrap">' +
       '<div id="twx-feat-lbl">FEATURED PARTS</div>' +
       grp("H", FEAT.H, "TO FIT HORSCH", true) +
       grp("V", FEAT.V, "TO FIT VADERSTAD", true) +
+      grp("L", [], "TO FIT LEMKEN", false) +
       "</div>" +
       "</div>";
 
@@ -1989,8 +2035,9 @@
             x.classList.remove("twx-act", "twx-dim");
           });
           root.querySelectorAll(".twx-grp").forEach(function (g) {
-            g.classList.remove("twx-hide");
-            g.classList.add("twx-show");
+            var isFeat = g.getAttribute("data-is-feat") === "true";
+            g.classList.toggle("twx-show", isFeat);
+            g.classList.toggle("twx-hide", !isFeat);
           });
           document.getElementById("twx-feat-lbl").textContent =
             "FEATURED PARTS";
@@ -2012,6 +2059,38 @@
           if (!loaded[b]) {
             var activeGrp = root.querySelector(
               '.twx-grp[data-brand="' + b + '"]',
+            );
+            if (activeGrp) {
+              var count = fetchAndRender(b, activeGrp);
+              if (count > 0) loaded[b] = true;
+            }
+          }
+        }
+      });
+    });
+  }
+
+  function waitForRoot(callback, maxWait) {
+    var start = Date.now();
+    var interval = setInterval(function () {
+      var el = document.getElementById(ROOT_ID);
+      if (el) {
+        clearInterval(interval);
+        callback();
+      } else if (Date.now() - start > (maxWait || 5000)) {
+        clearInterval(interval); // give up after 5s
+      }
+    }, 50);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      waitForRoot(init);
+    });
+  } else {
+    waitForRoot(init);
+  }
+})();
             );
             if (activeGrp) {
               var count = fetchAndRender(b, activeGrp);
