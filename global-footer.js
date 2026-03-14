@@ -134,7 +134,7 @@
     "/* --- Global Product Card Styles --- */",
     ".twx-card,.product-card,.brands--product-card{background:#0e0e0e;border:1px solid #1c1c1c;border-radius:4px;overflow:hidden;text-decoration:none;display:flex;flex-direction:column;position:relative;transition:all .3s ease;height:100%}",
     ".twx-card:hover,.product-card:hover,.brands--product-card:hover{border-color:#c2934a;transform:translateY(-4px);box-shadow:0 12px 36px rgba(194,147,74,.14)}",
-    ".twx-img,.image-2,.brands-image{width:100%;aspect-ratio:1/1;object-fit:contain;background:#080808;padding:14px;box-sizing:border-box;display:block}",
+    ".twx-img,.product-card-image,.brands-image{width:100%;aspect-ratio:1/1;object-fit:contain;background:#080808;padding:14px;box-sizing:border-box;display:block}",
     ".twx-body,.product-card-details,.brands--product-content-wrapper{padding:12px 14px 14px;background:#141414;display:flex;flex-direction:column;flex-grow:1}",
     ".twx-code{font-family:Oswald,sans-serif;font-size:10px;letter-spacing:2px;color:#c2934a;text-transform:uppercase;margin-bottom:4px}",
     ".twx-name,.card-title-homepage,.brands-view-all-btn-copy,.view-all-btn{font-family:Oswald,sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1.25;margin-bottom:5px;text-decoration:none}",
@@ -2105,7 +2105,9 @@
 
   function styleStockBadges() {
     // Target any potential card container. This is broad but safe as it only reads data.
-    const cards = document.querySelectorAll(".twx-card, .product-card, .brands-product-card, .w-dyn-item");
+    const cards = document.querySelectorAll(
+      ".twx-card, .product-card, .brands-product-card, .w-dyn-item",
+    );
 
     cards.forEach((card) => {
       const badge = card.querySelector(".twx-stk");
@@ -2119,15 +2121,15 @@
           .trim()
           .toLowerCase();
         const isInStock = stockText.includes("in stock");
+        const targetClass = isInStock ? "twx-ins" : "twx-ord";
+        const targetText = isInStock ? "IN STOCK" : "ORDER NOW";
 
-        badge.classList.remove("twx-ins", "twx-ord");
-
-        if (isInStock) {
-          badge.classList.add("twx-ins");
-          badge.textContent = "IN STOCK";
-        } else {
-          badge.classList.add("twx-ord");
-          badge.textContent = "ORDER NOW";
+        if (!badge.classList.contains(targetClass)) {
+          badge.classList.remove("twx-ins", "twx-ord");
+          badge.classList.add(targetClass);
+        }
+        if (badge.textContent !== targetText) {
+          badge.textContent = targetText;
         }
       }
     });
@@ -2160,14 +2162,14 @@
     // This selector is intentionally specific. For this script to work on a CMS
     // collection item, the item's root element must have one of these classes.
     const cards = document.querySelectorAll(
-      ".twx-card, .product-card, .brands-product-card"
+      ".twx-card, .product-card, .brands-product-card",
     );
 
     cards.forEach((card) => {
       if (card.querySelector(".twx-card-add-btn")) return;
 
       const nameEl = card.querySelector(
-        ".twx-name, .card-title-homepage, .product-name, .product-title, h3, h4"
+        ".twx-name, .card-title-homepage, .product-name, .product-title, h3, h4",
       );
       const name = nameEl ? nameEl.textContent.trim() : "";
       if (!name) return;
