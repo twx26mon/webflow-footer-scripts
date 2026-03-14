@@ -2071,3 +2071,52 @@
     waitForRoot(init);
   }
 })();
+
+/* ── 7. GLOBAL STOCK BADGES ─────────────────────────── */
+(function () {
+  "use strict";
+
+  function styleStockBadges() {
+    const cards = document.querySelectorAll(
+      ".twx-card, .product-card, .brands-product-card, .w-dyn-item",
+    );
+
+    cards.forEach((card) => {
+      const badge = card.querySelector(".twx-stk");
+      // The stock data source is expected to be an element with this class inside the card
+      const stockDataSource = card.querySelector(".part-data-stock");
+
+      if (badge && stockDataSource) {
+        const stockText = (stockDataSource.textContent || "")
+          .trim()
+          .toLowerCase();
+        const isInStock = stockText.includes("in stock");
+
+        badge.classList.remove("twx-ins", "twx-ord");
+
+        if (isInStock) {
+          badge.classList.add("twx-ins");
+          badge.textContent = "IN STOCK";
+        } else {
+          badge.classList.add("twx-ord");
+          badge.textContent = "ORDER NOW";
+        }
+      }
+    });
+  }
+
+  function init() {
+    styleStockBadges();
+    // Re-run for dynamically loaded Webflow collections via a MutationObserver
+    const observer = new MutationObserver(styleStockBadges);
+    observer.observe(document.body, { childList: true, subtree: true });
+    // Disconnect after a reasonable time to avoid performance issues
+    setTimeout(() => observer.disconnect(), 8000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
