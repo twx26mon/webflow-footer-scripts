@@ -132,21 +132,21 @@
     "@media(max-width:767px){.partner-grid{gap:16px!important}.partner-card-link{width:100%!important;max-width:none!important}}",
 
     "/* --- Global Product Card Styles --- */",
-    ".twx-card,.product-card,.brands--product-card{background:#0e0e0e;border:1px solid #1c1c1c;border-radius:4px;overflow:hidden;text-decoration:none;display:flex;flex-direction:column;position:relative;transition:all .3s ease;height:100%}",
-    ".twx-card:hover,.product-card:hover,.brands--product-card:hover{border-color:#c2934a;transform:translateY(-4px);box-shadow:0 12px 36px rgba(194,147,74,.14)}",
-    ".twx-img,.product-card-image,.brands-image{width:100%;aspect-ratio:1/1;object-fit:contain;background:#080808;padding:14px;box-sizing:border-box;display:block}",
-    ".twx-body,.product-card-details,.brands--product-content-wrapper{padding:12px 14px 14px;background:#141414;display:flex;flex-direction:column;flex-grow:1}",
+    ".twx-card{background:#0e0e0e;border:1px solid #1c1c1c;border-radius:4px;overflow:hidden;text-decoration:none;display:flex;flex-direction:column;position:relative;transition:all .3s ease;height:100%}",
+    ".twx-card:hover{border-color:#c2934a;transform:translateY(-4px);box-shadow:0 12px 36px rgba(194,147,74,.14)}",
+    ".twx-img{width:100%;aspect-ratio:1/1;object-fit:contain;background:#080808;padding:14px;box-sizing:border-box;display:block}",
+    ".twx-body{padding:12px 14px 14px;background:#141414;display:flex;flex-direction:column;flex-grow:1}",
     ".twx-code{font-family:Oswald,sans-serif;font-size:10px;letter-spacing:2px;color:#c2934a;text-transform:uppercase;margin-bottom:4px}",
-    ".twx-name,.card-title-homepage,.brands-view-all-btn-copy,.view-all-btn{font-family:Oswald,sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1.25;margin-bottom:5px;text-decoration:none}",
-    ".twx-fit,.product-details-text,.brands_product_description{font-size:12px;color:rgba(255,255,255,.38);margin-bottom:8px}",
-    ".twx-price,.text-block-24{font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:#c2934a;margin-top:auto;padding-top:10px}",
+    ".twx-name{font-family:Oswald,sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1.25;margin-bottom:5px;text-decoration:none}",
+    ".twx-fit{font-size:12px;color:rgba(255,255,255,.38);margin-bottom:8px}",
+    ".twx-price{font-family:Oswald,sans-serif;font-size:18px;font-weight:700;color:#c2934a;margin-top:auto;padding-top:10px}",
     ".twx-stk{display:inline-block;font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:2px;margin-top:6px;align-self:flex-start}",
     ".twx-ins{background:rgba(80,180,80,.1);color:#5db85d;border:1px solid rgba(80,180,80,.2)}",
     ".twx-ord{background:rgba(255,255,255,.06);color:#999;border:1px solid rgba(255,255,255,.15)}",
-    ".twx-card-add-btn{position:absolute;bottom:14px;right:14px;width:40px;height:40px;background:rgba(194,147,74,0.9);color:#111;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;z-index:5;opacity:0;transform:scale(.8);}",
+    ".twx-card-add-btn{position:absolute;bottom:14px;right:14px;width:48px;height:48px;background:rgba(194,147,74,0.9);color:#111;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;z-index:5;opacity:0;transform:scale(.8);}",
     ".twx-card:hover .twx-card-add-btn{opacity:1;transform:scale(1)}",
     ".twx-card-add-btn:hover{transform:scale(1.1)!important;background:#c2934a}",
-    ".twx-card-add-btn svg{width:20px;height:20px;stroke-width:2.5}",
+    ".twx-card-add-btn svg{width:24px;height:24px;stroke-width:2.2}",
   ].join("\n");
 
   var style = document.createElement("style");
@@ -1168,7 +1168,7 @@
       }
     }
 
-    const btn = e.target.closest("[data-add-to-quote]:not(.add-to-quote-btn)");
+    const btn = e.target.closest("[data-add-to-quote]");
     if (!btn) return;
 
     if (btn.classList.contains("carousel-link")) {
@@ -1186,8 +1186,15 @@
       }
       if (productName) {
         e.preventDefault();
+        e.stopPropagation();
         handleAddToQuote(btn, productName);
       }
+    } else {
+      e.preventDefault();
+      e.stopPropagation();
+      const productName =
+        btn.getAttribute("data-add-to-quote") || btn.getAttribute("data-name");
+      if (productName) handleAddToQuote(btn, productName);
     }
   }
 
@@ -1834,7 +1841,7 @@
       'data-image="' +
       (p.img || "") +
       '">' +
-      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>' +
+      '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>' +
       "</div>";
 
     return (
@@ -1882,8 +1889,8 @@
       '<div class="twx-grid">' +
       parts.map(card).join("") +
       "</div>" +
-      '<div class="twx-cta"><a href="' +
-      BRANDS[key].link +
+      '<div class="twx-cta"><a href="#" data-b="' +
+      key +
       '" class="twx-va">VIEW ALL ' +
       BRANDS[key].name +
       " PARTS &rarr;</a></div>" +
@@ -2075,6 +2082,20 @@
         }
       });
     });
+
+    root.querySelectorAll(".twx-va").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        var b = btn.getAttribute("data-b");
+        var topBtn = root.querySelector('.twx-bn[data-b="' + b + '"]');
+        if (topBtn) {
+          topBtn.click();
+          document
+            .getElementById("twx-bf")
+            .scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    });
   }
 
   function waitForRoot(callback, maxWait) {
@@ -2104,10 +2125,7 @@
   "use strict";
 
   function styleStockBadges() {
-    // Target any potential card container. This is broad but safe as it only reads data.
-    const cards = document.querySelectorAll(
-      ".twx-card, .product-card, .brands-product-card, .w-dyn-item",
-    );
+    const cards = document.querySelectorAll(".twx-card, .w-dyn-item");
 
     cards.forEach((card) => {
       const badge = card.querySelector(".twx-stk");
@@ -2156,29 +2174,21 @@
   "use strict";
 
   const SVG_ICON =
-    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>';
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>';
 
   function enhanceCards() {
-    // This selector is intentionally specific. For this script to work on a CMS
-    // collection item, the item's root element must have one of these classes.
-    const cards = document.querySelectorAll(
-      ".twx-card, .product-card, .brands-product-card",
-    );
+    const cards = document.querySelectorAll(".twx-card");
 
     cards.forEach((card) => {
       if (card.querySelector(".twx-card-add-btn")) return;
 
-      const nameEl = card.querySelector(
-        ".twx-name, .card-title-homepage, .product-name, .product-title, h3, h4",
-      );
+      const nameEl = card.querySelector(".twx-name, h3, h4");
       const name = nameEl ? nameEl.textContent.trim() : "";
       if (!name) return;
 
       const codeEl = card.querySelector(".twx-code, .part-data-code");
       const priceEl = card.querySelector(".twx-price, .part-data-price");
-      const imgEl = card.querySelector(
-        ".twx-img, .product-card-image, .brands-image, img",
-      );
+      const imgEl = card.querySelector(".twx-img, img");
       const linkEl = card.closest("a");
 
       const slug =
