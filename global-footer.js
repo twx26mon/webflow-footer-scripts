@@ -49,7 +49,7 @@
     ".qr-qty-value{min-width:24px;text-align:center;font-weight:600}",
 
     /* Quote Cart: Remove button */
-    ".qr-remove-btn{display:block;margin-top:6px;background:none;border:1px solid #c2934a;color:#c2934a;font-size:10px;font-weight:700;letter-spacing:0.08em;cursor:pointer;padding:3px 7px;border-radius:3px;transition:color 0.15s,background 0.15s,opacity 0.15s;line-height:1.4;white-space:nowrap}",
+    ".qr-remove-btn{display:block;margin:6px auto 0;background:none;border:1px solid #c2934a;color:#c2934a;font-size:10px;font-weight:700;letter-spacing:0.08em;cursor:pointer;padding:3px 7px;border-radius:3px;transition:color 0.15s,background 0.15s,opacity 0.15s;line-height:1.4;white-space:nowrap}",
     ".qr-remove-btn:hover{background:#c2934a;color:#1a1a1a;opacity:1}",
     ".qr-remove-btn:active{opacity:0.7}",
     "#cart-clearall{color:#c2934a!important;font-size:13px!important;font-weight:700!important;letter-spacing:0.08em!important;text-align:right!important;display:block!important;width:100%!important;padding:10px 16px!important;cursor:pointer!important;background:none!important;border:none!important;}",
