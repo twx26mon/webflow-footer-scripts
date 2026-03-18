@@ -78,7 +78,7 @@
     ".qr-name-row>*>*,.qr-contact-row>*>*,.qr-name-row input,.qr-name-row .w-input,.qr-name-row .input-container,.qr-name-row .form-field-wrapper{width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important}",
 
     /* Delivery address toggle */
-    ".qr-same-address-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;margin-top:-4px}",
+    ".qr-same-address-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;margin-top:-4px}",
     ".qr-same-address-row label{font-size:12px;font-weight:600;color:#aaa;text-transform:none;letter-spacing:0;margin:0;cursor:pointer}",
     ".qr-same-address-row input[type=checkbox]{accent-color:#c2934a;width:15px;height:15px;cursor:pointer;flex-shrink:0}",
     ".qr-delivery-input-wrapper{display:none;margin-top:10px}",
