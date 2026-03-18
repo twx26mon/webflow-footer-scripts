@@ -1233,7 +1233,8 @@
     const existing = state.cart.find((item) => item.id === part.id);
     addPartToCart(part, false);
     if (existing) showUpdateMessage(`Updated quantity for ${part.name}`);
-    triggerReverseWizard(part.name);
+    const wizardOpened = triggerReverseWizard(part.name);
+    if (!wizardOpened) showCart();
   }
   /* ── Cart DOM injection (for pages without quote-cart element) ── */
   function injectCartIfMissing() {
