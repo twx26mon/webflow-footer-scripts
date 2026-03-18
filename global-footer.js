@@ -81,7 +81,7 @@
     ".qr-same-address-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;margin-top:-4px}",
     ".qr-same-address-row label{font-size:12px;font-weight:600;color:#aaa;text-transform:none;letter-spacing:0;margin:0;cursor:pointer}",
     ".qr-same-address-row input[type=checkbox]{accent-color:#c2934a;width:15px;height:15px;cursor:pointer;flex-shrink:0}",
-    ".qr-delivery-input-wrapper{display:none;margin-top:10px}",
+    ".qr-delivery-input-wrapper{display:none;margin-top:16px}",
     ".qr-delivery-input-wrapper.visible{display:block}",
     '#qr-address~label,label[for="qr-address"]{display:none!important}',
 
@@ -94,7 +94,7 @@
     "#qr-submit-btn:active{transform:scale(0.98) translateY(0)!important;box-shadow:0 2px 8px rgba(194,147,74,0.3)!important}",
 
     /* Freight disclaimer */
-    ".qr-freight-disclaimer{margin-top:16px;padding:16px 20px;background:rgba(194,147,74,0.06);border-left:3px solid #c2934a;border-radius:0 6px 6px 0;color:#bbb;font-size:13px;line-height:1.7}",
+    ".qr-freight-disclaimer{margin-top:16px;padding:16px 20px;background:rgba(255,255,255,0.06);border-left:3px solid #c2934a;border-radius:0 6px 6px 0;color:#bbb;font-size:13px;line-height:1.7}",
     ".qr-freight-disclaimer .qr-freight-phone{display:inline-block;margin-top:10px;font-weight:700;color:#c2934a;font-size:13px;letter-spacing:0.03em}",
 
     /* Parts container */
@@ -104,7 +104,7 @@
     ".qr-parts-table{width:100%;border-collapse:collapse;font-size:14px}",
     ".qr-parts-table th{text-align:left;padding:10px 12px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#c2934a;border-bottom:1px solid #2a2a2a}",
     ".qr-parts-table td{padding:14px 12px;border-bottom:1px solid #1a1a1a;vertical-align:middle;color:#fff}",
-    ".qr-item-img{width:56px;height:56px;object-fit:contain;background:#111;border-radius:4px;margin-bottom:6px;display:block}",
+    ".qr-item-img{width:56px;height:56px;object-fit:contain;background:transparent;border-radius:4px;margin-bottom:6px;display:block}",
     ".qr-item-name{font-weight:600;font-size:14px;line-height:1.3}",
     ".qr-item-code{font-size:11px;color:#888;margin-top:2px;letter-spacing:0.04em}",
     ".qr-summary-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1e1e1e;font-size:14px;color:#ccc}",
