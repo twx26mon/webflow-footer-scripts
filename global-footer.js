@@ -86,7 +86,7 @@
     '#qr-address~label,label[for="qr-address"]{display:none!important}',
 
     /* Form heading */
-    "#qr-form-section h3.qr-form-heading{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#c2934a;border-bottom:1px solid #2a2a2a;padding-bottom:12px;margin-bottom:20px}",
+    "#qr-form-section h3.qr-form-heading{font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#c2934a;border-bottom:1px solid #2a2a2a;padding-bottom:12px;margin-bottom:20px}",
 
     /* Submit button */
     "#qr-submit-btn{width:100%!important;background:linear-gradient(135deg,#b8833e 0%,#d4a55c 40%,#e8b86d 60%,#c2934a 100%)!important;background-size:200% auto!important;color:#111!important;font-size:14px!important;font-weight:800!important;letter-spacing:0.12em!important;text-transform:uppercase!important;border:none!important;border-radius:8px!important;padding:18px 24px!important;cursor:pointer!important;margin-top:16px!important;transition:background-position 0.4s,transform 0.15s,box-shadow 0.2s!important;box-shadow:0 4px 20px rgba(194,147,74,0.4),inset 0 1px 0 rgba(255,255,255,0.15)!important}",
