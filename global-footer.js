@@ -1512,15 +1512,9 @@
 
     if (cartJsonField) {
       const cleanCart = cart.map((item) => ({
-        id: item.id,
-        sku: item.code || item.id,
-        name: item.name,
-        quantity: Math.max(1, item.qty || 1),
-        price: parsePrice(item.price) || 0,
-        machine_context: item.machineContext || ""
-        sku: item.code || item.id,
-        name: item.name,
-        quantity: Math.max(1, item.qty || 1),
+        SKU: item.code || item.id,
+        Name: item.name,
+        Quantity: Math.max(1, item.qty || 1),
       }));
       cartJsonField.value = JSON.stringify(cleanCart);
     }
