@@ -53,6 +53,9 @@
     ".qr-remove-btn:hover{background:#c2934a;color:#1a1a1a;opacity:1}",
     ".qr-remove-btn:active{opacity:0.7}",
     "#cart-clearall{color:#c2934a!important;font-size:13px!important;font-weight:700!important;letter-spacing:0.08em!important;text-align:right!important;display:block!important;width:100%!important;padding:10px 16px!important;cursor:pointer!important;background:none!important;border:none!important;}",
+    ".cart-trash{display:flex;align-items:center;justify-content:center;cursor:pointer;padding:4px;opacity:0.7;transition:opacity 0.15s,transform 0.1s;flex-shrink:0}",
+    ".cart-trash:hover{opacity:1;transform:scale(1.15)}",
+    ".cart-trash:active{transform:scale(0.88);opacity:0.6}",
 
     /* Quote Cart: Browse button */
     ".qr-browse-row{margin-top:16px}",
@@ -530,8 +533,12 @@
                  class="quote-cart-item-qty" aria-label="Quantity" data-id="${item.id}">
           <button type="button" data-action="increase" aria-label="Increase quantity">+</button>
         </div>
-        <span class="cart-trash" title="Remove item" role="button" tabindex="0" aria-label="Remove item">🗑️</span>
-      `;
+<span class="cart-trash" title="Remove item" role="button" tabindex="0" aria-label="Remove item">
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2.5 2.5C4.8 5.1 7.2 7.0 9.1 9.2C11.2 11.5 13.5 13.8 15.5 15.5" stroke="#c2934a" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M15.5 2.5C13.1 5.0 10.9 7.1 9.0 9.0C6.9 11.1 4.7 13.5 2.5 15.5" stroke="#c2934a" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>
+</span>      `;
 
       fragment.appendChild(div);
     });
