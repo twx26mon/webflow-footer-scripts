@@ -1339,6 +1339,7 @@
     const tableContainer = document.getElementById("qr-parts-container");
     const summaryContainer = document.getElementById("qr-summary-container");
     const cartDataField = document.getElementById("qr-cart-data");
+    let cartJsonField = document.getElementById("qr-cart-json");
     const emptyMsg = document.getElementById("qr-empty-msg");
     const formSection = document.getElementById("qr-form-section");
     const flexRow = document.getElementById("qr-flex-row");
@@ -1498,6 +1499,30 @@
           return `${item.name} (${item.code || item.id}) x${qty} @ ${item.price || "TBC"} = $${lineTotal}`;
         })
         .join("\n");
+
+      // ── Cart JSON field for Zoho Flow integration ──
+      if (!cartJsonField) {
+        cartJsonField = document.createElement("input");
+        cartJsonField.type = "hidden";
+        cartJsonField.id = "qr-cart-json";
+        cartJsonField.name = "Cart JSON";
+        cartDataField.parentNode.appendChild(cartJsonField);
+      }
+    }
+
+    if (cartJsonField) {
+      const cleanCart = cart.map((item) => ({
+        id: item.id,
+        sku: item.code || item.id,
+        name: item.name,
+        quantity: Math.max(1, item.qty || 1),
+        price: parsePrice(item.price) || 0,
+        machine_context: item.machineContext || ""
+        sku: item.code || item.id,
+        name: item.name,
+        quantity: Math.max(1, item.qty || 1)
+      }));
+      cartJsonField.value = JSON.stringify(cleanCart);
     }
   }
 
