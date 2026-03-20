@@ -1661,24 +1661,25 @@
     honeypot.style.cssText =
       "position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;";
     sec.appendChild(honeypot);
-  }
-  const submitBtn =
-    sec.querySelector("#qr-submit-btn") ||
-    document.getElementById("qr-submit-btn");
-  if (submitBtn) {
-    submitBtn.addEventListener(
-      "click",
-      function (e) {
-        const hp = document.getElementById("qr-honeypot");
-        if (hp && hp.value) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          // Silent fail — bots don't know they were blocked
-          return false;
-        }
-      },
-      true,
-    );
+
+    const submitBtn =
+      sec.querySelector("#qr-submit-btn") ||
+      document.getElementById("qr-submit-btn");
+    if (submitBtn) {
+      submitBtn.addEventListener(
+        "click",
+        function (e) {
+          const hp = document.getElementById("qr-honeypot");
+          if (hp && hp.value) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            // Silent fail — bots don't know they were blocked
+            return false;
+          }
+        },
+        true,
+      );
+    }
   }
   document.addEventListener("DOMContentLoaded", () => {
     renderQuoteReview();
