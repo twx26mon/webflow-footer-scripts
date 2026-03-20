@@ -49,9 +49,9 @@
     ".qr-qty-value{min-width:24px;text-align:center;font-weight:600}",
 
     /* Quote Cart: Remove button */
-    ".qr-remove-btn{display:block;margin:6px auto 0;background:none;border:1px solid #c2934a;color:#c2934a;font-size:10px;font-weight:700;letter-spacing:0.08em;cursor:pointer;padding:3px 7px;border-radius:3px;transition:color 0.15s,background 0.15s,opacity 0.15s;line-height:1.4;white-space:nowrap}",
-    ".qr-remove-btn:hover{background:#c2934a;color:#1a1a1a;opacity:1}",
-    ".qr-remove-btn:active{opacity:0.7}",
+    ".qr-remove-btn{display:flex;align-items:center;justify-content:center;margin:6px auto 0;background:none;border:none;cursor:pointer;padding:4px;opacity:0.6;transition:opacity 0.15s,transform 0.1s;}",
+    ".qr-remove-btn:hover{opacity:1;transform:scale(1.15)}",
+    ".qr-remove-btn:active{transform:scale(0.88);opacity:0.5}",
     "#cart-clearall{color:#c2934a!important;font-size:13px!important;font-weight:700!important;letter-spacing:0.08em!important;text-align:right!important;display:block!important;width:100%!important;padding:10px 16px!important;cursor:pointer!important;background:none!important;border:none!important;}",
     ".cart-trash{display:flex;align-items:center;justify-content:center;cursor:pointer;padding:4px;opacity:0.7;transition:opacity 0.15s,transform 0.1s;flex-shrink:0}",
     ".cart-trash:hover{opacity:1;transform:scale(1.15)}",
@@ -120,6 +120,7 @@
     "#qr-right-col{width:100%!important;flex:none!important}",
     "#qr-form-section{width:100%!important;flex:none!important}",
     ".qr-parts-table th:nth-child(2),.qr-parts-table td:nth-child(2){display:none}",
+    ".qr-parts-table th:nth-child(5),.qr-parts-table td:nth-child(5){display:table-cell!important}",
     ".qr-parts-table{font-size:12px}",
     ".qr-parts-table td,.qr-parts-table th{padding:10px 6px}",
     ".qr-item-img{width:36px!important;height:36px!important;margin-right:8px!important}",
@@ -1428,17 +1429,23 @@
               <span class="qr-qty-value">${safeQty}</span>
               <button class="qr-qty-btn qr-qty-plus" data-id="${escapeHtml(item.id)}" aria-label="Increase quantity">+</button>
             </div>
-            <button class="qr-remove-btn" data-id="${escapeHtml(item.id)}" aria-label="Remove item">REMOVE</button>
           </td>
-          <td>${lineTotalHtml}</td>
-        </tr>
-      `;
+<td>${lineTotalHtml}</td>
+<td style="width:32px;text-align:center;padding:14px 8px 14px 4px;">
+  <button class="qr-remove-btn" data-id="${escapeHtml(item.id)}" aria-label="Remove item">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2.5 2.5C4.8 5.1 7.2 7.0 9.1 9.2C11.2 11.5 13.5 13.8 15.5 15.5" stroke="#c2934a" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M15.5 2.5C13.1 5.0 10.9 7.1 9.0 9.0C6.9 11.1 4.7 13.5 2.5 15.5" stroke="#c2934a" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </button>
+</td>
+        </tr>      `;
     });
 
     tableContainer.innerHTML = `
       <table class="qr-parts-table">
         <thead>
-          <tr><th>Part</th><th>Unit Price</th><th>Qty</th><th>Total</th></tr>
+<tr><th>Part</th><th>Unit Price</th><th>Qty</th><th>Total</th><th></th></tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>
