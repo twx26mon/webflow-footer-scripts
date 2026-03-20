@@ -1665,17 +1665,20 @@
     const submitBtn =
       sec.querySelector("#qr-submit-btn") ||
       document.getElementById("qr-submit-btn");
-    if (submitBtn) {
+    const realSubmit = document.querySelector(".submit-button.w-button");
+
+    if (submitBtn && realSubmit) {
       submitBtn.addEventListener(
         "click",
         function (e) {
+          e.preventDefault();
           const hp = document.getElementById("qr-honeypot");
           if (hp && hp.value) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            // Silent fail — bots don't know they were blocked
+            // Silent fail for bots
             return false;
           }
+          // Trigger the real Webflow submit button
+          realSubmit.click();
         },
         true,
       );
