@@ -966,7 +966,9 @@
   /* ── Cart visibility ── */
   function showCart() {
     if (!DOM.cart) return;
+    // Re-load CMS data in case collection rendered after init
     loadCMSData();
+    setTimeout(loadCMSData, 500);
     DOM.cart.classList.add("open");
     DOM.cart.classList.remove("closed");
     updateButtons();
@@ -1286,13 +1288,22 @@
 
     const observer = new MutationObserver(() => {
       const items = document.querySelectorAll(".part-data-item");
-      if (items.length > 0) {
+      const payloads = document.querySelectorAll(
+        ".part-data-payload[data-price]",
+      );
+      // Only reload if we have payloads with actual price data
+      const pricedPayloads = Array.from(payloads).filter(
+        (p) => p.dataset.price,
+      );
+      if (items.length > 0 && pricedPayloads.length > 0) {
         observer.disconnect();
         loadCMSData();
         log(
           "CMS data reloaded after Webflow collection render:",
           items.length,
-          "items",
+          "items,",
+          pricedPayloads.length,
+          "priced",
         );
       }
     });
