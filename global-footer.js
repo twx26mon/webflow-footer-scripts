@@ -1709,6 +1709,70 @@
 
           // ── Submit the real form ──
           realForm.querySelector(".submit-button.w-button").click();
+          // ── Watch for Webflow success/fail and show visible confirmation ──
+          const successDiv = document.querySelector(
+            "#quote-form-block .w-form-done",
+          );
+          const failDiv = document.querySelector(
+            "#quote-form-block .w-form-fail",
+          );
+
+          const observer = new MutationObserver(() => {
+            const successVisible =
+              window.getComputedStyle(successDiv).display !== "none";
+            const failVisible =
+              window.getComputedStyle(failDiv).display !== "none";
+
+            if (successVisible) {
+              observer.disconnect();
+              // Replace the entire form section with a success message
+              const formSection = document.getElementById("qr-form-section");
+              formSection.innerHTML = `
+      <div style="padding:40px 24px;text-align:center;">
+        <div style="font-size:48px;margin-bottom:16px;">✅</div>
+        <h3 style="color:#c2934a;font-size:20px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
+          Order Received!
+        </h3>
+        <p style="color:#ccc;font-size:15px;line-height:1.7;margin-bottom:24px;">
+          Thanks, your order has been received!<br>
+          We'll email you a Sales Order including freight cost ASAP.
+        </p>
+        <p style="color:#888;font-size:13px;">
+          Questions? Call us on <a href="tel:0861851944" style="color:#c2934a;font-weight:700;">08 6185 1944</a>
+        </p>
+      </div>
+    `;
+              // Clear the cart
+              localStorage.removeItem("tillageworx_quote_cart");
+              if (window.renderCart) window.renderCart();
+            }
+
+            if (failVisible) {
+              observer.disconnect();
+              const formSection = document.getElementById("qr-form-section");
+              const existing = formSection.querySelector(".qr-submit-error");
+              if (!existing) {
+                const err = document.createElement("div");
+                err.className = "qr-submit-error";
+                err.style.cssText =
+                  "margin-top:16px;padding:14px 18px;background:rgba(220,50,50,0.1);border-left:3px solid #e05050;border-radius:0 6px 6px 0;color:#e08080;font-size:13px;";
+                err.textContent =
+                  "Something went wrong. Please try again or call us on 08 6185 1944.";
+                formSection.appendChild(err);
+              }
+            }
+          });
+
+          if (successDiv && failDiv) {
+            observer.observe(successDiv, {
+              attributes: true,
+              attributeFilter: ["style"],
+            });
+            observer.observe(failDiv, {
+              attributes: true,
+              attributeFilter: ["style"],
+            });
+          }
         },
         true,
       );
