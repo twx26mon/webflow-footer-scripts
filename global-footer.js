@@ -1520,7 +1520,7 @@
         machine_context: item.machineContext || ""
         sku: item.code || item.id,
         name: item.name,
-        quantity: Math.max(1, item.qty || 1)
+        quantity: Math.max(1, item.qty || 1),
       }));
       cartJsonField.value = JSON.stringify(cleanCart);
     }
