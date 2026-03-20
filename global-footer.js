@@ -1665,20 +1665,50 @@
     const submitBtn =
       sec.querySelector("#qr-submit-btn") ||
       document.getElementById("qr-submit-btn");
-    const realSubmit = document.querySelector(".submit-button.w-button");
+    const realForm = document.getElementById("wf-form-Quote-Request-Form");
 
-    if (submitBtn && realSubmit) {
+    if (submitBtn && realForm) {
       submitBtn.addEventListener(
         "click",
         function (e) {
           e.preventDefault();
+
+          // ── Honeypot check ──
           const hp = document.getElementById("qr-honeypot");
-          if (hp && hp.value) {
-            // Silent fail for bots
+          if (hp && hp.value) return false; // Silent bot block
+
+          // ── Copy visible fields → hidden form fields ──
+          const g = (id) => document.getElementById(id)?.value || "";
+
+          const firstName = g("qr-first-name");
+          const lastName = g("qr-last-name");
+          realForm.querySelector("#customer_name").value =
+            `${firstName} ${lastName}`.trim();
+          realForm.querySelector("#customer_email").value = g("qr-email");
+          realForm.querySelector("#customer_phone").value = g("qr-phone");
+          realForm.querySelector("#business_name").value = g("qr-business");
+          realForm.querySelector("#Delivery_Address").value = g(
+            "qr-invoicing-address",
+          );
+          realForm.querySelector("#Additional-Info").value = g("qr-notes");
+          realForm.querySelector("#quote_items").value = g("qr-cart-data");
+
+          // ── Validate required visible fields manually ──
+          if (!firstName) {
+            document.getElementById("qr-first-name").focus();
             return false;
           }
-          // Trigger the real Webflow submit button
-          realSubmit.click();
+          if (!g("qr-email")) {
+            document.getElementById("qr-email").focus();
+            return false;
+          }
+
+          // ── Check terms checkbox ──
+          const terms = realForm.querySelector("#terms_agreed");
+          if (terms) terms.checked = true;
+
+          // ── Submit the real form ──
+          realForm.querySelector(".submit-button.w-button").click();
         },
         true,
       );
