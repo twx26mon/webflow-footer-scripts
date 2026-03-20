@@ -1725,23 +1725,32 @@
 
             if (successVisible) {
               observer.disconnect();
-              // Replace the entire form section with a success message
+
+              // Scroll to top so user sees confirmation
+              window.scrollTo({ top: 0, behavior: "smooth" });
+
+              // Clear the cart before replacing DOM
+              localStorage.removeItem("tillageworx_quote_cart");
+              if (window.renderCart) window.renderCart();
+
+              // Replace form with success message
               const formSection = document.getElementById("qr-form-section");
               formSection.innerHTML = `
-      <div style="padding:40px 24px;text-align:center;">
-        <div style="font-size:48px;margin-bottom:16px;">✅</div>
-        <h3 style="color:#c2934a;font-size:20px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
-          Order Received!
-        </h3>
-        <p style="color:#ccc;font-size:15px;line-height:1.7;margin-bottom:24px;">
-          Thanks, your order has been received!<br>
-          We'll email you a Sales Order including freight cost ASAP.
-        </p>
-        <p style="color:#888;font-size:13px;">
-          Questions? Call us on <a href="tel:0861851944" style="color:#c2934a;font-weight:700;">08 6185 1944</a>
-        </p>
-      </div>
-    `;
+    <div style="padding:40px 24px;text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;">✅</div>
+      <h3 style="color:#c2934a;font-size:20px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
+        Order Received!
+      </h3>
+      <p style="color:#ccc;font-size:15px;line-height:1.7;margin-bottom:24px;">
+        Thanks, your order has been received!<br>
+        We'll email you a Sales Order including freight cost ASAP.
+      </p>
+      <p style="color:#888;font-size:13px;">
+        Questions? Call us on <a href="tel:0861851944" style="color:#c2934a;font-weight:700;">08 6185 1944</a>
+      </p>
+    </div>
+  `;
+
               // Clear the cart
               localStorage.removeItem("tillageworx_quote_cart");
               if (window.renderCart) window.renderCart();
