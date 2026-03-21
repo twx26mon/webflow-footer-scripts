@@ -327,6 +327,7 @@
         image: (payload.dataset.image || "").trim(),
         price: payloadPrice || domPrice || btnData.price || "",
         code: payloadCode || domCode || btnData.code || "",
+        zoho_id: (payload.dataset.zohoId || "").trim(),
         models: Array.from(item.querySelectorAll(".part-model-ref"))
           .map((span) => span.textContent.trim())
           .filter(Boolean),
@@ -400,6 +401,7 @@
         price: partData.price || "",
         qty: Math.min(CONFIG.MAX_CART_ITEMS, parseInt(partData.qty) || 1),
         machineContext: partData.machineContext || "",
+        zoho_id: partData.zoho_id || "",
       });
     }
 
@@ -1503,7 +1505,7 @@
           <div class="qr-summary-row"><span>GST (10%)</span><span>$${gst.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
           <div class="qr-summary-row"><span>Freight</span><span style="color:#888;font-style:italic;">TBA</span></div>
           <div class="qr-summary-row qr-summary-total"><span>Total (inc. GST)</span><span>$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
-          <div class="qr-freight-disclaimer">Once we receive your order, we will do our best to source the most affordable, reliable freight option.<br><br>We will then email you a Sales Order with freight included for you to accept.<br><br><span class="qr-freight-phone">📞 Questions? Call us on 08 6185 1944</span></div>
+          <div class="qr-freight-disclaimer">Once we receive your request, we will do our best to source the most affordable, reliable freight option.<br><br>We will then email you a Sales Order with freight included for you to accept.<br><br><span class="qr-freight-phone">📞 Questions? Call us on 08 6185 1944</span></div>
         `;
         if (!allPriced)
           summaryHtml += `<div class="qr-summary-note" style="margin-top:8px;">Some items are price on request — our team will confirm final pricing before processing your order.</div>`;
@@ -1540,6 +1542,7 @@
         SKU: item.code || item.id,
         Name: item.name,
         Quantity: Math.max(1, item.qty || 1),
+        ZohoItemID: item.zoho_id || "",
       }));
       cartJsonField.value = JSON.stringify(cleanCart);
     }
