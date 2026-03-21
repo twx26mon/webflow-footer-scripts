@@ -1621,43 +1621,6 @@
     contactRow.appendChild(wrapEl(email));
     if (phone) contactRow.appendChild(wrapEl(phone));
 
-    // Invoicing address — combine into Delivery_Address
-    const invStreet = g("qr-invoice-street");
-    const invTown = g("qr-invoice-town");
-    const invState = g("qr-invoice-state");
-    const invPost = g("qr-invoice-postcode");
-    realForm.querySelector("#Delivery_Address").value = [
-      invStreet,
-      invTown,
-      invState,
-      invPost,
-    ]
-      .filter(Boolean)
-      .join(", ");
-
-    // Town + postcode fields (legacy)
-    const townField = realForm.querySelector("#town");
-    const postField = realForm.querySelector("#post_code");
-    if (townField) townField.value = invTown;
-    if (postField) postField.value = invPost;
-
-    // Delivery address — prepend to Additional Info if different
-    const diffDelivery = document.getElementById("qr-diff-delivery");
-    if (diffDelivery && diffDelivery.checked) {
-      const delStreet = g("qr-delivery-street");
-      const delTown = g("qr-delivery-town");
-      const delState = g("qr-delivery-state");
-      const delPost = g("qr-delivery-postcode");
-      const delAddress = [delStreet, delTown, delState, delPost]
-        .filter(Boolean)
-        .join(", ");
-      const notesField = realForm.querySelector("#Additional-Info");
-      const existingNotes = g("qr-notes");
-      notesField.value = `DELIVERY ADDRESS: ${delAddress}${existingNotes ? "\n\n" + existingNotes : ""}`;
-    } else {
-      realForm.querySelector("#Additional-Info").value = g("qr-notes");
-    }
-
     // ── Honeypot field — invisible to humans, bots fill it in ──
     const honeypot = document.createElement("input");
     honeypot.type = "text";
@@ -1695,6 +1658,7 @@
           realForm.querySelector("#customer_email").value = g("qr-email");
           realForm.querySelector("#customer_phone").value = g("qr-phone");
           realForm.querySelector("#business_name").value = g("qr-business");
+          realForm.querySelector("#business_name").value = g("qr-business");
           const invStreet = g("qr-invoice-street");
           const invTown = g("qr-invoice-town");
           const invState = g("qr-invoice-state");
@@ -1707,20 +1671,26 @@
           ]
             .filter(Boolean)
             .join(", ");
-
+          const townField = realForm.querySelector("#town");
+          const postField = realForm.querySelector("#post_code");
+          if (townField) townField.value = invTown;
+          if (postField) postField.value = invPost;
           const diffDelivery = document.getElementById("qr-diff-delivery");
           if (diffDelivery && diffDelivery.checked) {
-            const delStreet = g("qr-delivery-street");
-            const delTown = g("qr-delivery-town");
-            const delState = g("qr-delivery-state");
-            const delPost = g("qr-delivery-postcode");
-            const delField = realForm.querySelector("#Delivery_Address_2");
-            if (delField)
-              delField.value = [delStreet, delTown, delState, delPost]
-                .filter(Boolean)
-                .join(", ");
+            const delAddress = [
+              g("qr-delivery-street"),
+              g("qr-delivery-town"),
+              g("qr-delivery-state"),
+              g("qr-delivery-postcode"),
+            ]
+              .filter(Boolean)
+              .join(", ");
+            const existingNotes = g("qr-notes");
+            realForm.querySelector("#Additional-Info").value =
+              `DELIVERY ADDRESS: ${delAddress}${existingNotes ? "\n\n" + existingNotes : ""}`;
+          } else {
+            realForm.querySelector("#Additional-Info").value = g("qr-notes");
           }
-          realForm.querySelector("#Additional-Info").value = g("qr-notes");
           realForm.querySelector("#quote_items").value = g("qr-cart-data");
 
           // ── Validate required visible fields manually ──
