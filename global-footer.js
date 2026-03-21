@@ -1567,7 +1567,7 @@
     const email = g("qr-email");
     const phone = g("qr-phone");
     const business = g("qr-business");
-    const address = g("qr-address");
+    const address = document.getElementById("qr-address");
     if (!firstName) return;
 
     // Creates a styled input element
