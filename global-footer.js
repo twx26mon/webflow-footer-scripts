@@ -1621,6 +1621,147 @@
     contactRow.appendChild(wrapEl(email));
     if (phone) contactRow.appendChild(wrapEl(phone));
 
+    // Invoicing address — 4 structured fields
+    if (business) {
+      const invBlock = document.createElement("div");
+      business.parentNode.insertBefore(invBlock, business.nextSibling);
+      invBlock.appendChild(mkLabel("Invoicing Address"));
+      invBlock.appendChild(
+        mkInput({
+          type: "text",
+          id: "qr-invoice-street",
+          name: "Invoice Street",
+          placeholder: "Street Address",
+        }),
+      );
+      const invRow = document.createElement("div");
+      invRow.className = "qr-addr-row";
+      const invTownWrap = document.createElement("div");
+      invTownWrap.style.cssText = "flex:2 1 0%;min-width:0";
+      invTownWrap.appendChild(
+        mkInput({
+          type: "text",
+          id: "qr-invoice-town",
+          name: "Invoice Town",
+          placeholder: "Town / City",
+        }),
+      );
+      const invStateWrap = document.createElement("div");
+      invStateWrap.style.cssText = "flex:1 1 0%;min-width:0";
+      invStateWrap.appendChild(
+        mkInput({
+          type: "text",
+          id: "qr-invoice-state",
+          name: "Invoice State",
+          placeholder: "State",
+        }),
+      );
+      const invPostWrap = document.createElement("div");
+      invPostWrap.style.cssText = "flex:1 1 0%;min-width:0";
+      invPostWrap.appendChild(
+        mkInput({
+          type: "text",
+          id: "qr-invoice-postcode",
+          name: "Invoice Postcode",
+          placeholder: "Postcode",
+        }),
+      );
+      invRow.appendChild(invTownWrap);
+      invRow.appendChild(invStateWrap);
+      invRow.appendChild(invPostWrap);
+      invBlock.appendChild(invRow);
+
+      // Delivery address toggle
+      if (address) {
+        const addrContainer =
+          address.closest(".input-container") || address.parentElement;
+        const addrBlock = document.createElement("div");
+        addrContainer.parentNode.insertBefore(addrBlock, addrContainer);
+        addrContainer.style.display = "none";
+
+        const sameRow = document.createElement("div");
+        sameRow.className = "qr-same-address-row";
+        sameRow.style.marginTop = "4px";
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = "qr-diff-delivery";
+        const cbLbl = document.createElement("label");
+        cbLbl.setAttribute("for", "qr-diff-delivery");
+        cbLbl.textContent =
+          "Delivery address is different from invoicing address";
+        sameRow.appendChild(cb);
+        sameRow.appendChild(cbLbl);
+
+        const inputWrapper = document.createElement("div");
+        inputWrapper.className = "qr-delivery-input-wrapper";
+        inputWrapper.appendChild(mkLabel("Delivery Address"));
+        inputWrapper.appendChild(
+          mkInput({
+            type: "text",
+            id: "qr-delivery-street",
+            name: "Delivery Street",
+            placeholder: "Street Address / Depot Name",
+          }),
+        );
+        const delRow = document.createElement("div");
+        delRow.className = "qr-addr-row";
+        const delTownWrap = document.createElement("div");
+        delTownWrap.style.cssText = "flex:2 1 0%;min-width:0";
+        delTownWrap.appendChild(
+          mkInput({
+            type: "text",
+            id: "qr-delivery-town",
+            name: "Delivery Town",
+            placeholder: "Town / City",
+          }),
+        );
+        const delStateWrap = document.createElement("div");
+        delStateWrap.style.cssText = "flex:1 1 0%;min-width:0";
+        delStateWrap.appendChild(
+          mkInput({
+            type: "text",
+            id: "qr-delivery-state",
+            name: "Delivery State",
+            placeholder: "State",
+          }),
+        );
+        const delPostWrap = document.createElement("div");
+        delPostWrap.style.cssText = "flex:1 1 0%;min-width:0";
+        delPostWrap.appendChild(
+          mkInput({
+            type: "text",
+            id: "qr-delivery-postcode",
+            name: "Delivery Postcode",
+            placeholder: "Postcode",
+          }),
+        );
+        delRow.appendChild(delTownWrap);
+        delRow.appendChild(delStateWrap);
+        delRow.appendChild(delPostWrap);
+        inputWrapper.appendChild(delRow);
+
+        addrBlock.appendChild(sameRow);
+        addrBlock.appendChild(inputWrapper);
+
+        cb.addEventListener("change", () => {
+          if (cb.checked) {
+            inputWrapper.classList.add("visible");
+          } else {
+            inputWrapper.classList.remove("visible");
+            [
+              "qr-delivery-street",
+              "qr-delivery-town",
+              "qr-delivery-state",
+              "qr-delivery-postcode",
+            ].forEach((id) => {
+              const el = document.getElementById(id);
+              if (el) el.value = "";
+            });
+          }
+        });
+      }
+    }
+
     // ── Honeypot field — invisible to humans, bots fill it in ──
     const honeypot = document.createElement("input");
     honeypot.type = "text";
