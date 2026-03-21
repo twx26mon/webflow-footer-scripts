@@ -76,6 +76,11 @@
     "#qr-form-section select option{background:#1a1a1a;color:#fff}",
     "#qr-form-section .w-checkbox{display:flex;align-items:flex-start;gap:10px;margin-top:8px}",
     "#qr-form-section .w-checkbox input[type=checkbox]{margin-top:2px;accent-color:#c2934a;width:16px;height:16px;flex-shrink:0}",
+    /* Address sub-row (town/state/postcode) */
+    ".qr-addr-row{display:flex;gap:12px;width:100%}",
+    ".qr-addr-town{flex:1 1 0%;min-width:0}",
+    ".qr-addr-state{flex:0 0 60px!important;min-width:0}",
+    ".qr-addr-postcode{flex:0 0 80px!important;min-width:0}",
 
     /* Side-by-side field rows */
     ".qr-name-row,.qr-contact-row,.qr-delivery-row{display:flex!important;gap:16px!important;width:100%!important}",
@@ -1637,7 +1642,7 @@
       const invRow = document.createElement("div");
       invRow.className = "qr-addr-row";
       const invTownWrap = document.createElement("div");
-      invTownWrap.style.cssText = "flex:2 1 0%;min-width:0";
+      invTownWrap.className = "qr-addr-town";
       invTownWrap.appendChild(
         mkInput({
           type: "text",
@@ -1647,7 +1652,7 @@
         }),
       );
       const invStateWrap = document.createElement("div");
-      invStateWrap.style.cssText = "flex:1 1 0%;min-width:0";
+      invStateWrap.className = "qr-addr-state";
       invStateWrap.appendChild(
         mkInput({
           type: "text",
@@ -1657,7 +1662,7 @@
         }),
       );
       const invPostWrap = document.createElement("div");
-      invPostWrap.style.cssText = "flex:1 1 0%;min-width:0";
+      invPostWrap.className = "qr-addr-postcode";
       invPostWrap.appendChild(
         mkInput({
           type: "text",
@@ -1706,7 +1711,7 @@
         const delRow = document.createElement("div");
         delRow.className = "qr-addr-row";
         const delTownWrap = document.createElement("div");
-        delTownWrap.style.cssText = "flex:2 1 0%;min-width:0";
+        delTownWrap.className = "qr-addr-town";
         delTownWrap.appendChild(
           mkInput({
             type: "text",
@@ -1716,7 +1721,7 @@
           }),
         );
         const delStateWrap = document.createElement("div");
-        delStateWrap.style.cssText = "flex:1 1 0%;min-width:0";
+        delStateWrap.className = "qr-addr-state";
         delStateWrap.appendChild(
           mkInput({
             type: "text",
@@ -1726,7 +1731,7 @@
           }),
         );
         const delPostWrap = document.createElement("div");
-        delPostWrap.style.cssText = "flex:1 1 0%;min-width:0";
+        delPostWrap.className = "qr-addr-postcode";
         delPostWrap.appendChild(
           mkInput({
             type: "text",
