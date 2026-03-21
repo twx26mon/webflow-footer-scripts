@@ -1971,3 +1971,105 @@
 
   window.addEventListener("scroll", onScroll, { passive: true });
 })();
+/* ── 6. CONTACT FORM STYLING ─────────────────────────────── */
+(function () {
+  if (!window.location.pathname.includes("/contact")) return;
+
+  function styleContactForm() {
+    const form = document.querySelector(".w-form form");
+    if (!form) return;
+
+    // Style the form wrapper
+    const formBlock = form.closest(".w-form");
+    if (formBlock) {
+      formBlock.style.cssText =
+        "background:#0e0e0e;padding:32px;border-radius:8px;border:1px solid #1c1c1c";
+    }
+
+    // Add gold labels above each field
+    const fields = [
+      { id: "name", label: "First Name" },
+      { id: "name-2", label: "Last Name" },
+      { id: "email", label: "Email Address" },
+      { id: "Phone-Number", label: "Phone Number" },
+      { id: "field", label: "Message" },
+    ];
+
+    fields.forEach(({ id, label }) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const lbl = document.createElement("label");
+      lbl.setAttribute("for", id);
+      lbl.textContent = label;
+      lbl.style.cssText =
+        "display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#c2934a;margin-bottom:5px;margin-top:12px";
+      el.parentNode.insertBefore(lbl, el);
+    });
+
+    // Wrap first + last name side by side
+    const firstName = document.getElementById("name");
+    const lastName = document.getElementById("name-2");
+    if (firstName && lastName) {
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;gap:16px;width:100%";
+      const w1 = document.createElement("div");
+      w1.style.cssText = "flex:1 1 0%;min-width:0";
+      const w2 = document.createElement("div");
+      w2.style.cssText = "flex:1 1 0%;min-width:0";
+      firstName.parentNode.insertBefore(
+        row,
+        firstName.parentNode.querySelector('label[for="name"]') || firstName,
+      );
+      const fnLabel = form.querySelector('label[for="name"]');
+      const lnLabel = form.querySelector('label[for="name-2"]');
+      w1.appendChild(fnLabel);
+      w1.appendChild(firstName);
+      w2.appendChild(lnLabel);
+      w2.appendChild(lastName);
+      row.appendChild(w1);
+      row.appendChild(w2);
+    }
+
+    // Style all inputs and textarea
+    form
+      .querySelectorAll(
+        "input[type=text], input[type=email], input[type=tel], textarea",
+      )
+      .forEach((el) => {
+        el.style.cssText =
+          "width:100%;box-sizing:border-box;background:#1a1a1a;color:#fff;border:1px solid #3a3a3a;border-radius:6px;padding:14px 16px;font-size:14px;line-height:1.4;transition:border-color 0.2s,box-shadow 0.2s;margin-bottom:12px;display:block";
+        el.addEventListener("focus", () => {
+          el.style.borderColor = "#c2934a";
+          el.style.boxShadow = "0 0 0 3px rgba(194,147,74,0.15)";
+          el.style.outline = "none";
+        });
+        el.addEventListener("blur", () => {
+          el.style.borderColor = "#3a3a3a";
+          el.style.boxShadow = "";
+        });
+      });
+
+    // Style submit button
+    const submit = form.querySelector("input[type=submit]");
+    if (submit) {
+      submit.style.cssText =
+        "width:100%;background:linear-gradient(135deg,#b8833e 0%,#d4a55c 40%,#e8b86d 60%,#c2934a 100%);background-size:200% auto;color:#111;font-size:14px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;border:none;border-radius:8px;padding:18px 24px;cursor:pointer;margin-top:8px;box-shadow:0 4px 20px rgba(194,147,74,0.4);display:block";
+      submit.addEventListener("mouseover", () => {
+        submit.style.backgroundPosition = "right center";
+        submit.style.boxShadow = "0 6px 28px rgba(194,147,74,0.55)";
+        submit.style.transform = "translateY(-1px)";
+      });
+      submit.addEventListener("mouseout", () => {
+        submit.style.backgroundPosition = "";
+        submit.style.boxShadow = "0 4px 20px rgba(194,147,74,0.4)";
+        submit.style.transform = "";
+      });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", styleContactForm);
+  } else {
+    styleContactForm();
+  }
+})();
