@@ -78,9 +78,9 @@
     "#qr-form-section .w-checkbox input[type=checkbox]{margin-top:2px;accent-color:#c2934a;width:16px;height:16px;flex-shrink:0}",
     /* Address sub-row (town/state/postcode) */
     ".qr-addr-row{display:flex;gap:12px;width:100%}",
-    ".qr-addr-town{flex:1 1 0%;min-width:0}",
-    ".qr-addr-state{flex:0 0 60px!important;min-width:0}",
-    ".qr-addr-postcode{flex:0 0 80px!important;min-width:0}",
+    ".qr-addr-town{flex:2 1 0%;min-width:0}",
+    ".qr-addr-state{flex:1 1 0%;min-width:0;max-width:80px}",
+    ".qr-addr-postcode{flex:1 1 0%;min-width:0;max-width:90px}",
 
     /* Side-by-side field rows */
     ".qr-name-row,.qr-contact-row,.qr-delivery-row{display:flex!important;gap:16px!important;width:100%!important}",
