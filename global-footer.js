@@ -2518,7 +2518,7 @@
           <span class="word">Parts</span> <span class="word">that</span> <span class="word gold">work.</span><br>
           <span class="word">People</span> <span class="word">who</span> <span class="word gold">care.</span>
         </h1>
-        <p class="twx-about-hero-sub">A small team with deep roots in farming. Almost 20 years of experience in wearing parts manufacturing, design and sales.</p>
+        <p class="twx-about-hero-sub">A small team with deep roots in Australian farming. Almost 20 years of experience in wearing parts manufacturing, design and sales.</p>
         <div class="twx-hero-scroll-hint">Scroll to explore</div>
       </section>
 
@@ -2529,7 +2529,7 @@
             <span class="twx-section-tag twx-fade-up">Who We Are</span>
             <div class="twx-gold-line"></div>
             <h2 class="twx-section-title twx-fade-up">From the paddock.<br>To your machine.</h2>
-            <p class="twx-section-body twx-fade-up">We originate from a <strong>family farming partnership</strong> specialising in broadacre cropping and sheep in Central West NSW. That background isn't just part of our story — it shapes every decision we make.</p>
+            <p class="twx-section-body twx-fade-up">We originate from a <strong>family farming partnership</strong> specialising in broadacre cropping and sheep in Central West NSW. That background isn't just part of our story, it shapes every decision we make.</p>
             <p class="twx-section-body twx-fade-up">From design to production, we're involved in every step. We listen, we create, we test, and we deliver. <strong>No egos. No sales pressure.</strong> Just people who actually care.</p>
           </div>
         </div>
@@ -2560,7 +2560,7 @@
             <div class="twx-value-card" style="transition-delay:0.15s">
               <span class="twx-value-icon">⚙️</span>
               <div class="twx-value-title">No Corners Cut</div>
-              <div class="twx-value-body">We test, refine, and only back parts we'd use ourselves. If something's not right, we fix it. If it works well, we make it better.</div>
+              <div class="twx-value-body">We test, refine, and only sell parts we'd use ourselves. If something's not right, we fix it. If it works well, we make it better.</div>
             </div>
             <div class="twx-value-card" style="transition-delay:0.3s">
               <span class="twx-value-icon">🤝</span>
@@ -2590,7 +2590,7 @@
               </div>
               <div class="twx-timeline-item">
                 <div class="twx-timeline-label">Deliver</div>
-                <div class="twx-timeline-text">We keep overheads lean so you're not paying for bloated margins. Smart pricing, fast turnaround, reliable supply.</div>
+                <div class="twx-timeline-text">We're not a massive corporation with ten layers of margin between factory and farmer. There's no boardroom setting our margins — just us, making sure you get a fair deal.</div>
               </div>
               <div class="twx-timeline-item">
                 <div class="twx-timeline-label">Improve</div>
