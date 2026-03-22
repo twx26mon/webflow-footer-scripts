@@ -2085,12 +2085,12 @@
 
     /* Hero */
     .twx-about-hero {
-      min-height: 90vh;
+      min-height: 70vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
-      padding: 50px 8vw 80px;
+      padding: 100px 8vw 60px;
       position: relative;
       overflow: hidden;
       background: #000;
@@ -2108,7 +2108,7 @@
       letter-spacing: 0.25em;
       text-transform: uppercase;
       color: #c2934a;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 0.8s ease, transform 0.8s ease;
@@ -2119,7 +2119,7 @@
       font-weight: 900;
       line-height: 1.05;
       color: #fff;
-      margin: 0 0 32px;
+      margin: 0 0 24px;
       max-width: 900px;
     }
     .twx-about-headline .gold { color: #c2934a; }
@@ -2142,7 +2142,7 @@
     .twx-about-hero-sub.visible { opacity: 1; transform: translateY(0); }
     .twx-hero-scroll-hint {
       position: absolute;
-      bottom: 40px;
+      bottom: 24px;
       left: 8vw;
       display: flex;
       align-items: center;
@@ -2488,6 +2488,8 @@
 
     /* Mobile */
     @media (max-width: 767px) {
+      .twx-about-hero { min-height: 65vh; padding-top: 80px; }
+      .twx-hero-scroll-hint { bottom: 16px; }
       .twx-section-inner { grid-template-columns: 1fr; gap: 16px; }
       .twx-section-num { font-size: 5rem; position: static; }
       .twx-values-grid { grid-template-columns: 1fr; }
