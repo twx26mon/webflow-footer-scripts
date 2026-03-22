@@ -2376,10 +2376,12 @@
     }
     .twx-statement-text {
       font-size: clamp(1.8rem, 4.5vw, 3.5rem);
+      font-size: clamp(1.5rem, 3.5vw, 2.5rem);
       font-weight: 900;
       color: #fff;
       line-height: 1.2;
       max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto 40px;
     }
     .twx-statement-text .gold { color: #c2934a; }
