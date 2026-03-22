@@ -2362,7 +2362,7 @@
     /* Statement section */
     .twx-statement {
       text-align: center;
-      padding: 120px;
+      padding: 120px 0px;
       background: #000;
       position: relative;
       overflow: hidden;
