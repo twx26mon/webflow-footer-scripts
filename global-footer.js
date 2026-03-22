@@ -2090,7 +2090,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
-      padding: 120px 8vw 80px;
+      padding: 80px 8vw 80px;
       position: relative;
       overflow: hidden;
       background: #000;
