@@ -2185,10 +2185,16 @@
     .twx-section-inner.full { grid-template-columns: 1fr; }
     .twx-section-inner.center { text-align: center; justify-items: center; }
 
+    .twx-section-inner.reversed {
+      direction: rtl;
+    }
+    .twx-section-inner.reversed > * {
+      direction: ltr;
+    }
     .twx-section-num {
       font-size: clamp(5rem, 12vw, 10rem);
       font-weight: 900;
-      color: rgba(194,147,74,0.08);
+      color: rgba(194,147,74,0.18);
       line-height: 1;
       margin: 0;
       position: sticky;
@@ -2530,7 +2536,7 @@
       </section>
 
       <section class="twx-about-section">
-        <div class="twx-section-inner">
+        <div class="twx-section-inner reversed">
           <div class="twx-section-num twx-fade-up">02</div>
           <div class="twx-section-content">
             <span class="twx-section-tag twx-fade-up">Why We Started</span>
