@@ -2073,6 +2073,7 @@
     styleContactForm();
   }
 })();
+
 /* ── 7. ABOUT PAGE — cinematic rebuild ───────────────────── */
 (function () {
   if (!window.location.pathname.includes("/about-us")) return;
