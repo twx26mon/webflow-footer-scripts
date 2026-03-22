@@ -2073,3 +2073,626 @@
     styleContactForm();
   }
 })();
+/* ── 7. ABOUT PAGE — cinematic rebuild ───────────────────── */
+(function () {
+  if (!window.location.pathname.includes("/about-us")) return;
+
+  // ── Inject styles ──
+  const style = document.createElement("style");
+  style.textContent = `
+    .twx-about { font-family: inherit; }
+
+    /* Hero */
+    .twx-about-hero {
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 120px 8vw 80px;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+    }
+    .twx-about-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 50%, rgba(194,147,74,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .twx-about-eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #c2934a;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .twx-about-eyebrow.visible { opacity: 1; transform: translateY(0); }
+    .twx-about-headline {
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 900;
+      line-height: 1.05;
+      color: #fff;
+      margin: 0 0 32px;
+      max-width: 900px;
+    }
+    .twx-about-headline .gold { color: #c2934a; }
+    .twx-about-headline .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .twx-about-headline .word.visible { opacity: 1; transform: translateY(0); }
+    .twx-about-hero-sub {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: #888;
+      max-width: 560px;
+      line-height: 1.7;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease 0.6s, transform 0.8s ease 0.6s;
+    }
+    .twx-about-hero-sub.visible { opacity: 1; transform: translateY(0); }
+    .twx-hero-scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 8vw;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #444;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: twx-fadein 1s ease 1.5s forwards;
+    }
+    .twx-hero-scroll-hint::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: #c2934a;
+      animation: twx-expand 1s ease 1.8s both;
+    }
+    @keyframes twx-expand { from { width: 0 } to { width: 40px } }
+    @keyframes twx-fadein { from { opacity: 0 } to { opacity: 1 } }
+
+    /* Sections */
+    .twx-about-section {
+      padding: 100px 8vw;
+      position: relative;
+      overflow: hidden;
+    }
+    .twx-about-section:nth-child(even) { background: #060606; }
+    .twx-about-section:nth-child(odd) { background: #000; }
+
+    .twx-section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 60px;
+      align-items: start;
+    }
+    .twx-section-inner.full { grid-template-columns: 1fr; }
+    .twx-section-inner.center { text-align: center; justify-items: center; }
+
+    .twx-section-num {
+      font-size: clamp(5rem, 12vw, 10rem);
+      font-weight: 900;
+      color: rgba(194,147,74,0.08);
+      line-height: 1;
+      margin: 0;
+      position: sticky;
+      top: 120px;
+      user-select: none;
+    }
+    .twx-section-content {}
+    .twx-section-tag {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #c2934a;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .twx-section-title {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      margin: 0 0 28px;
+    }
+    .twx-section-body {
+      font-size: clamp(1rem, 1.5vw, 1.15rem);
+      color: #999;
+      line-height: 1.8;
+      margin: 0 0 20px;
+    }
+    .twx-section-body strong { color: #e0e0e0; }
+
+    /* Gold line reveal */
+    .twx-gold-line {
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #c2934a, transparent);
+      margin-bottom: 32px;
+      transition: width 1.2s ease;
+    }
+    .twx-gold-line.visible { width: 120px; }
+
+    /* Fade up animation */
+    .twx-fade-up {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .twx-fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* Values cards */
+    .twx-values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .twx-value-card {
+      background: #0e0e0e;
+      border: 1px solid #1a1a1a;
+      border-radius: 12px;
+      padding: 40px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .twx-value-card.visible { opacity: 1; transform: translateY(0); }
+    .twx-value-card:hover {
+      border-color: rgba(194,147,74,0.4);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(194,147,74,0.1);
+    }
+    .twx-value-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #c2934a, transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .twx-value-card:hover::before { transform: scaleX(1); }
+    .twx-value-icon {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .twx-value-title {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #c2934a;
+      margin-bottom: 12px;
+    }
+    .twx-value-body {
+      font-size: 0.95rem;
+      color: #888;
+      line-height: 1.7;
+    }
+
+    /* Timeline */
+    .twx-timeline {
+      position: relative;
+      padding-left: 48px;
+      max-width: 700px;
+    }
+    .twx-timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 0;
+      width: 2px;
+      background: #1a1a1a;
+    }
+    .twx-timeline-fill {
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 2px;
+      height: 0;
+      background: linear-gradient(180deg, #c2934a, rgba(194,147,74,0.2));
+      transition: height 1.5s ease;
+    }
+    .twx-timeline-fill.visible { height: 100%; }
+    .twx-timeline-item {
+      position: relative;
+      margin-bottom: 48px;
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .twx-timeline-item.visible { opacity: 1; transform: translateX(0); }
+    .twx-timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -54px;
+      top: 6px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #c2934a;
+      border: 2px solid #000;
+      box-shadow: 0 0 0 4px rgba(194,147,74,0.15);
+    }
+    .twx-timeline-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #c2934a;
+      margin-bottom: 6px;
+    }
+    .twx-timeline-text {
+      font-size: 1rem;
+      color: #ccc;
+      line-height: 1.7;
+    }
+
+    /* Statement section */
+    .twx-statement {
+      text-align: center;
+      padding: 120px 8vw;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+    }
+    .twx-statement::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(194,147,74,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .twx-statement-text {
+      font-size: clamp(1.8rem, 4.5vw, 3.5rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.2;
+      max-width: 900px;
+      margin: 0 auto 40px;
+    }
+    .twx-statement-text .gold { color: #c2934a; }
+    .twx-statement-sub {
+      font-size: 1rem;
+      color: #666;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* Team cards */
+    .twx-team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      max-width: 700px;
+      margin: 40px auto 0;
+    }
+    .twx-team-card {
+      background: #0e0e0e;
+      border: 1px solid #1a1a1a;
+      border-radius: 12px;
+      padding: 40px 32px;
+      text-align: center;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s ease;
+    }
+    .twx-team-card.visible { opacity: 1; transform: translateY(0); }
+    .twx-team-card:hover {
+      border-color: rgba(194,147,74,0.3);
+      transform: translateY(-4px);
+    }
+    .twx-team-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+      border: 2px solid #c2934a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 1.8rem;
+      color: #c2934a;
+      font-weight: 900;
+    }
+    .twx-team-name {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .twx-team-role {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #c2934a;
+      margin-bottom: 16px;
+    }
+    .twx-team-bio {
+      font-size: 0.9rem;
+      color: #777;
+      line-height: 1.6;
+    }
+
+    /* CTA strip */
+    .twx-about-cta {
+      padding: 80px 8vw;
+      background: #060606;
+      border-top: 1px solid #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .twx-about-cta-text {
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      font-weight: 800;
+      color: #fff;
+    }
+    .twx-about-cta-text .gold { color: #c2934a; }
+    .twx-about-cta-btn {
+      display: inline-block;
+      padding: 16px 40px;
+      background: linear-gradient(135deg, #b8833e, #d4a55c, #c2934a);
+      color: #111;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(194,147,74,0.4);
+      white-space: nowrap;
+    }
+    .twx-about-cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(194,147,74,0.5);
+    }
+
+    /* Mobile */
+    @media (max-width: 767px) {
+      .twx-section-inner { grid-template-columns: 1fr; gap: 16px; }
+      .twx-section-num { font-size: 5rem; position: static; }
+      .twx-values-grid { grid-template-columns: 1fr; }
+      .twx-team-grid { grid-template-columns: 1fr; }
+      .twx-about-cta { flex-direction: column; text-align: center; }
+      .twx-about-section { padding: 60px 6vw; }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // ── Build the page ──
+  function buildAboutPage() {
+    const body = document.querySelector("body");
+
+    // Find and hide existing about content
+    const existing =
+      document.querySelector(".about-mobile-story") ||
+      document.querySelector("main") ||
+      document.querySelector(".page-wrapper");
+    const wrapper = document.createElement("div");
+    wrapper.className = "twx-about";
+
+    // ── HERO ──
+    wrapper.innerHTML = `
+      <section class="twx-about-hero">
+        <div class="twx-about-eyebrow">Tillageworx — Est. in the paddock</div>
+        <h1 class="twx-about-headline">
+          <span class="word">Parts</span> <span class="word">that</span> <span class="word gold">work.</span><br>
+          <span class="word">People</span> <span class="word">who</span> <span class="word gold">care.</span>
+        </h1>
+        <p class="twx-about-hero-sub">A small team with deep roots in farming. Almost 20 years of experience in wearing parts manufacturing, design and sales.</p>
+        <div class="twx-hero-scroll-hint">Scroll to explore</div>
+      </section>
+
+      <section class="twx-about-section">
+        <div class="twx-section-inner">
+          <div class="twx-section-num twx-fade-up">01</div>
+          <div class="twx-section-content">
+            <span class="twx-section-tag twx-fade-up">Who We Are</span>
+            <div class="twx-gold-line"></div>
+            <h2 class="twx-section-title twx-fade-up">From the paddock.<br>To your machine.</h2>
+            <p class="twx-section-body twx-fade-up">We originate from a <strong>family farming partnership</strong> specialising in broadacre cropping and sheep in Central West NSW. That background isn't just part of our story — it shapes every decision we make.</p>
+            <p class="twx-section-body twx-fade-up">From design to production, we're involved in every step. We listen, we create, we test, and we deliver. <strong>No egos. No sales pressure.</strong> Just people who actually care.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="twx-about-section">
+        <div class="twx-section-inner">
+          <div class="twx-section-num twx-fade-up">02</div>
+          <div class="twx-section-content">
+            <span class="twx-section-tag twx-fade-up">Why We Started</span>
+            <div class="twx-gold-line"></div>
+            <h2 class="twx-section-title twx-fade-up">We saw the gap.<br>We closed it.</h2>
+            <p class="twx-section-body twx-fade-up"><strong>Limited options, high prices and average parts</strong> — that was the reality for Australian farmers. We set out to change it with a high-performance model focused on reducing your cost per hectare.</p>
+            <p class="twx-section-body twx-fade-up">From day one, our objective has been clear: design stronger parts, give better service, and prove that aftermarket gear can not only match OEM performance — <strong>it can be better.</strong></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="twx-about-section" style="padding-top:80px;padding-bottom:80px;">
+        <div style="max-width:1100px;margin:0 auto;">
+          <span class="twx-section-tag twx-fade-up" style="text-align:center;display:block;margin-bottom:48px;">What We Stand For</span>
+          <div class="twx-values-grid">
+            <div class="twx-value-card">
+              <span class="twx-value-icon">🌾</span>
+              <div class="twx-value-title">Paddock to Production</div>
+              <div class="twx-value-body">We're involved in every stage — from understanding what farmers actually need in the field, to how the part is designed, tested and manufactured.</div>
+            </div>
+            <div class="twx-value-card" style="transition-delay:0.15s">
+              <span class="twx-value-icon">⚙️</span>
+              <div class="twx-value-title">No Corners Cut</div>
+              <div class="twx-value-body">We test, refine, and only back parts we'd use ourselves. If something's not right, we fix it. If it works well, we make it better.</div>
+            </div>
+            <div class="twx-value-card" style="transition-delay:0.3s">
+              <span class="twx-value-icon">🤝</span>
+              <div class="twx-value-title">Family, Not Corporate</div>
+              <div class="twx-value-body">Nobody's just a number here. We pick up the phone, listen, and build long-term relationships. We're a family business that genuinely cares.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="twx-about-section">
+        <div class="twx-section-inner">
+          <div class="twx-section-num twx-fade-up">03</div>
+          <div class="twx-section-content">
+            <span class="twx-section-tag twx-fade-up">How We Work</span>
+            <div class="twx-gold-line"></div>
+            <h2 class="twx-section-title twx-fade-up">Simple process.<br>Serious results.</h2>
+            <div class="twx-timeline">
+              <div class="twx-timeline-fill"></div>
+              <div class="twx-timeline-item">
+                <div class="twx-timeline-label">Listen</div>
+                <div class="twx-timeline-text">We talk to farmers. We understand their setup, their challenges, and their goals. Every conversation shapes what we build.</div>
+              </div>
+              <div class="twx-timeline-item">
+                <div class="twx-timeline-label">Design & Test</div>
+                <div class="twx-timeline-text">We design for performance, not just price. Every part is tested in real conditions before it carries the Tillageworx name.</div>
+              </div>
+              <div class="twx-timeline-item">
+                <div class="twx-timeline-label">Deliver</div>
+                <div class="twx-timeline-text">We keep overheads lean so you're not paying for bloated margins. Smart pricing, fast turnaround, reliable supply.</div>
+              </div>
+              <div class="twx-timeline-item">
+                <div class="twx-timeline-label">Improve</div>
+                <div class="twx-timeline-text">We don't just copy what's out there — we work with customers to make it better. Continuous refinement is built into everything we do.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="twx-statement">
+        <h2 class="twx-statement-text twx-fade-up">Most aftermarket suppliers <span class="gold">cut corners.</span><br>Most OEM gear <span class="gold">costs a fortune.</span><br>We sit in the <span class="gold">sweet spot.</span></h2>
+        <p class="twx-statement-sub twx-fade-up">Durable parts. Smart pricing. A better cost per hectare for the end user.</p>
+      </div>
+
+      <section class="twx-about-section">
+        <div class="twx-section-inner full center">
+          <div>
+            <span class="twx-section-tag twx-fade-up">The Team</span>
+            <div class="twx-gold-line" style="margin:16px auto 0"></div>
+            <h2 class="twx-section-title twx-fade-up">Meet Tillageworx</h2>
+            <p class="twx-section-body twx-fade-up" style="max-width:560px;margin:0 auto 0">Small team. Deep roots. Big commitment.</p>
+            <div class="twx-team-grid">
+              <div class="twx-team-card">
+                <div class="twx-team-avatar">M</div>
+                <div class="twx-team-name">Mon</div>
+                <div class="twx-team-role">Founder & Director</div>
+                <div class="twx-team-bio">Grew up in Central West NSW on a family farm specialising in broadacre cropping and sheep. Almost 20 years in wearing parts manufacturing and sales.</div>
+              </div>
+              <div class="twx-team-card" style="transition-delay:0.15s">
+                <div class="twx-team-avatar">R</div>
+                <div class="twx-team-name">Roch</div>
+                <div class="twx-team-role">Co-Founder</div>
+                <div class="twx-team-bio">Brings deep technical expertise and a hands-on approach to product development. Closely involved in every stage of design and production.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="twx-about-cta">
+        <div class="twx-about-cta-text">Ready to lower your <span class="gold">cost per hectare?</span></div>
+        <a href="/browse-brands" class="twx-about-cta-btn">Browse Parts →</a>
+      </div>
+    `;
+
+    // Insert before footer or at end of body
+    const footer =
+      document.querySelector("footer") ||
+      document.querySelector(".footer") ||
+      document.querySelector('[class*="footer"]');
+    if (footer) {
+      footer.parentNode.insertBefore(wrapper, footer);
+    } else {
+      document.body.appendChild(wrapper);
+    }
+
+    // Hide existing content
+    document
+      .querySelectorAll(
+        '.about-mobile-story, .page-wrapper > *:not(.twx-about):not(.navbar):not(footer):not([class*="footer"])',
+      )
+      .forEach((el) => {
+        if (
+          !el.classList.contains("twx-about") &&
+          !el.closest("nav") &&
+          !el.closest("footer")
+        ) {
+          el.style.display = "none";
+        }
+      });
+
+    // ── Animations ──
+    // Hero word reveal
+    setTimeout(() => {
+      const eyebrow = wrapper.querySelector(".twx-about-eyebrow");
+      if (eyebrow) eyebrow.classList.add("visible");
+      wrapper.querySelectorAll(".twx-about-headline .word").forEach((w, i) => {
+        setTimeout(() => w.classList.add("visible"), i * 120);
+      });
+      setTimeout(() => {
+        const sub = wrapper.querySelector(".twx-about-hero-sub");
+        if (sub) sub.classList.add("visible");
+      }, 800);
+    }, 300);
+
+    // Intersection observer for scroll animations
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 },
+    );
+
+    wrapper
+      .querySelectorAll(
+        ".twx-fade-up, .twx-gold-line, .twx-value-card, .twx-timeline-item, .twx-timeline-fill, .twx-team-card",
+      )
+      .forEach((el) => io.observe(el));
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", buildAboutPage);
+  } else {
+    buildAboutPage();
+  }
+})();
