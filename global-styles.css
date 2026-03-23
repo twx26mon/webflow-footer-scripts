@@ -154,3 +154,15 @@
 
 /* ── Quote Review: Parts container ───────────────────────── */
 #qr-parts-container { padding-top:8px; }
+
+
+/* ── Brands nav: active pill ──────────────────────────────── */
+.brands-nav .w--current {
+  background: #000 !important;
+  color: #fff !important;
+}
+/* Chevron points down on active brand pill */
+.brands-nav .w--current svg {
+  transform: rotate(90deg) !important;
+  transition: transform 0.2s;
+}
