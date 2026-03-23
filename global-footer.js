@@ -2705,3 +2705,54 @@
     buildAboutPage();
   }
 })();
+
+/* ── 8. BRANDS NAV MOBILE SCROLL ANIMATION ───────────────── */
+(function () {
+  function initNavScroll() {
+    if (window.innerWidth > 767) return;
+    const navList = document.querySelector('.brands-nav__list');
+    if (!navList) return;
+
+    // Ensure it only runs once
+    if (navList.dataset.scrollInit) return;
+    navList.dataset.scrollInit = "true";
+
+    setTimeout(() => {
+      const maxScroll = navList.scrollWidth - navList.clientWidth;
+      if (maxScroll <= 10) return;
+
+      // 1. Instantly move to far right
+      navList.scrollLeft = maxScroll;
+
+      // 2. Wait a moment, then rapidly animate scrolling left
+      setTimeout(() => {
+        const duration = 600; // 0.6 seconds fast swipe
+        const start = navList.scrollLeft;
+        const startTime = performance.now();
+
+        function animateScroll(currentTime) {
+          const elapsed = currentTime - startTime;
+          let progress = Math.min(elapsed / duration, 1);
+
+          const easeOut = 1 - Math.pow(1 - progress, 3);
+          navList.scrollLeft = start * (1 - easeOut);
+
+          if (progress < 1) {
+            requestAnimationFrame(animateScroll);
+          } else {
+            // 3. Hit the left edge and shudder
+            navList.classList.add('twx-skid-active');
+            setTimeout(() => navList.classList.remove('twx-skid-active'), 500);
+          }
+        }
+        requestAnimationFrame(animateScroll);
+      }, 800); // 0.8s delay before it zips back
+    }, 500);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavScroll);
+  } else {
+    initNavScroll();
+  }
+})();
