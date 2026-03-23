@@ -2730,10 +2730,15 @@
       const activeItem = navList.querySelector(".w--current");
       let targetScroll = 0;
       if (activeItem) {
-        const itemCenter = activeItem.offsetLeft + activeItem.offsetWidth / 2;
+        const listRect = navList.getBoundingClientRect();
+        const itemRect = activeItem.getBoundingClientRect();
+        const itemScrollCenter =
+          navList.scrollLeft +
+          (itemRect.left - listRect.left) +
+          itemRect.width / 2;
         targetScroll = Math.max(
           0,
-          Math.min(maxScroll, itemCenter - navList.clientWidth / 2),
+          Math.min(maxScroll, itemScrollCenter - navList.clientWidth / 2),
         );
       }
 
