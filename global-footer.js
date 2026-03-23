@@ -158,6 +158,11 @@
     ".twx-card:hover .twx-card-add-btn{opacity:1;transform:scale(1)}",
     ".twx-card-add-btn:hover{transform:scale(1.1)!important;background:#c2934a}",
     ".twx-card-add-btn svg{width:24px;height:24px;stroke-width:2.2}",
+
+    /* Brands nav: active pill black background (desktop + mobile) */
+    ".brands-nav .w--current{background:#000!important;color:#fff!important}",
+    /* Brands nav: chevron points down on active pill */
+    ".brands-nav .w--current svg{transform:rotate(90deg)!important;transition:transform 0.2s}",
   ].join("\n");
 
   var style = document.createElement("style");
@@ -2710,7 +2715,7 @@
 (function () {
   function initNavScroll() {
     if (window.innerWidth > 767) return;
-    const navList = document.querySelector('.brands-nav__list');
+    const navList = document.querySelector(".brands-nav__list");
     if (!navList) return;
 
     // Ensure it only runs once
@@ -2721,13 +2726,25 @@
       const maxScroll = navList.scrollWidth - navList.clientWidth;
       if (maxScroll <= 10) return;
 
+      // Find active brand pill and calculate target scroll position
+      const activeItem = navList.querySelector(".w--current");
+      let targetScroll = 0;
+      if (activeItem) {
+        const itemCenter = activeItem.offsetLeft + activeItem.offsetWidth / 2;
+        targetScroll = Math.max(
+          0,
+          Math.min(maxScroll, itemCenter - navList.clientWidth / 2),
+        );
+      }
+
       // 1. Instantly move to far right
       navList.scrollLeft = maxScroll;
 
-      // 2. Wait a moment, then rapidly animate scrolling left
+      // 2. Wait a moment, then rapidly animate scrolling to active brand
       setTimeout(() => {
         const duration = 600; // 0.6 seconds fast swipe
         const start = navList.scrollLeft;
+        const end = targetScroll;
         const startTime = performance.now();
 
         function animateScroll(currentTime) {
@@ -2735,14 +2752,14 @@
           let progress = Math.min(elapsed / duration, 1);
 
           const easeOut = 1 - Math.pow(1 - progress, 3);
-          navList.scrollLeft = start * (1 - easeOut);
+          navList.scrollLeft = start + (end - start) * easeOut;
 
           if (progress < 1) {
             requestAnimationFrame(animateScroll);
           } else {
-            // 3. Hit the left edge and shudder
-            navList.classList.add('twx-skid-active');
-            setTimeout(() => navList.classList.remove('twx-skid-active'), 500);
+            // 3. Land on active brand and shudder
+            navList.classList.add("twx-skid-active");
+            setTimeout(() => navList.classList.remove("twx-skid-active"), 500);
           }
         }
         requestAnimationFrame(animateScroll);
@@ -2750,8 +2767,8 @@
     }, 500);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initNavScroll);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initNavScroll);
   } else {
     initNavScroll();
   }
