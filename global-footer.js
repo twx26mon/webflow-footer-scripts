@@ -1875,6 +1875,12 @@
             addHidden("Delivery Postcode", g("qr-invoice-postcode"));
           }
 
+          // Cart JSON for Zoho Flow sales order creation
+          addHidden(
+            "Cart JSON",
+            document.getElementById("qr-cart-json")?.value || "",
+          );
+
           // ── Validate required visible fields manually ──
           if (!firstName) {
             document.getElementById("qr-first-name").focus();
