@@ -1844,6 +1844,37 @@
           }
           realForm.querySelector("#quote_items").value = g("qr-cart-data");
 
+          // ── Structured address fields for Zoho Flow ──
+          const addHidden = (name, value) => {
+            let el = realForm.querySelector(`[name="${name}"]`);
+            if (!el) {
+              el = document.createElement("input");
+              el.type = "hidden";
+              el.name = name;
+              realForm.appendChild(el);
+            }
+            el.value = value || "";
+          };
+
+          addHidden("Invoice Street", g("qr-invoice-street"));
+          addHidden("Invoice Town", g("qr-invoice-town"));
+          addHidden("Invoice State", g("qr-invoice-state"));
+          addHidden("Invoice Postcode", g("qr-invoice-postcode"));
+
+          const diffDeliveryCheck = document.getElementById("qr-diff-delivery");
+          if (diffDeliveryCheck && diffDeliveryCheck.checked) {
+            addHidden("Delivery Street", g("qr-delivery-street"));
+            addHidden("Delivery Town", g("qr-delivery-town"));
+            addHidden("Delivery State", g("qr-delivery-state"));
+            addHidden("Delivery Postcode", g("qr-delivery-postcode"));
+          } else {
+            // Delivery same as invoice — copy invoice fields across
+            addHidden("Delivery Street", g("qr-invoice-street"));
+            addHidden("Delivery Town", g("qr-invoice-town"));
+            addHidden("Delivery State", g("qr-invoice-state"));
+            addHidden("Delivery Postcode", g("qr-invoice-postcode"));
+          }
+
           // ── Validate required visible fields manually ──
           if (!firstName) {
             document.getElementById("qr-first-name").focus();
