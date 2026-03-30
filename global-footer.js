@@ -2664,7 +2664,7 @@
         <p class="twx-statement-sub twx-fade-up">Durable parts. Smart pricing. A better cost per hectare for the end user.</p>
       </div>
 
-      <section class="twx-about-section">
+      <section class="twx-about-section" style="display: none !important;">
         <div class="twx-section-inner full center">
           <div>
             <span class="twx-section-tag twx-fade-up">The Team</span>
