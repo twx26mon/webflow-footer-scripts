@@ -2078,17 +2078,26 @@
       w1.style.cssText = "flex:1 1 200px;min-width:0";
       const w2 = document.createElement("div");
       w2.style.cssText = "flex:1 1 200px;min-width:0";
+      // Target the Webflow container wrapping the input to prevent empty block spacing issues
+      const wrap1 = el1.closest(".input-outer-container") || el1.parentElement;
+      const wrap2 = el2.closest(".input-outer-container") || el2.parentElement;
 
         const lbl1 = form.querySelector(`label.twx-styled-lbl[for="${el1.id}"]`);
         const lbl2 = form.querySelector(`label.twx-styled-lbl[for="${el2.id}"]`);
+      if (!wrap1 || !wrap2 || wrap1 === wrap2) return;
 
       el1.parentNode.insertBefore(row, lbl1 || el1);
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;flex-wrap:wrap;gap:16px;width:100%;";
 
       if (lbl1) w1.appendChild(lbl1);
       w1.appendChild(el1);
       if (lbl2) w2.appendChild(lbl2);
       w2.appendChild(el2);
+      wrap1.style.cssText += ";flex:1 1 200px;min-width:0;";
+      wrap2.style.cssText += ";flex:1 1 200px;min-width:0;";
 
+      wrap1.parentNode.insertBefore(row, wrap1);
       row.appendChild(w1);
       row.appendChild(w2);
     };
