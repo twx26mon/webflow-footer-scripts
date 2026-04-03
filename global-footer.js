@@ -8,8 +8,8 @@
      1. CSS injection  — injects tillageworx.css at runtime
      2. Quote Cart     — cart state, machine wizard, add-to-quote buttons
      3. Quote Review   — renders cart table + summary on /quote-review
-     4. Quote Form     — restructures Webflow form fields (side-by-side rows,
-                         delivery address toggle, invoicing address field)
+     4. Quote Form     — collects form fields, submits directly to Zoho Flow
+                         webhook via fetch(). No native Webflow form required.
      5. Navbar scroll  — hides navbar on scroll-down, reveals on scroll-up
      6. BROWSE BRANDS  — animated brand filter with live CMS fetch
      
@@ -27,14 +27,13 @@
      .open-quote-cart / .open-quote-cart-btn  — any element that opens cart
      #qr-parts-container                      — table container on /quote-review
      #qr-summary-container                    — totals block on /quote-review
-     #qr-cart-data                            — hidden field (cart payload)
      #qr-empty-msg                            — shown when cart is empty
      #qr-form-section                         — contact form wrapper
      #qr-flex-row / #qr-right-col             — layout containers on /quote-review
      #qr-first-name, #qr-last-name            — name inputs inside form
      #qr-email, #qr-phone                     — contact inputs
      #qr-business                             — business name input
-     #qr-address                              — delivery address input
+     #qr-notes                                — additional notes textarea
      #qr-submit-btn                           — form submit button (is an <a> tag)
    ============================================================ */
 
@@ -103,7 +102,12 @@
     ".qr-same-address-row input[type=checkbox]{accent-color:#c2934a;width:15px;height:15px;cursor:pointer;flex-shrink:0}",
     ".qr-delivery-input-wrapper{display:none;margin-top:16px}",
     ".qr-delivery-input-wrapper.visible{display:block}",
-    '#qr-address~label,label[for="qr-address"]{display:none!important}',
+
+    /* T&C row */
+    ".qr-tc-row{display:flex;align-items:flex-start;gap:10px;margin-top:20px;margin-bottom:4px}",
+    ".qr-tc-row input[type=checkbox]{margin-top:2px;accent-color:#c2934a;width:15px;height:15px;cursor:pointer;flex-shrink:0}",
+    ".qr-tc-row label{font-size:12px;font-weight:600;color:#aaa;text-transform:none;letter-spacing:0;margin:0;cursor:pointer;line-height:1.5}",
+    ".qr-tc-row a{color:#c2934a;text-decoration:underline}",
 
     /* Form heading */
     "#qr-form-section h3.qr-form-heading{font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#c2934a;border-bottom:1px solid #2a2a2a;padding-bottom:12px;margin-bottom:20px}",
@@ -1274,6 +1278,7 @@
     const wizardOpened = triggerReverseWizard(part.name);
     if (!wizardOpened) showCart();
   }
+
   /* ── Cart DOM injection (for pages without quote-cart element) ── */
   function injectCartIfMissing() {
     if (document.getElementById("quote-cart")) return; // already exists
@@ -1385,8 +1390,6 @@
     const cart = getCart();
     const tableContainer = document.getElementById("qr-parts-container");
     const summaryContainer = document.getElementById("qr-summary-container");
-    const cartDataField = document.getElementById("qr-cart-data");
-    let cartJsonField = document.getElementById("qr-cart-json");
     const emptyMsg = document.getElementById("qr-empty-msg");
     const formSection = document.getElementById("qr-form-section");
     const flexRow = document.getElementById("qr-flex-row");
@@ -1458,22 +1461,22 @@
               <button class="qr-qty-btn qr-qty-plus" data-id="${escapeHtml(item.id)}" aria-label="Increase quantity">+</button>
             </div>
           </td>
-<td>${lineTotalHtml}</td>
-<td style="width:32px;text-align:center;padding:14px 8px 14px 4px;">
-  <button class="qr-remove-btn" data-id="${escapeHtml(item.id)}" aria-label="Remove item">
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2.5 2.5C4.8 5.1 7.2 7.0 9.1 9.2C11.2 11.5 13.5 13.8 15.5 15.5" stroke="#c2934a" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M15.5 2.5C13.1 5.0 10.9 7.1 9.0 9.0C6.9 11.1 4.7 13.5 2.5 15.5" stroke="#c2934a" stroke-width="1.8" stroke-linecap="round"/>
-    </svg>
-  </button>
-</td>
-        </tr>      `;
+          <td>${lineTotalHtml}</td>
+          <td style="width:32px;text-align:center;padding:14px 8px 14px 4px;">
+            <button class="qr-remove-btn" data-id="${escapeHtml(item.id)}" aria-label="Remove item">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.5 2.5C4.8 5.1 7.2 7.0 9.1 9.2C11.2 11.5 13.5 13.8 15.5 15.5" stroke="#c2934a" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M15.5 2.5C13.1 5.0 10.9 7.1 9.0 9.0C6.9 11.1 4.7 13.5 2.5 15.5" stroke="#c2934a" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </td>
+        </tr>`;
     });
 
     tableContainer.innerHTML = `
       <table class="qr-parts-table">
         <thead>
-<tr><th>Part</th><th>Unit Price</th><th>Qty</th><th>Total</th><th></th></tr>
+          <tr><th>Part</th><th>Unit Price</th><th>Qty</th><th>Total</th><th></th></tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>
@@ -1541,55 +1544,25 @@
 
       summaryContainer.innerHTML = summaryHtml;
     }
-
-    if (cartDataField) {
-      cartDataField.value = cart
-        .map((item) => {
-          const qty = Math.max(1, item.qty || 1);
-          const unitPrice = parsePrice(item.price);
-          const lineTotal =
-            unitPrice !== null ? (unitPrice * qty).toFixed(2) : "TBC";
-          return `${item.name} (${item.code || item.id}) x${qty} @ ${item.price || "TBC"} = $${lineTotal}`;
-        })
-        .join("\n");
-
-      // ── Cart JSON field for Zoho Flow integration ──
-      if (!cartJsonField) {
-        cartJsonField = document.createElement("input");
-        cartJsonField.type = "hidden";
-        cartJsonField.id = "qr-cart-json";
-        cartJsonField.name = "Cart JSON";
-        cartDataField.parentNode.appendChild(cartJsonField);
-      }
-    }
-
-    if (cartJsonField) {
-      const cleanCart = cart.map((item) => ({
-        SKU: item.code || item.id,
-        Name: item.name,
-        Quantity: Math.max(1, item.qty || 1),
-        ZohoItemID: item.zoho_id || "",
-      }));
-      cartJsonField.value = JSON.stringify(cleanCart);
-    }
   }
 
-  /* ── 4. ORDER FORM — restructures Webflow form fields ─── */
+  /* ── 4. ORDER FORM — direct Zoho Flow webhook submission ─── */
   function initQRForm() {
     const sec = document.getElementById("qr-form-section");
     if (!sec || sec.dataset.qrFormInit) return;
     sec.dataset.qrFormInit = "1";
 
-    const g = (id) => sec.querySelector("#" + id);
+    const g = (id) => document.getElementById(id);
+    const gv = (id) => (g(id)?.value || "").trim();
+
     const firstName = g("qr-first-name");
     const lastName = g("qr-last-name");
     const email = g("qr-email");
     const phone = g("qr-phone");
     const business = g("qr-business");
-    const address = document.getElementById("qr-address");
     if (!firstName) return;
 
-    // Creates a styled input element
+    // ── Styled input factory ──
     const mkInput = (attrs) => {
       const inp = document.createElement("input");
       Object.entries(attrs).forEach(([k, v]) => inp.setAttribute(k, v));
@@ -1606,7 +1579,7 @@
       return inp;
     };
 
-    // Creates a gold uppercase label
+    // ── Gold label factory ──
     const mkLabel = (text) => {
       const lbl = document.createElement("label");
       lbl.style.cssText =
@@ -1615,7 +1588,7 @@
       return lbl;
     };
 
-    // Wraps an existing Webflow input (respects .input-container) in a flex child div
+    // ── Wrap existing input in a flex child ──
     const wrapEl = (el) => {
       let container = el.closest(".input-container") || el.parentElement;
       if (!container || container === sec || container.tagName === "FORM")
@@ -1627,7 +1600,7 @@
       return d;
     };
 
-    // First + Last name side by side
+    // ── Name row (First + Last side by side) ──
     const firstNameContainer =
       firstName.closest(".input-container") || firstName.parentElement;
     const nameRow = document.createElement("div");
@@ -1636,7 +1609,7 @@
     nameRow.appendChild(wrapEl(firstName));
     if (lastName) nameRow.appendChild(wrapEl(lastName));
 
-    // Email + Phone side by side
+    // ── Contact row (Email + Phone side by side) ──
     const emailContainer =
       email.closest(".input-container") || email.parentElement;
     const contactRow = document.createElement("div");
@@ -1645,10 +1618,11 @@
     contactRow.appendChild(wrapEl(email));
     if (phone) contactRow.appendChild(wrapEl(phone));
 
-    // Invoicing address — 4 structured fields
+    // ── Invoicing address block ──
     if (business) {
       const invBlock = document.createElement("div");
       business.parentNode.insertBefore(invBlock, business.nextSibling);
+
       invBlock.appendChild(mkLabel("Invoicing Address"));
       invBlock.appendChild(
         mkInput({
@@ -1658,6 +1632,7 @@
           placeholder: "Street Address",
         }),
       );
+
       const invRow = document.createElement("div");
       invRow.className = "qr-addr-row";
       const invTownWrap = document.createElement("div");
@@ -1695,302 +1670,299 @@
       invRow.appendChild(invPostWrap);
       invBlock.appendChild(invRow);
 
-      // Delivery address toggle
-      if (address) {
-        const addrContainer =
-          address.closest(".input-container") || address.parentElement;
-        const addrBlock = document.createElement("div");
-        addrContainer.parentNode.insertBefore(addrBlock, addrContainer);
-        addrContainer.style.display = "none";
+      // ── Delivery address toggle ──
+      const addrBlock = document.createElement("div");
+      invBlock.parentNode.insertBefore(addrBlock, invBlock.nextSibling);
 
-        const sameRow = document.createElement("div");
-        sameRow.className = "qr-same-address-row";
-        sameRow.style.marginTop = "4px";
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.id = "qr-diff-delivery";
-        const cbLbl = document.createElement("label");
-        cbLbl.setAttribute("for", "qr-diff-delivery");
-        cbLbl.textContent =
-          "Delivery address is different from invoicing address";
-        sameRow.appendChild(cb);
-        sameRow.appendChild(cbLbl);
+      const sameRow = document.createElement("div");
+      sameRow.className = "qr-same-address-row";
+      sameRow.style.marginTop = "4px";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = "qr-diff-delivery";
+      const cbLbl = document.createElement("label");
+      cbLbl.setAttribute("for", "qr-diff-delivery");
+      cbLbl.textContent =
+        "Delivery address is different from invoicing address";
+      sameRow.appendChild(cb);
+      sameRow.appendChild(cbLbl);
 
-        const inputWrapper = document.createElement("div");
-        inputWrapper.className = "qr-delivery-input-wrapper";
-        inputWrapper.appendChild(mkLabel("Delivery Address"));
-        inputWrapper.appendChild(
-          mkInput({
-            type: "text",
-            id: "qr-delivery-street",
-            name: "Delivery Street",
-            placeholder: "Street Address / Depot Name",
-          }),
-        );
-        const delRow = document.createElement("div");
-        delRow.className = "qr-addr-row";
-        const delTownWrap = document.createElement("div");
-        delTownWrap.className = "qr-addr-town";
-        delTownWrap.appendChild(
-          mkInput({
-            type: "text",
-            id: "qr-delivery-town",
-            name: "Delivery Town",
-            placeholder: "Town / City",
-          }),
-        );
-        const delStateWrap = document.createElement("div");
-        delStateWrap.className = "qr-addr-state";
-        delStateWrap.appendChild(
-          mkInput({
-            type: "text",
-            id: "qr-delivery-state",
-            name: "Delivery State",
-            placeholder: "State",
-          }),
-        );
-        const delPostWrap = document.createElement("div");
-        delPostWrap.className = "qr-addr-postcode";
-        delPostWrap.appendChild(
-          mkInput({
-            type: "text",
-            id: "qr-delivery-postcode",
-            name: "Delivery Postcode",
-            placeholder: "Postcode",
-          }),
-        );
-        delRow.appendChild(delTownWrap);
-        delRow.appendChild(delStateWrap);
-        delRow.appendChild(delPostWrap);
-        inputWrapper.appendChild(delRow);
+      const delWrapper = document.createElement("div");
+      delWrapper.className = "qr-delivery-input-wrapper";
+      delWrapper.appendChild(mkLabel("Delivery Address"));
+      delWrapper.appendChild(
+        mkInput({
+          type: "text",
+          id: "qr-delivery-street",
+          name: "Delivery Street",
+          placeholder: "Street Address / Depot Name",
+        }),
+      );
+      const delRow = document.createElement("div");
+      delRow.className = "qr-addr-row";
+      const delTownWrap = document.createElement("div");
+      delTownWrap.className = "qr-addr-town";
+      delTownWrap.appendChild(
+        mkInput({
+          type: "text",
+          id: "qr-delivery-town",
+          name: "Delivery Town",
+          placeholder: "Town / City",
+        }),
+      );
+      const delStateWrap = document.createElement("div");
+      delStateWrap.className = "qr-addr-state";
+      delStateWrap.appendChild(
+        mkInput({
+          type: "text",
+          id: "qr-delivery-state",
+          name: "Delivery State",
+          placeholder: "State",
+        }),
+      );
+      const delPostWrap = document.createElement("div");
+      delPostWrap.className = "qr-addr-postcode";
+      delPostWrap.appendChild(
+        mkInput({
+          type: "text",
+          id: "qr-delivery-postcode",
+          name: "Delivery Postcode",
+          placeholder: "Postcode",
+        }),
+      );
+      delRow.appendChild(delTownWrap);
+      delRow.appendChild(delStateWrap);
+      delRow.appendChild(delPostWrap);
+      delWrapper.appendChild(delRow);
 
-        addrBlock.appendChild(sameRow);
-        addrBlock.appendChild(inputWrapper);
+      addrBlock.appendChild(sameRow);
+      addrBlock.appendChild(delWrapper);
 
-        cb.addEventListener("change", () => {
-          if (cb.checked) {
-            inputWrapper.classList.add("visible");
-          } else {
-            inputWrapper.classList.remove("visible");
-            [
-              "qr-delivery-street",
-              "qr-delivery-town",
-              "qr-delivery-state",
-              "qr-delivery-postcode",
-            ].forEach((id) => {
-              const el = document.getElementById(id);
-              if (el) el.value = "";
-            });
-          }
-        });
-      }
+      cb.addEventListener("change", () => {
+        delWrapper.classList.toggle("visible", cb.checked);
+        if (!cb.checked) {
+          [
+            "qr-delivery-street",
+            "qr-delivery-town",
+            "qr-delivery-state",
+            "qr-delivery-postcode",
+          ].forEach((id) => {
+            const el = g(id);
+            if (el) el.value = "";
+          });
+        }
+      });
     }
 
-    // ── Honeypot field — invisible to humans, bots fill it in ──
+    // ── Honeypot (invisible to humans, catches bots) ──
     const honeypot = document.createElement("input");
     honeypot.type = "text";
     honeypot.id = "qr-honeypot";
-    honeypot.name = "Website"; // sounds like a legit field to bots
+    honeypot.name = "website";
     honeypot.autocomplete = "off";
-    honeypot.tabIndex = -1; // keyboard users skip it
+    honeypot.tabIndex = -1;
     honeypot.setAttribute("aria-hidden", "true");
     honeypot.style.cssText =
       "position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;";
     sec.appendChild(honeypot);
 
-    const submitBtn =
-      sec.querySelector("#qr-submit-btn") ||
-      document.getElementById("qr-submit-btn");
-    const realForm = document.getElementById("wf-form-Quote-Request-Form");
+    // ── Submit button reference ──
+    const submitBtn = g("qr-submit-btn") || sec.querySelector("#qr-submit-btn");
+    if (!submitBtn) return;
 
-    if (submitBtn && realForm) {
-      submitBtn.addEventListener(
-        "click",
-        function (e) {
-          e.preventDefault();
+    // ── T&C checkbox (inserted just before submit button) ──
+    const tcRow = document.createElement("div");
+    tcRow.className = "qr-tc-row";
+    const tcCb = document.createElement("input");
+    tcCb.type = "checkbox";
+    tcCb.id = "qr-terms";
+    const tcLbl = document.createElement("label");
+    tcLbl.setAttribute("for", "qr-terms");
+    tcLbl.innerHTML =
+      'I agree to the <a href="/terms-and-conditions" target="_blank">Terms &amp; Conditions</a>';
+    tcRow.appendChild(tcCb);
+    tcRow.appendChild(tcLbl);
+    submitBtn.parentNode.insertBefore(tcRow, submitBtn);
 
-          // ── Honeypot check ──
-          const hp = document.getElementById("qr-honeypot");
-          if (hp && hp.value) return false; // Silent bot block
+    // ── Error message helper ──
+    const showError = (msg) => {
+      let err = sec.querySelector(".qr-submit-error");
+      if (!err) {
+        err = document.createElement("div");
+        err.className = "qr-submit-error";
+        err.style.cssText =
+          "margin-top:16px;padding:14px 18px;background:rgba(220,50,50,0.1);border-left:3px solid #e05050;border-radius:0 6px 6px 0;color:#e08080;font-size:13px;";
+        submitBtn.parentNode.insertBefore(err, submitBtn.nextSibling);
+      }
+      err.textContent = msg;
+      err.style.display = "block";
+    };
 
-          // ── Copy visible fields → hidden form fields ──
-          const g = (id) => document.getElementById(id)?.value || "";
+    const clearError = () => {
+      const err = sec.querySelector(".qr-submit-error");
+      if (err) err.style.display = "none";
+    };
 
-          const firstName = g("qr-first-name");
-          const lastName = g("qr-last-name");
-          realForm.querySelector("#customer_name").value =
-            `${firstName} ${lastName}`.trim();
-          realForm.querySelector("#customer_email").value = g("qr-email");
-          realForm.querySelector("#customer_phone").value = g("qr-phone");
-          realForm.querySelector("#business_name").value = g("qr-business");
-          realForm.querySelector("#business_name").value = g("qr-business");
-          const invStreet = g("qr-invoice-street");
-          const invTown = g("qr-invoice-town");
-          const invState = g("qr-invoice-state");
-          const invPost = g("qr-invoice-postcode");
-          realForm.querySelector("#Delivery_Address").value = [
-            invStreet,
-            invTown,
-            invState,
-            invPost,
-          ]
-            .filter(Boolean)
-            .join(", ");
-          const townField = realForm.querySelector("#town");
-          const postField = realForm.querySelector("#post_code");
-          if (townField) townField.value = invTown;
-          if (postField) postField.value = invPost;
-          const diffDelivery = document.getElementById("qr-diff-delivery");
-          if (diffDelivery && diffDelivery.checked) {
-            const delAddress = [
-              g("qr-delivery-street"),
-              g("qr-delivery-town"),
-              g("qr-delivery-state"),
-              g("qr-delivery-postcode"),
-            ]
-              .filter(Boolean)
-              .join(", ");
-            const existingNotes = g("qr-notes");
-            realForm.querySelector("#Additional-Info").value =
-              `DELIVERY ADDRESS: ${delAddress}${existingNotes ? "\n\n" + existingNotes : ""}`;
-          } else {
-            realForm.querySelector("#Additional-Info").value = g("qr-notes");
-          }
-          realForm.querySelector("#quote_items").value = g("qr-cart-data");
+    // ── Submit handler ──
+    submitBtn.addEventListener("click", async function (e) {
+      e.preventDefault();
+      clearError();
 
-          // ── Structured address fields for Zoho Flow ──
-          const addHidden = (name, value) => {
-            let el = realForm.querySelector(`[name="${name}"]`);
-            if (!el) {
-              el = document.createElement("input");
-              el.type = "hidden";
-              el.name = name;
-              realForm.appendChild(el);
-            }
-            el.value = value || "";
-          };
+      // Honeypot check — silent bot block
+      if (g("qr-honeypot")?.value) return;
 
-          addHidden("Invoice Street", g("qr-invoice-street"));
-          addHidden("Invoice Town", g("qr-invoice-town"));
-          addHidden("Invoice State", g("qr-invoice-state"));
-          addHidden("Invoice Postcode", g("qr-invoice-postcode"));
+      // Validation
+      const firstNameVal = gv("qr-first-name");
+      const emailVal = gv("qr-email");
 
-          const diffDeliveryCheck = document.getElementById("qr-diff-delivery");
-          if (diffDeliveryCheck && diffDeliveryCheck.checked) {
-            addHidden("Delivery Street", g("qr-delivery-street"));
-            addHidden("Delivery Town", g("qr-delivery-town"));
-            addHidden("Delivery State", g("qr-delivery-state"));
-            addHidden("Delivery Postcode", g("qr-delivery-postcode"));
-          } else {
-            // Delivery same as invoice — copy invoice fields across
-            addHidden("Delivery Street", g("qr-invoice-street"));
-            addHidden("Delivery Town", g("qr-invoice-town"));
-            addHidden("Delivery State", g("qr-invoice-state"));
-            addHidden("Delivery Postcode", g("qr-invoice-postcode"));
-          }
+      if (!firstNameVal) {
+        showError("Please enter your first name.");
+        g("qr-first-name")?.focus();
+        return;
+      }
+      if (!emailVal) {
+        showError("Please enter your email address.");
+        g("qr-email")?.focus();
+        return;
+      }
+      if (!g("qr-terms")?.checked) {
+        showError("Please agree to the Terms & Conditions to proceed.");
+        return;
+      }
 
-          // Cart JSON for Zoho Flow sales order creation
-          addHidden(
-            "Cart JSON",
-            document.getElementById("qr-cart-json")?.value || "",
-          );
+      // Cart check
+      let cart = [];
+      try {
+        cart = JSON.parse(localStorage.getItem("tillageworx_quote_cart")) || [];
+      } catch (err) {}
+      if (!cart.length) {
+        showError("Your cart is empty.");
+        return;
+      }
 
-          // ── Validate required visible fields manually ──
-          if (!firstName) {
-            document.getElementById("qr-first-name").focus();
-            return false;
-          }
-          if (!g("qr-email")) {
-            document.getElementById("qr-email").focus();
-            return false;
-          }
+      // Delivery address — mirrors invoice if same
+      const diffDelivery = g("qr-diff-delivery")?.checked;
+      const deliveryStreet = diffDelivery
+        ? gv("qr-delivery-street")
+        : gv("qr-invoice-street");
+      const deliveryTown = diffDelivery
+        ? gv("qr-delivery-town")
+        : gv("qr-invoice-town");
+      const deliveryState = diffDelivery
+        ? gv("qr-delivery-state")
+        : gv("qr-invoice-state");
+      const deliveryPostcode = diffDelivery
+        ? gv("qr-delivery-postcode")
+        : gv("qr-invoice-postcode");
+      const deliveryAddress = [
+        deliveryStreet,
+        deliveryTown,
+        deliveryState,
+        deliveryPostcode,
+      ]
+        .filter(Boolean)
+        .join(", ");
 
-          // ── Check terms checkbox ──
-          const terms = realForm.querySelector("#terms_agreed");
-          if (terms) terms.checked = true;
-
-          // ── Submit the real form ──
-          realForm.querySelector(".submit-button.w-button").click();
-          // ── Watch for Webflow success/fail and show visible confirmation ──
-          const successDiv = document.querySelector(
-            "#quote-form-block .w-form-done",
-          );
-          const failDiv = document.querySelector(
-            "#quote-form-block .w-form-fail",
-          );
-
-          const observer = new MutationObserver(() => {
-            const successVisible =
-              window.getComputedStyle(successDiv).display !== "none";
-            const failVisible =
-              window.getComputedStyle(failDiv).display !== "none";
-
-            if (successVisible) {
-              observer.disconnect();
-
-              // Scroll to top so user sees confirmation
-              window.scrollTo({ top: 0, behavior: "smooth" });
-
-              // Clear the cart before replacing DOM
-              localStorage.removeItem("tillageworx_quote_cart");
-              if (window.renderCart) window.renderCart();
-
-              // Replace form with success message
-              const formSection = document.getElementById("qr-form-section");
-              formSection.innerHTML = `
-    <div style="padding:40px 24px;text-align:center;">
-      <div style="font-size:48px;margin-bottom:16px;">✅</div>
-      <h3 style="color:#c2934a;font-size:20px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
-        Order Received!
-      </h3>
-      <p style="color:#ccc;font-size:15px;line-height:1.7;margin-bottom:24px;">
-        Thanks, your order has been received!<br>
-        We'll email you a Sales Order including freight cost ASAP.
-      </p>
-      <p style="color:#888;font-size:13px;">
-        Questions? Call us on <a href="tel:0861851944" style="color:#c2934a;font-weight:700;">08 6185 1944</a>
-      </p>
-    </div>
-  `;
-
-              // Clear the cart
-              localStorage.removeItem("tillageworx_quote_cart");
-              if (window.renderCart) window.renderCart();
-            }
-
-            if (failVisible) {
-              observer.disconnect();
-              const formSection = document.getElementById("qr-form-section");
-              const existing = formSection.querySelector(".qr-submit-error");
-              if (!existing) {
-                const err = document.createElement("div");
-                err.className = "qr-submit-error";
-                err.style.cssText =
-                  "margin-top:16px;padding:14px 18px;background:rgba(220,50,50,0.1);border-left:3px solid #e05050;border-radius:0 6px 6px 0;color:#e08080;font-size:13px;";
-                err.textContent =
-                  "Something went wrong. Please try again or call us on 08 6185 1944.";
-                formSection.appendChild(err);
-              }
-            }
-          });
-
-          if (successDiv && failDiv) {
-            observer.observe(successDiv, {
-              attributes: true,
-              attributeFilter: ["style"],
-            });
-            observer.observe(failDiv, {
-              attributes: true,
-              attributeFilter: ["style"],
-            });
-          }
-        },
-        true,
+      // Cart JSON for Zoho line items
+      const cartJson = JSON.stringify(
+        cart.map((item) => ({
+          SKU: item.code || item.id,
+          Name: item.name,
+          Quantity: Math.max(1, item.qty || 1),
+          ZohoItemID: item.zoho_id || "",
+        })),
       );
-    }
+
+      // Snapshot — human-readable order summary stored on the Sales Order
+      const notesVal = gv("qr-notes");
+      const snapshot =
+        cart
+          .map((item) => {
+            const qty = Math.max(1, item.qty || 1);
+            return `${item.name} (${item.code || item.id}) x${qty}`;
+          })
+          .join("\n") + (notesVal ? "\n\nNotes: " + notesVal : "");
+
+      // ── Build payload — field names must match Zoho Flow exactly ──
+      const payload = {
+        honeypot: "",
+        customer_email: emailVal,
+        customer_first_name: firstNameVal,
+        customer_last_name: gv("qr-last-name"),
+        customer_name: [firstNameVal, gv("qr-last-name")]
+          .filter(Boolean)
+          .join(" "),
+        customer_phone: gv("qr-phone"),
+        business_name: gv("qr-business"),
+        invoice_street: gv("qr-invoice-street"),
+        invoice_town: gv("qr-invoice-town"),
+        invoice_state: gv("qr-invoice-state"),
+        invoice_postcode: gv("qr-invoice-postcode"),
+        delivery_street: deliveryStreet,
+        delivery_town: deliveryTown,
+        delivery_state: deliveryState,
+        delivery_postcode: deliveryPostcode,
+        delivery_address: deliveryAddress,
+        notes: notesVal,
+        cart_json: cartJson,
+        snapshot: snapshot,
+      };
+
+      // Disable button during submit
+      submitBtn.style.opacity = "0.6";
+      submitBtn.style.pointerEvents = "none";
+      submitBtn.textContent = "SUBMITTING...";
+
+      try {
+        const response = await fetch(
+          "https://flow.zoho.com.au/7006567107/flow/webhook/incoming?zapikey=1001.cc0969bdabb757f945d8db3186106523.89cee0fdfd78d8bf36b4675508ab47b5&isdebug=false",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          },
+        );
+
+        if (response.ok) {
+          // Clear cart
+          localStorage.removeItem("tillageworx_quote_cart");
+          if (window.renderCart) window.renderCart();
+
+          // Show success screen
+          sec.innerHTML = `
+            <div style="padding:40px 24px;text-align:center;">
+              <div style="font-size:48px;margin-bottom:16px;">✅</div>
+              <h3 style="color:#c2934a;font-size:20px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
+                Order Received!
+              </h3>
+              <p style="color:#ccc;font-size:15px;line-height:1.7;margin-bottom:24px;">
+                Thanks ${firstNameVal}, your order has been received!<br>
+                We'll email you a Sales Order with freight included ASAP.
+              </p>
+              <p style="color:#888;font-size:13px;">
+                Questions? Call us on <a href="tel:0861851944" style="color:#c2934a;font-weight:700;">08 6185 1944</a>
+              </p>
+            </div>
+          `;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          throw new Error("Response not OK: " + response.status);
+        }
+      } catch (err) {
+        console.error("[TWX] Submission error:", err);
+        submitBtn.style.opacity = "";
+        submitBtn.style.pointerEvents = "";
+        submitBtn.textContent = "SUBMIT ORDER";
+        showError(
+          "Something went wrong. Please try again or call us on 08 6185 1944.",
+        );
+      }
+    });
   }
+
   const formBlock = document.getElementById("quote-form-block");
   if (formBlock) formBlock.classList.add("qr-ready");
+
   document.addEventListener("DOMContentLoaded", () => {
     renderQuoteReview();
     initQRForm();
@@ -2027,6 +1999,7 @@
 
   window.addEventListener("scroll", onScroll, { passive: true });
 })();
+
 /* ── 6. CONTACT FORM STYLING ─────────────────────────────── */
 (function () {
   if (!window.location.pathname.includes("/contact")) return;
