@@ -1562,6 +1562,17 @@
     const business = g("qr-business");
     if (!firstName) return;
 
+    // ── Hide native single-line address field left over from Webflow form ──
+    const nativeAddress = g("qr-address");
+    if (nativeAddress) {
+      const nativeAddrContainer =
+        nativeAddress.closest(".input-container") ||
+        nativeAddress.parentElement;
+      if (nativeAddrContainer) nativeAddrContainer.style.display = "none";
+      const nativeAddrLabel = document.querySelector('label[for="qr-address"]');
+      if (nativeAddrLabel) nativeAddrLabel.style.display = "none";
+    }
+
     // ── Styled input factory ──
     const mkInput = (attrs) => {
       const inp = document.createElement("input");
@@ -1914,16 +1925,17 @@
       submitBtn.textContent = "SUBMITTING...";
 
       try {
-        const response = await fetch(
+        await fetch(
           "https://flow.zoho.com.au/7006567107/flow/webhook/incoming?zapikey=1001.cc0969bdabb757f945d8db3186106523.89cee0fdfd78d8bf36b4675508ab47b5&isdebug=false",
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
             body: JSON.stringify(payload),
           },
         );
 
-        if (response.ok) {
+        if (true) {
           // Clear cart
           localStorage.removeItem("tillageworx_quote_cart");
           if (window.renderCart) window.renderCart();
