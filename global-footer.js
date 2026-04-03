@@ -1886,13 +1886,17 @@
 
       // Snapshot — human-readable order summary stored on the Sales Order
       const notesVal = gv("qr-notes");
-      const snapshot =
-        cart
-          .map((item) => {
-            const qty = Math.max(1, item.qty || 1);
-            return `${item.name} (${item.code || item.id}) x${qty}`;
-          })
-          .join("\n") + (notesVal ? "\n\nNotes: " + notesVal : "");
+      
+      // Extract unique machine brands for a concise snapshot
+      const brands = [...new Set(cart.map(item => {
+        if (item.machineContext) return item.machineContext.split(' ')[0];
+        const match = item.name.match(/to fit\s+([a-zA-Z0-9\-]+)/i);
+        return match ? match[1] : null;
+      }).filter(Boolean))];
+
+      const totalItems = cart.reduce((sum, item) => sum + Math.max(1, item.qty || 1), 0);
+      const brandText = brands.length > 0 ? ` - ${brands.join(', ')}` : '';
+      const snapshot = `Webflow Order: ${totalItems} parts${brandText}`.substring(0, 250);
 
       // ── Build payload — field names must match Zoho Flow exactly ──
       const payload = {
