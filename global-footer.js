@@ -1924,14 +1924,20 @@
       submitBtn.style.pointerEvents = "none";
       submitBtn.textContent = "SUBMITTING...";
 
+      // Format payload as URLSearchParams for seamless Zoho parsing without CORS errors
+      const formParams = new URLSearchParams();
+      Object.entries(payload).forEach(([key, value]) =>
+        formParams.append(key, value),
+      );
+
       try {
         await fetch(
           "https://flow.zoho.com.au/7006567107/flow/webhook/incoming?zapikey=1001.cc0969bdabb757f945d8db3186106523.89cee0fdfd78d8bf36b4675508ab47b5&isdebug=false",
           {
             method: "POST",
             mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify(payload),
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: formParams,
           },
         );
 
@@ -1957,8 +1963,6 @@
             </div>
           `;
           window.scrollTo({ top: 0, behavior: "smooth" });
-        } else {
-          throw new Error("Response not OK: " + response.status);
         }
       } catch (err) {
         console.error("[TWX] Submission error:", err);
