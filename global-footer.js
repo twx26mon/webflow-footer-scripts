@@ -2027,108 +2027,108 @@
         "background:#0e0e0e;padding:32px;border-radius:8px;border:1px solid #1c1c1c";
     }
 
-      // Find fields dynamically to handle Webflow ID changes
-      const getField = (selectors) => {
-        for (let sel of selectors) {
-          const el = form.querySelector(sel);
-          if (el) return el;
-        }
-        return null;
-      };
+    // Find fields dynamically to handle Webflow ID changes
+    const getField = (selectors) => {
+      for (let sel of selectors) {
+        const el = form.querySelector(sel);
+        if (el) return el;
+      }
+      return null;
+    };
 
-      const fnField = getField(['#First-Name', '#first-name', '#name', 'input[name*="First"]', 'input[name*="first"]']);
-      const lnField = getField(['#Last-Name', '#last-name', '#name-2', 'input[name*="Last"]', 'input[name*="last"]']);
-      const emField = getField(['#Email', '#email', 'input[type="email"]']);
-      const phField = getField(['#Phone-Number', '#phone', '#Phone', 'input[type="tel"]', 'input[name*="Phone"]', 'input[name*="phone"]']);
-      const msgField = getField(['#Message', '#message', '#field', 'textarea']);
+    const fnField = getField([
+      "#First-Name",
+      "#first-name",
+      "#name",
+      'input[name*="First"]',
+      'input[name*="first"]',
+    ]);
+    const lnField = getField([
+      "#Last-Name",
+      "#last-name",
+      "#name-2",
+      'input[name*="Last"]',
+      'input[name*="last"]',
+    ]);
+    const emField = getField(["#Email", "#email", 'input[type="email"]']);
+    const phField = getField([
+      "#Phone-Number",
+      "#phone",
+      "#Phone",
+      'input[type="tel"]',
+      'input[name*="Phone"]',
+      'input[name*="phone"]',
+    ]);
+    const msgField = getField(["#Message", "#message", "#field", "textarea"]);
 
-      // Add gold labels above each field, hide native labels
-      const fieldConfig = [
-        { el: fnField, label: "First Name" },
-        { el: lnField, label: "Last Name" },
-        { el: emField, label: "Email Address" },
-        { el: phField, label: "Phone Number" },
-        { el: msgField, label: "Message" },
-      ];
+    // Add gold labels above each field, hide native labels
+    const fieldConfig = [
+      { el: fnField, label: "First Name" },
+      { el: lnField, label: "Last Name" },
+      { el: emField, label: "Email Address" },
+      { el: phField, label: "Phone Number" },
+      { el: msgField, label: "Message" },
+    ];
 
-      fieldConfig.forEach(({ el, label }) => {
-        if (!el) return;
-        
-        const existingLbl = form.querySelector(`label[for="${el.id}"]`);
-        if (existingLbl && !existingLbl.classList.contains("twx-styled-lbl")) {
-          existingLbl.style.display = "none";
-        }
+    fieldConfig.forEach(({ el, label }) => {
+      if (!el) return;
 
-        const lbl = document.createElement("label");
-        lbl.className = "twx-styled-lbl";
-        lbl.setAttribute("for", el.id || "");
-        lbl.textContent = label;
-        lbl.style.cssText =
-          "display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#c2934a;margin-bottom:5px;margin-top:12px";
-        el.parentNode.insertBefore(lbl, el);
-      });
+      const existingLbl = form.querySelector(`label[for="${el.id}"]`);
+      if (existingLbl && !existingLbl.classList.contains("twx-styled-lbl")) {
+        existingLbl.style.display = "none";
+      }
+
+      const lbl = document.createElement("label");
+      lbl.className = "twx-styled-lbl";
+      lbl.setAttribute("for", el.id || "");
+      lbl.textContent = label;
+      lbl.style.cssText =
+        "display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#c2934a;margin-bottom:5px;margin-top:12px";
+      el.parentNode.insertBefore(lbl, el);
+    });
 
     // Helper to wrap two fields side-by-side
-      const wrapSideBySide = (el1, el2) => {
+    const wrapSideBySide = (el1, el2) => {
       if (!el1 || !el2) return;
-        if (!el1 || !el2) return;
 
-      const row = document.createElement("div");
-      row.style.cssText = "display:flex;flex-wrap:wrap;gap:16px;width:100%";
-      const w1 = document.createElement("div");
-      w1.style.cssText = "flex:1 1 200px;min-width:0";
-      const w2 = document.createElement("div");
-      w2.style.cssText = "flex:1 1 200px;min-width:0";
-      // Target the Webflow container wrapping the input to prevent empty block spacing issues
-      const wrap1 = el1.closest(".input-outer-container") || el1.parentElement;
-      const wrap2 = el2.closest(".input-outer-container") || el2.parentElement;
-        // Grab the immediate wrapper (.input-container)
-        const wrap1 = el1.closest(".input-container") || el1.parentElement;
-        const wrap2 = el2.closest(".input-container") || el2.parentElement;
+      // Grab the immediate wrapper (.input-container)
+      const wrap1 = el1.closest(".input-container") || el1.parentElement;
+      const wrap2 = el2.closest(".input-container") || el2.parentElement;
 
-        const lbl1 = form.querySelector(`label.twx-styled-lbl[for="${el1.id}"]`);
-        const lbl2 = form.querySelector(`label.twx-styled-lbl[for="${el2.id}"]`);
-      if (!wrap1 || !wrap2 || wrap1 === wrap2) return;
-        if (!wrap1 || !wrap2) return;
+      if (!wrap1 || !wrap2) return;
 
-      el1.parentNode.insertBefore(row, lbl1 || el1);
-      const row = document.createElement("div");
-      row.style.cssText = "display:flex;flex-wrap:wrap;gap:16px;width:100%;";
-        // If Webflow already grouped them in an .input-outer-container (like First/Last Name)
-        const sharedOuter = wrap1.parentElement;
-        if (sharedOuter && sharedOuter === wrap2.parentElement && sharedOuter.classList.contains("input-outer-container")) {
-          sharedOuter.style.cssText += ";display:flex;flex-wrap:wrap;gap:16px;width:100%;";
-          wrap1.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
-          wrap2.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
-          return;
-        }
+      // If Webflow already grouped them in an .input-outer-container (like First/Last Name)
+      const sharedOuter = wrap1.parentElement;
+      if (
+        sharedOuter &&
+        sharedOuter === wrap2.parentElement &&
+        sharedOuter.classList.contains("input-outer-container")
+      ) {
+        sharedOuter.style.cssText +=
+          ";display:flex;flex-wrap:wrap;gap:16px;width:100%;";
+        wrap1.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
+        wrap2.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
+        return;
+      }
 
-      if (lbl1) w1.appendChild(lbl1);
-      w1.appendChild(el1);
-      if (lbl2) w2.appendChild(lbl2);
-      w2.appendChild(el2);
-      wrap1.style.cssText += ";flex:1 1 200px;min-width:0;";
-      wrap2.style.cssText += ";flex:1 1 200px;min-width:0;";
-        // If they are in separate containers (like Email/Phone), wrap them in a new flex row
-        if (wrap1 !== wrap2) {
-          const row = document.createElement("div");
-          row.style.cssText = "display:flex;flex-wrap:wrap;gap:16px;width:100%;margin-bottom:12px;";
-          
-          wrap1.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
-          wrap2.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
+      // If they are in separate containers (like Email/Phone), wrap them in a new flex row
+      if (wrap1 !== wrap2) {
+        const row = document.createElement("div");
+        row.style.cssText =
+          "display:flex;flex-wrap:wrap;gap:16px;width:100%;margin-bottom:12px;";
 
-      wrap1.parentNode.insertBefore(row, wrap1);
-      row.appendChild(w1);
-      row.appendChild(w2);
-          wrap1.parentNode.insertBefore(row, wrap1);
-          row.appendChild(wrap1);
-          row.appendChild(wrap2);
-        }
+        wrap1.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
+        wrap2.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
+
+        wrap1.parentNode.insertBefore(row, wrap1);
+        row.appendChild(wrap1);
+        row.appendChild(wrap2);
+      }
     };
 
     // Wrap First/Last Name and Email/Phone side by side
-      wrapSideBySide(fnField, lnField);
-      wrapSideBySide(emField, phField);
+    wrapSideBySide(fnField, lnField);
+    wrapSideBySide(emField, phField);
 
     // Style all inputs and textarea
     form
@@ -2193,7 +2193,7 @@
       honeypot.setAttribute("aria-hidden", "true");
       honeypot.style.cssText =
         "position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;";
-      
+
       form.appendChild(honeypot);
 
       // Intercept the submit event on the capture phase
@@ -2205,7 +2205,7 @@
             e.preventDefault();
             e.stopImmediatePropagation();
             console.log("[TWX] Blocked automated spam submission.");
-            
+
             // Show Webflow's native success message to trick the bot
             const formBlock = form.closest(".w-form");
             if (formBlock) {
@@ -2215,7 +2215,7 @@
             }
           }
         },
-        true // Use capture phase to intercept before Webflow's native scripts process it
+        true, // Use capture phase to intercept before Webflow's native scripts process it
       );
     });
   }
