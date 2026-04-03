@@ -2071,6 +2071,7 @@
     // Helper to wrap two fields side-by-side
       const wrapSideBySide = (el1, el2) => {
       if (!el1 || !el2) return;
+        if (!el1 || !el2) return;
 
       const row = document.createElement("div");
       row.style.cssText = "display:flex;flex-wrap:wrap;gap:16px;width:100%";
@@ -2081,14 +2082,26 @@
       // Target the Webflow container wrapping the input to prevent empty block spacing issues
       const wrap1 = el1.closest(".input-outer-container") || el1.parentElement;
       const wrap2 = el2.closest(".input-outer-container") || el2.parentElement;
+        // Grab the immediate wrapper (.input-container)
+        const wrap1 = el1.closest(".input-container") || el1.parentElement;
+        const wrap2 = el2.closest(".input-container") || el2.parentElement;
 
         const lbl1 = form.querySelector(`label.twx-styled-lbl[for="${el1.id}"]`);
         const lbl2 = form.querySelector(`label.twx-styled-lbl[for="${el2.id}"]`);
       if (!wrap1 || !wrap2 || wrap1 === wrap2) return;
+        if (!wrap1 || !wrap2) return;
 
       el1.parentNode.insertBefore(row, lbl1 || el1);
       const row = document.createElement("div");
       row.style.cssText = "display:flex;flex-wrap:wrap;gap:16px;width:100%;";
+        // If Webflow already grouped them in an .input-outer-container (like First/Last Name)
+        const sharedOuter = wrap1.parentElement;
+        if (sharedOuter && sharedOuter === wrap2.parentElement && sharedOuter.classList.contains("input-outer-container")) {
+          sharedOuter.style.cssText += ";display:flex;flex-wrap:wrap;gap:16px;width:100%;";
+          wrap1.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
+          wrap2.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
+          return;
+        }
 
       if (lbl1) w1.appendChild(lbl1);
       w1.appendChild(el1);
@@ -2096,10 +2109,21 @@
       w2.appendChild(el2);
       wrap1.style.cssText += ";flex:1 1 200px;min-width:0;";
       wrap2.style.cssText += ";flex:1 1 200px;min-width:0;";
+        // If they are in separate containers (like Email/Phone), wrap them in a new flex row
+        if (wrap1 !== wrap2) {
+          const row = document.createElement("div");
+          row.style.cssText = "display:flex;flex-wrap:wrap;gap:16px;width:100%;margin-bottom:12px;";
+          
+          wrap1.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
+          wrap2.style.cssText += ";flex:1 1 200px;min-width:0;margin-bottom:0;";
 
       wrap1.parentNode.insertBefore(row, wrap1);
       row.appendChild(w1);
       row.appendChild(w2);
+          wrap1.parentNode.insertBefore(row, wrap1);
+          row.appendChild(wrap1);
+          row.appendChild(wrap2);
+        }
     };
 
     // Wrap First/Last Name and Email/Phone side by side
