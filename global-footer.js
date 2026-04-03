@@ -2047,29 +2047,36 @@
       el.parentNode.insertBefore(lbl, el);
     });
 
-    // Wrap first + last name side by side
-    const firstName = document.getElementById("name");
-    const lastName = document.getElementById("name-2");
-    if (firstName && lastName) {
+    // Helper to wrap two fields side-by-side
+    const wrapSideBySide = (id1, id2) => {
+      const el1 = document.getElementById(id1);
+      const el2 = document.getElementById(id2);
+      if (!el1 || !el2) return;
+
       const row = document.createElement("div");
-      row.style.cssText = "display:flex;gap:16px;width:100%";
+      row.style.cssText = "display:flex;flex-wrap:wrap;gap:16px;width:100%";
       const w1 = document.createElement("div");
-      w1.style.cssText = "flex:1 1 0%;min-width:0";
+      w1.style.cssText = "flex:1 1 200px;min-width:0";
       const w2 = document.createElement("div");
-      w2.style.cssText = "flex:1 1 0%;min-width:0";
-      firstName.parentNode.insertBefore(
-        row,
-        firstName.parentNode.querySelector('label[for="name"]') || firstName,
-      );
-      const fnLabel = form.querySelector('label[for="name"]');
-      const lnLabel = form.querySelector('label[for="name-2"]');
-      w1.appendChild(fnLabel);
-      w1.appendChild(firstName);
-      w2.appendChild(lnLabel);
-      w2.appendChild(lastName);
+      w2.style.cssText = "flex:1 1 200px;min-width:0";
+
+      const lbl1 = form.querySelector(`label[for="${id1}"]`);
+      const lbl2 = form.querySelector(`label[for="${id2}"]`);
+
+      el1.parentNode.insertBefore(row, lbl1 || el1);
+
+      if (lbl1) w1.appendChild(lbl1);
+      w1.appendChild(el1);
+      if (lbl2) w2.appendChild(lbl2);
+      w2.appendChild(el2);
+
       row.appendChild(w1);
       row.appendChild(w2);
-    }
+    };
+
+    // Wrap First/Last Name and Email/Phone side by side
+    wrapSideBySide("name", "name-2");
+    wrapSideBySide("email", "Phone-Number");
 
     // Style all inputs and textarea
     form
@@ -2112,6 +2119,59 @@
     document.addEventListener("DOMContentLoaded", styleContactForm);
   } else {
     styleContactForm();
+  }
+})();
+
+/* ── 9. GLOBAL SPAM HONEYPOT ─────────────────────────────── */
+(function () {
+  function initGlobalHoneypot() {
+    // Target all Webflow forms (and any other forms) across the site
+    const forms = document.querySelectorAll("form");
+    forms.forEach((form) => {
+      // Don't add if already present
+      if (form.querySelector(".twx-global-honeypot")) return;
+
+      // Create the invisible honeypot field
+      const honeypot = document.createElement("input");
+      honeypot.type = "text";
+      honeypot.name = "company_website_url"; // Bait for bots
+      honeypot.className = "twx-global-honeypot";
+      honeypot.tabIndex = -1;
+      honeypot.autocomplete = "off";
+      honeypot.setAttribute("aria-hidden", "true");
+      honeypot.style.cssText =
+        "position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;";
+      
+      form.appendChild(honeypot);
+
+      // Intercept the submit event on the capture phase
+      form.addEventListener(
+        "submit",
+        function (e) {
+          if (honeypot.value.trim() !== "") {
+            // If a bot filled it out, quietly kill the submission
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            console.log("[TWX] Blocked automated spam submission.");
+            
+            // Show Webflow's native success message to trick the bot
+            const formBlock = form.closest(".w-form");
+            if (formBlock) {
+              form.style.display = "none";
+              const success = formBlock.querySelector(".w-form-done");
+              if (success) success.style.display = "block";
+            }
+          }
+        },
+        true // Use capture phase to intercept before Webflow's native scripts process it
+      );
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initGlobalHoneypot);
+  } else {
+    initGlobalHoneypot();
   }
 })();
 
