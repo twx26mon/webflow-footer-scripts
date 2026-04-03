@@ -2027,30 +2027,49 @@
         "background:#0e0e0e;padding:32px;border-radius:8px;border:1px solid #1c1c1c";
     }
 
-    // Add gold labels above each field
-    const fields = [
-      { id: "name", label: "First Name" },
-      { id: "name-2", label: "Last Name" },
-      { id: "email", label: "Email Address" },
-      { id: "Phone-Number", label: "Phone Number" },
-      { id: "field", label: "Message" },
-    ];
+      // Find fields dynamically to handle Webflow ID changes
+      const getField = (selectors) => {
+        for (let sel of selectors) {
+          const el = form.querySelector(sel);
+          if (el) return el;
+        }
+        return null;
+      };
 
-    fields.forEach(({ id, label }) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const lbl = document.createElement("label");
-      lbl.setAttribute("for", id);
-      lbl.textContent = label;
-      lbl.style.cssText =
-        "display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#c2934a;margin-bottom:5px;margin-top:12px";
-      el.parentNode.insertBefore(lbl, el);
-    });
+      const fnField = getField(['#First-Name', '#first-name', '#name', 'input[name*="First"]', 'input[name*="first"]']);
+      const lnField = getField(['#Last-Name', '#last-name', '#name-2', 'input[name*="Last"]', 'input[name*="last"]']);
+      const emField = getField(['#Email', '#email', 'input[type="email"]']);
+      const phField = getField(['#Phone-Number', '#phone', '#Phone', 'input[type="tel"]', 'input[name*="Phone"]', 'input[name*="phone"]']);
+      const msgField = getField(['#Message', '#message', '#field', 'textarea']);
+
+      // Add gold labels above each field, hide native labels
+      const fieldConfig = [
+        { el: fnField, label: "First Name" },
+        { el: lnField, label: "Last Name" },
+        { el: emField, label: "Email Address" },
+        { el: phField, label: "Phone Number" },
+        { el: msgField, label: "Message" },
+      ];
+
+      fieldConfig.forEach(({ el, label }) => {
+        if (!el) return;
+        
+        const existingLbl = form.querySelector(`label[for="${el.id}"]`);
+        if (existingLbl && !existingLbl.classList.contains("twx-styled-lbl")) {
+          existingLbl.style.display = "none";
+        }
+
+        const lbl = document.createElement("label");
+        lbl.className = "twx-styled-lbl";
+        lbl.setAttribute("for", el.id || "");
+        lbl.textContent = label;
+        lbl.style.cssText =
+          "display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#c2934a;margin-bottom:5px;margin-top:12px";
+        el.parentNode.insertBefore(lbl, el);
+      });
 
     // Helper to wrap two fields side-by-side
-    const wrapSideBySide = (id1, id2) => {
-      const el1 = document.getElementById(id1);
-      const el2 = document.getElementById(id2);
+      const wrapSideBySide = (el1, el2) => {
       if (!el1 || !el2) return;
 
       const row = document.createElement("div");
@@ -2060,8 +2079,8 @@
       const w2 = document.createElement("div");
       w2.style.cssText = "flex:1 1 200px;min-width:0";
 
-      const lbl1 = form.querySelector(`label[for="${id1}"]`);
-      const lbl2 = form.querySelector(`label[for="${id2}"]`);
+        const lbl1 = form.querySelector(`label.twx-styled-lbl[for="${el1.id}"]`);
+        const lbl2 = form.querySelector(`label.twx-styled-lbl[for="${el2.id}"]`);
 
       el1.parentNode.insertBefore(row, lbl1 || el1);
 
@@ -2075,8 +2094,8 @@
     };
 
     // Wrap First/Last Name and Email/Phone side by side
-    wrapSideBySide("name", "name-2");
-    wrapSideBySide("email", "Phone-Number");
+      wrapSideBySide(fnField, lnField);
+      wrapSideBySide(emField, phField);
 
     // Style all inputs and textarea
     form
