@@ -1338,28 +1338,25 @@
       toggleBtn.id = "qr-mobile-toggle";
       toggleBtn.className = "qr-mobile-toggle";
 
-      // Guarantee order summary sits at the top of the flex row on mobile
-      if (flexRow && formSection && flexRow.contains(formSection)) {
-        flexRow.insertBefore(rightCol, formSection);
-      }
-
       rightCol.insertBefore(toggleBtn, rightCol.firstChild);
 
       toggleBtn.addEventListener("click", () => {
-        rightCol.classList.toggle("expanded");
-        toggleBtn.classList.toggle("expanded");
         const currentlyExpanded = toggleBtn.classList.toggle("expanded");
-        if (tableContainer) tableContainer.classList.toggle("expanded", currentlyExpanded);
-        if (summaryContainer) summaryContainer.classList.toggle("expanded", currentlyExpanded);
+        if (tableContainer)
+          tableContainer.classList.toggle("expanded", currentlyExpanded);
+        if (summaryContainer)
+          summaryContainer.classList.toggle("expanded", currentlyExpanded);
       });
     }
-    
+
     if (toggleBtn) {
       // Re-apply expanded state to containers in case DOM was re-rendered
       const isExpanded = toggleBtn.classList.contains("expanded");
-      if (tableContainer) tableContainer.classList.toggle("expanded", isExpanded);
-      if (summaryContainer) summaryContainer.classList.toggle("expanded", isExpanded);
-      
+      if (tableContainer)
+        tableContainer.classList.toggle("expanded", isExpanded);
+      if (summaryContainer)
+        summaryContainer.classList.toggle("expanded", isExpanded);
+
       toggleBtn.innerHTML = `
         <span style="display:flex;align-items:center;gap:8px;">
           ORDER SUMMARY
