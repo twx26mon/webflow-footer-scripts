@@ -410,26 +410,14 @@ label[for="qr-address"] {
 /* ── Quote Review Form: Mobile Summary Dropdown ───────────────────────────
    DESKTOP (768px+): toggle hidden, parts + summary always visible
    MOBILE (767px and below): toggle visible, parts + summary collapsed
+   until user taps the toggle. Right col (summary) stacks above form.
    ─────────────────────────────────────────────────────────────────────── */
 
-/* Base: always hidden — overridden to flex on mobile only */
+/* Always hidden on desktop */
 .qr-mobile-toggle {
   display: none !important;
-  width: 100%;
-  background: #1a1a1a;
-  color: #c2934a;
-  border: 1px solid #3a3a3a;
-  border-radius: 8px;
-  padding: 16px 20px;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
 }
+
 .qr-mobile-toggle .qr-mobile-chevron {
   transition: transform 0.3s ease;
 }
@@ -441,7 +429,7 @@ label[for="qr-address"] {
   font-size: 15px;
 }
 
-/* ── Desktop (768px+): full layout, toggle hidden, everything visible ── */
+/* ── Desktop: layout + parts + summary always visible ── */
 @media (min-width: 768px) {
   #qr-flex-row {
     flex-direction: row !important;
@@ -450,49 +438,79 @@ label[for="qr-address"] {
     width: 100% !important;
     flex-wrap: wrap !important;
   }
+
   #qr-form-section {
     flex: 1 1 320px !important;
     min-width: 0 !important;
   }
+
   #qr-right-col {
     flex: 1 1 280px !important;
     min-width: 0 !important;
     flex-direction: column !important;
     gap: 24px !important;
   }
+
   #qr-parts-container,
   #qr-summary-container {
     display: block !important;
   }
 }
 
-/* ── Mobile (767px and below): stacked, toggle controls visibility ── */
+/* ── Mobile layout ── */
 @media (max-width: 767px) {
+  /* Stack columns normally (not reversed) — order property handles position */
   #qr-flex-row {
     flex-direction: column !important;
     gap: 16px !important;
-    align-items: stretch !important;
   }
+
+  /* Right col (summary + toggle) sits above the form */
   #qr-right-col {
-    order: -1 !important;
     width: 100% !important;
     flex: none !important;
-    display: block !important;
+    margin-bottom: 0 !important;
+    order: -1;
   }
+
   #qr-form-section {
     width: 100% !important;
     flex: none !important;
   }
+
+  /* Show the toggle button on mobile */
   .qr-mobile-toggle {
     display: flex !important;
+    width: 100%;
+    background: #1a1a1a;
+    color: #c2934a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
   }
+
+  /* Parts + summary hidden by default on mobile — shown when .expanded */
   #qr-parts-container:not(.expanded),
   #qr-summary-container:not(.expanded) {
     display: none !important;
   }
+
+  /* Table tweaks for narrow screens */
   .qr-parts-table th:nth-child(2),
   .qr-parts-table td:nth-child(2) {
     display: none;
+  }
+  .qr-parts-table th:nth-child(5),
+  .qr-parts-table td:nth-child(5) {
+    display: table-cell !important;
   }
   .qr-parts-table {
     font-size: 12px;
@@ -504,6 +522,7 @@ label[for="qr-address"] {
   .qr-item-img {
     width: 36px !important;
     height: 36px !important;
+    margin-right: 8px !important;
   }
   .qr-qty-controls {
     gap: 4px;
@@ -576,26 +595,4 @@ label[for="qr-address"] {
   color: #888;
   margin-top: 8px;
   font-style: italic;
-}
-
-/* ── Fix 1: qr-form-section FOUC reveal ──────────────────────
-   qr-ready is added to quote-form-block by JS but qr-form-section
-   also starts hidden — reveal it unconditionally once content loads  */
-#qr-form-section {
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-/* ── Fix 2: Product images in parts table ─────────────────────
-   qr-item-img was previously only defined in Webflow head CSS.
-   Now defined here so it works regardless of head code.           */
-.qr-item-img {
-  width: 56px !important;
-  height: 56px !important;
-  object-fit: contain !important;
-  background: transparent !important;
-  border-radius: 4px !important;
-  margin-bottom: 6px !important;
-  display: block !important;
-  flex-shrink: 0 !important;
 }
