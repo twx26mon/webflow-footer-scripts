@@ -1327,7 +1327,7 @@
     // Prepare totals for the mobile dropdown button
     const gst = subtotal * 0.1;
     const total = subtotal + gst;
-    const mobileTotalText = allPriced 
+    const mobileTotalText = allPriced
       ? `$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : `$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (TBC)`;
 
@@ -1337,10 +1337,24 @@
       toggleBtn = document.createElement("button");
       toggleBtn.id = "qr-mobile-toggle";
       toggleBtn.className = "qr-mobile-toggle";
+
+      // Guarantee order summary sits at the top of the flex row on mobile
+      if (flexRow && formSection && flexRow.contains(formSection)) {
+        flexRow.insertBefore(rightCol, formSection);
+      }
+
       rightCol.insertBefore(toggleBtn, rightCol.firstChild);
+
+      // Hide containers by default on mobile
+      if (tableContainer) tableContainer.classList.add("qr-mobile-hidden");
+      if (summaryContainer) summaryContainer.classList.add("qr-mobile-hidden");
+
       toggleBtn.addEventListener("click", () => {
         rightCol.classList.toggle("expanded");
         toggleBtn.classList.toggle("expanded");
+        if (tableContainer) tableContainer.classList.toggle("qr-mobile-hidden");
+        if (summaryContainer)
+          summaryContainer.classList.toggle("qr-mobile-hidden");
       });
     }
     if (toggleBtn) {
