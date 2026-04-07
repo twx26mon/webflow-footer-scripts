@@ -108,8 +108,8 @@
     visibility 0.3s ease;
 }
 #qr-form-section.qr-ready {
-  opacity: 1;
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 #quote-form-block {
   opacity: 0;
@@ -119,8 +119,8 @@
     visibility 0.3s ease;
 }
 #quote-form-block.qr-ready {
-  opacity: 1;
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 #qr-form-section .w-form,
@@ -422,7 +422,7 @@ label[for="qr-address"] {
   font-size: 15px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 991px) {
   /* Use column-reverse to reliably stack the right column (Summary) above the left column (Form) */
   #qr-flex-row { flex-direction: column-reverse !important; gap: 16px !important; }
   
@@ -447,7 +447,7 @@ label[for="qr-address"] {
 .qr-summary-total { font-weight: 700; font-size: 16px; color: #fff; border-bottom: none; padding-top: 14px; }
 .qr-summary-note { font-size: 12px; color: #888; margin-top: 8px; font-style: italic; }
 
-@media (max-width: 767px) {
+@media (max-width: 991px) {
   .qr-parts-table th:nth-child(2), .qr-parts-table td:nth-child(2) { display: none; }
   .qr-parts-table th:nth-child(5), .qr-parts-table td:nth-child(5) { display: table-cell !important; }
   .qr-parts-table { font-size: 12px; }

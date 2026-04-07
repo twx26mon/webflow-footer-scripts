@@ -1253,29 +1253,37 @@
 
     if (!cart.length) {
       if (emptyMsg) emptyMsg.style.display = "block";
-      if (formSection) formSection.setAttribute("style", "display:none");
-      if (flexRow) flexRow.setAttribute("style", "display:none");
+      if (formSection) formSection.style.display = "none";
+      if (flexRow) flexRow.style.display = "none";
       tableContainer.style.display = "none";
       return;
     }
 
     if (emptyMsg) emptyMsg.style.display = "none";
-    if (flexRow)
-      flexRow.setAttribute(
-        "style",
-        "display:flex;flex-direction:row;align-items:flex-start;gap:40px;width:100%;flex-wrap:wrap",
-      );
-    if (formSection)
-      formSection.setAttribute(
-        "style",
-        "flex:1 1 320px;min-width:0;display:block",
-      );
-    if (rightCol)
-      rightCol.setAttribute(
-        "style",
-        "flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:24px",
-      );
-    if (heroLeft) heroLeft.setAttribute("style", "width:100%;max-width:none");
+    if (flexRow) {
+      flexRow.style.display = "flex";
+      flexRow.style.flexDirection = "row";
+      flexRow.style.alignItems = "flex-start";
+      flexRow.style.gap = "40px";
+      flexRow.style.width = "100%";
+      flexRow.style.flexWrap = "wrap";
+    }
+    if (formSection) {
+      formSection.style.flex = "1 1 320px";
+      formSection.style.minWidth = "0";
+      formSection.style.display = "block";
+    }
+    if (rightCol) {
+      rightCol.style.flex = "1 1 280px";
+      rightCol.style.minWidth = "0";
+      rightCol.style.display = "flex";
+      rightCol.style.flexDirection = "column";
+      rightCol.style.gap = "24px";
+    }
+    if (heroLeft) {
+      heroLeft.style.width = "100%";
+      heroLeft.style.maxWidth = "none";
+    }
 
     let subtotal = 0;
     let allPriced = true;
@@ -1497,31 +1505,41 @@
         container = el;
       const d = document.createElement("div");
       d.style.cssText = "flex:1 1 0%;min-width:0";
-      container.parentNode.insertBefore(d, container);
+      if (container.parentNode) {
+        container.parentNode.insertBefore(d, container);
+      }
       d.appendChild(container);
       return d;
     };
 
     // ── Name row (First + Last side by side) ──
-    const firstNameContainer =
-      firstName.closest(".input-container") || firstName.parentElement;
-    const nameRow = document.createElement("div");
-    nameRow.className = "qr-name-row";
-    firstNameContainer.parentNode.insertBefore(nameRow, firstNameContainer);
-    nameRow.appendChild(wrapEl(firstName));
-    if (lastName) nameRow.appendChild(wrapEl(lastName));
+    if (firstName) {
+      const firstNameContainer =
+        firstName.closest(".input-container") || firstName.parentElement;
+      if (firstNameContainer && firstNameContainer.parentNode) {
+        const nameRow = document.createElement("div");
+        nameRow.className = "qr-name-row";
+        firstNameContainer.parentNode.insertBefore(nameRow, firstNameContainer);
+        nameRow.appendChild(wrapEl(firstName));
+        if (lastName) nameRow.appendChild(wrapEl(lastName));
+      }
+    }
 
     // ── Contact row (Email + Phone side by side) ──
-    const emailContainer =
-      email.closest(".input-container") || email.parentElement;
-    const contactRow = document.createElement("div");
-    contactRow.className = "qr-contact-row";
-    emailContainer.parentNode.insertBefore(contactRow, emailContainer);
-    contactRow.appendChild(wrapEl(email));
-    if (phone) contactRow.appendChild(wrapEl(phone));
+    if (email) {
+      const emailContainer =
+        email.closest(".input-container") || email.parentElement;
+      if (emailContainer && emailContainer.parentNode) {
+        const contactRow = document.createElement("div");
+        contactRow.className = "qr-contact-row";
+        emailContainer.parentNode.insertBefore(contactRow, emailContainer);
+        contactRow.appendChild(wrapEl(email));
+        if (phone) contactRow.appendChild(wrapEl(phone));
+      }
+    }
 
     // ── Invoicing address block ──
-    if (business) {
+    if (business && business.parentNode) {
       const invBlock = document.createElement("div");
       business.parentNode.insertBefore(invBlock, business.nextSibling);
 
@@ -1860,7 +1878,11 @@
 
   const initQuotePage = () => {
     renderQuoteReview();
-    initQRForm();
+    try {
+      initQRForm();
+    } catch (e) {
+      console.error("Error initializing quote review form:", e);
+    }
     // Reveal the form once all JS styling is successfully applied
     const outerBlock = document.getElementById("quote-form-block");
     if (outerBlock) outerBlock.classList.add("qr-ready");
