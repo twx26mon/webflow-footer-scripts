@@ -414,8 +414,28 @@ label[for="qr-address"] {
   font-size: 15px;
 }
 
-/* ── Desktop: parts + summary always visible ── */
+/* ── Desktop: layout + parts + summary always visible ── */
 @media (min-width: 768px) {
+  #qr-flex-row {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 40px !important;
+    width: 100% !important;
+    flex-wrap: wrap !important;
+  }
+
+  #qr-form-section {
+    flex: 1 1 320px !important;
+    min-width: 0 !important;
+  }
+
+  #qr-right-col {
+    flex: 1 1 280px !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+
   #qr-parts-container,
   #qr-summary-container {
     display: block !important;

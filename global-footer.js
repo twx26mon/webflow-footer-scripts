@@ -1260,25 +1260,16 @@
     }
 
     if (emptyMsg) emptyMsg.style.display = "none";
+    // Layout is handled entirely by CSS — do not set inline flex styles here
+    // as they override media queries and break mobile layout.
     if (flexRow) {
       flexRow.style.display = "flex";
-      flexRow.style.flexDirection = "row";
-      flexRow.style.alignItems = "flex-start";
-      flexRow.style.gap = "40px";
-      flexRow.style.width = "100%";
-      flexRow.style.flexWrap = "wrap";
     }
     if (formSection) {
-      formSection.style.flex = "1 1 320px";
-      formSection.style.minWidth = "0";
       formSection.style.display = "block";
     }
     if (rightCol) {
-      rightCol.style.flex = "1 1 280px";
-      rightCol.style.minWidth = "0";
       rightCol.style.display = "flex";
-      rightCol.style.flexDirection = "column";
-      rightCol.style.gap = "24px";
     }
     if (heroLeft) {
       heroLeft.style.width = "100%";
