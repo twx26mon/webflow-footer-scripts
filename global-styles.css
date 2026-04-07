@@ -220,6 +220,12 @@
   flex-shrink: 0;
 }
 
+/* ── Quote Review Form: Address sub-row (town/state/postcode) ── */
+.qr-addr-row { display: flex; gap: 12px; width: 100%; }
+.qr-addr-town { flex: 2 1 0%; min-width: 0; }
+.qr-addr-state { flex: 1 1 0%; min-width: 0; max-width: 80px; }
+.qr-addr-postcode { flex: 1 1 0%; min-width: 0; max-width: 90px; }
+
 /* ── Quote Review Form: Side-by-side field rows ───────────── */
 /* First/Last name and Email/Phone rendered as flex pairs by JS */
 .qr-name-row,
@@ -422,8 +428,9 @@ label[for="qr-address"] {
   #qr-form-section { order: 2 !important; width: 100% !important; flex: none !important; }
   .qr-mobile-toggle { display: flex !important; }
   
-  /* Bullet-proof mobile hide class injected by JS */
-  .qr-mobile-hidden { display: none !important; }
+  /* Hide summary and parts until toggle is clicked */
+  #qr-right-col:not(.expanded) #qr-parts-container,
+  #qr-right-col:not(.expanded) #qr-summary-container { display: none !important; }
 }
 
 /* ── Quote Review Form: Parts Table ───────────────────────── */

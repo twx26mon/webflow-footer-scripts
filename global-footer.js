@@ -1345,16 +1345,9 @@
 
       rightCol.insertBefore(toggleBtn, rightCol.firstChild);
 
-      // Hide containers by default on mobile
-      if (tableContainer) tableContainer.classList.add("qr-mobile-hidden");
-      if (summaryContainer) summaryContainer.classList.add("qr-mobile-hidden");
-
       toggleBtn.addEventListener("click", () => {
         rightCol.classList.toggle("expanded");
         toggleBtn.classList.toggle("expanded");
-        if (tableContainer) tableContainer.classList.toggle("qr-mobile-hidden");
-        if (summaryContainer)
-          summaryContainer.classList.toggle("qr-mobile-hidden");
       });
     }
     if (toggleBtn) {
