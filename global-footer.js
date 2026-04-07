@@ -1098,6 +1098,13 @@
     );
 
     let imageUrl = btn.getAttribute("data-image");
+
+    // Also check the part-data-payload within the card
+    if (!imageUrl && card) {
+      const payload = card.querySelector(".part-data-payload");
+      if (payload) imageUrl = payload.dataset.image;
+    }
+
     if (!imageUrl && card) {
       const hiddenImg = card.querySelector(".hidden-image-url");
       if (hiddenImg) imageUrl = hiddenImg.textContent.trim();
