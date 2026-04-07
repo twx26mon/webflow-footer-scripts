@@ -42,6 +42,12 @@
 
 
 /* ── Global Form & Global Form & Quote Review Form: Inputs ────────────────────────────── */
+/* Hide form initially to prevent FOUC (Flash of Unstyled Content) */
+#qr-form-section { opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+#qr-form-section.qr-ready { opacity: 1; visibility: visible; }
+#quote-form-block { opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+#quote-form-block.qr-ready { opacity: 1; visibility: visible; }
+
 #qr-form-section .w-form,
 .twx-form,
 

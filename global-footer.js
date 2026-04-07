@@ -65,6 +65,8 @@
     /* Quote Review Form: Inputs */
     "#quote-form-block{opacity:0;transition:opacity 0.2s}",
     "#quote-form-block.qr-ready{opacity:1}",
+    "#quote-form-block, #qr-form-section{opacity:0;visibility:hidden;transition:opacity 0.2s, visibility 0.2s}",
+    "#quote-form-block.qr-ready, #qr-form-section.qr-ready{opacity:1;visibility:visible}",
     "#qr-form-section .w-form{width:100%}",
     "#qr-form-section .form-input,#qr-form-section input[type=text],#qr-form-section input[type=email],#qr-form-section input[type=tel],#qr-form-section textarea,#qr-form-section select{width:100%;box-sizing:border-box;background:#1a1a1a;color:#fff;border:1px solid #3a3a3a;border-radius:6px;padding:14px 16px;font-size:14px;line-height:1.4;transition:border-color 0.2s,box-shadow 0.2s;appearance:none;-webkit-appearance:none;margin-bottom:12px}",
     "#qr-form-section .form-input::placeholder,#qr-form-section input::placeholder,#qr-form-section textarea::placeholder{color:#666}",
@@ -1920,24 +1922,17 @@
       submitBtn.style.pointerEvents = "none";
       submitBtn.textContent = "SUBMITTING...";
 
-      // Format payload as URLSearchParams for seamless Zoho parsing without CORS errors
-      const formParams = new URLSearchParams();
-      Object.entries(payload).forEach(([key, value]) =>
-        formParams.append(key, value),
-      );
-
       try {
-        await fetch(
-          "https://flow.zoho.com.au/7006567107/flow/webhook/incoming?zapikey=1001.cc0969bdabb757f945d8db3186106523.89cee0fdfd78d8bf36b4675508ab47b5&isdebug=false",
+        const response = await fetch(
+          "https://twx-zoho-proxy.monica-6b5.workers.dev",
           {
             method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: formParams,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
           },
         );
 
-        if (true) {
+        if (response.ok) {
           // Clear cart
           localStorage.removeItem("tillageworx_quote_cart");
           if (window.renderCart) window.renderCart();
@@ -1959,6 +1954,8 @@
             </div>
           `;
           window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          throw new Error("Proxy submission failed");
         }
       } catch (err) {
         console.error("[TWX] Submission error:", err);
@@ -1972,13 +1969,21 @@
     });
   }
 
-  const formBlock = document.getElementById("quote-form-block");
-  if (formBlock) formBlock.classList.add("qr-ready");
-
-  document.addEventListener("DOMContentLoaded", () => {
+  const initQuotePage = () => {
     renderQuoteReview();
     initQRForm();
-  });
+    // Reveal the form once all JS styling is successfully applied
+    const formBlock =
+      document.getElementById("quote-form-block") ||
+      document.getElementById("qr-form-section");
+    if (formBlock) formBlock.classList.add("qr-ready");
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initQuotePage);
+  } else {
+    initQuotePage();
+  }
 })();
 
 /* ── 5. NAVBAR SCROLL — hide on down, reveal on up ─────────── */
