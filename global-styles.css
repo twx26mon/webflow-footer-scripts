@@ -375,3 +375,53 @@ label[for="qr-address"] {
   transform: rotate(90deg) !important;
   transition: transform 0.2s;
 }
+
+/* ── Quote Review Form: T&C Link ──────────────────────── */
+.qr-tc-row a {
+  color: #e8b86d;
+  text-decoration: underline;
+  font-weight: 800;
+  transition: color 0.2s ease;
+}
+.qr-tc-row a:hover {
+  color: #fff;
+}
+
+/* ── Quote Review Form: Mobile Summary Dropdown ───────── */
+.qr-mobile-toggle {
+  display: none;
+  width: 100%;
+  background: #1a1a1a;
+  color: #c2934a;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.qr-mobile-toggle .qr-mobile-chevron {
+  transition: transform 0.3s ease;
+}
+.qr-mobile-toggle.expanded .qr-mobile-chevron {
+  transform: rotate(180deg);
+}
+.qr-mobile-total {
+  color: #fff;
+  font-size: 15px;
+}
+
+@media (max-width: 767px) {
+  #qr-flex-row { flex-direction: column !important; gap: 16px !important; }
+  #qr-right-col { order: -1 !important; width: 100% !important; flex: none !important; }
+  #qr-form-section { order: 2 !important; width: 100% !important; flex: none !important; }
+  .qr-mobile-toggle { display: flex !important; }
+  /* Hide summary and parts until toggle is clicked */
+  #qr-right-col:not(.expanded) #qr-parts-container,
+  #qr-right-col:not(.expanded) #qr-summary-container { display: none !important; }
+}

@@ -1324,6 +1324,35 @@
         </tr>`;
     });
 
+    // Prepare totals for the mobile dropdown button
+    const gst = subtotal * 0.1;
+    const total = subtotal + gst;
+    const mobileTotalText = allPriced 
+      ? `$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : `$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (TBC)`;
+
+    // Inject and update the mobile toggle button
+    let toggleBtn = document.getElementById("qr-mobile-toggle");
+    if (!toggleBtn && rightCol) {
+      toggleBtn = document.createElement("button");
+      toggleBtn.id = "qr-mobile-toggle";
+      toggleBtn.className = "qr-mobile-toggle";
+      rightCol.insertBefore(toggleBtn, rightCol.firstChild);
+      toggleBtn.addEventListener("click", () => {
+        rightCol.classList.toggle("expanded");
+        toggleBtn.classList.toggle("expanded");
+      });
+    }
+    if (toggleBtn) {
+      toggleBtn.innerHTML = `
+        <span style="display:flex;align-items:center;gap:8px;">
+          ORDER SUMMARY
+          <svg class="qr-mobile-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </span>
+        <span class="qr-mobile-total">${mobileTotalText}</span>
+      `;
+    }
+
     tableContainer.innerHTML = `
       <table class="qr-parts-table">
         <thead>
@@ -1375,8 +1404,6 @@
     });
 
     if (summaryContainer) {
-      const gst = subtotal * 0.1;
-      const total = subtotal + gst;
       let summaryHtml = "";
 
       if (subtotal > 0) {
