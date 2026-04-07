@@ -1339,14 +1339,14 @@
       ? `$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : `$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (TBC)`;
 
-    // Inject and update the mobile toggle button
+    // ── Mobile toggle button ──
+    // Always ensure it's the first child of rightCol, creating it if needed.
+    // On re-renders (qty changes etc.) we move it back to first position.
     let toggleBtn = document.getElementById("qr-mobile-toggle");
     if (!toggleBtn && rightCol) {
       toggleBtn = document.createElement("button");
       toggleBtn.id = "qr-mobile-toggle";
       toggleBtn.className = "qr-mobile-toggle";
-
-      rightCol.insertBefore(toggleBtn, rightCol.firstChild);
 
       toggleBtn.addEventListener("click", () => {
         const currentlyExpanded = toggleBtn.classList.toggle("expanded");
@@ -1355,6 +1355,14 @@
         if (summaryContainer)
           summaryContainer.classList.toggle("expanded", currentlyExpanded);
       });
+    }
+
+    // Always keep toggle as the first child of rightCol so it sits
+    // above the summary content on mobile
+    if (toggleBtn && rightCol) {
+      if (rightCol.firstChild !== toggleBtn) {
+        rightCol.insertBefore(toggleBtn, rightCol.firstChild);
+      }
     }
 
     if (toggleBtn) {

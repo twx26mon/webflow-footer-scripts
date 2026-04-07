@@ -98,7 +98,7 @@
   opacity: 0.7;
 }
 
-/* ── Global Form & Global Form & Quote Review Form: Inputs ────────────────────────────── */
+/* ── Global Form & Quote Review Form: Inputs ──────────────── */
 /* Hide form initially to prevent FOUC (Flash of Unstyled Content) */
 #qr-form-section {
   opacity: 0;
@@ -227,7 +227,6 @@
 .qr-addr-postcode { flex: 1 1 0%; min-width: 0; max-width: 90px; }
 
 /* ── Quote Review Form: Side-by-side field rows ───────────── */
-/* First/Last name and Email/Phone rendered as flex pairs by JS */
 .qr-name-row,
 .qr-contact-row,
 .qr-delivery-row {
@@ -393,24 +392,17 @@ label[for="qr-address"] {
   color: #fff;
 }
 
-/* ── Quote Review Form: Mobile Summary Dropdown ───────── */
+/* ── Quote Review Form: Mobile Summary Dropdown ───────────────────────────
+   DESKTOP (768px+): toggle hidden, parts + summary always visible
+   MOBILE (767px and below): toggle visible, parts + summary collapsed
+   until user taps the toggle. Right col (summary) stacks above form.
+   ─────────────────────────────────────────────────────────────────────── */
+
+/* Always hidden on desktop */
 .qr-mobile-toggle {
   display: none !important;
-  width: 100%;
-  background: #1a1a1a;
-  color: #c2934a;
-  border: 1px solid #3a3a3a;
-  border-radius: 8px;
-  padding: 16px 20px;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
 }
+
 .qr-mobile-toggle .qr-mobile-chevron {
   transition: transform 0.3s ease;
 }
@@ -422,21 +414,92 @@ label[for="qr-address"] {
   font-size: 15px;
 }
 
-@media (max-width: 991px) {
-  /* Use column-reverse to reliably stack the right column (Summary) above the left column (Form) */
-  #qr-flex-row { flex-direction: column-reverse !important; gap: 16px !important; }
-  
-  #qr-right-col { width: 100% !important; flex: none !important; margin-bottom: 16px !important; }
-  #qr-form-section { width: 100% !important; flex: none !important; }
-  
-  .qr-mobile-toggle { display: flex !important; }
-  
-  /* Hide parts and summary containers on mobile by default */
-  #qr-parts-container:not(.expanded),
-  #qr-summary-container:not(.expanded) { display: none !important; }
+/* ── Desktop: parts + summary always visible ── */
+@media (min-width: 768px) {
+  #qr-parts-container,
+  #qr-summary-container {
+    display: block !important;
+  }
 }
 
-/* ── Quote Review Form: Parts Table ───────────────────────── */
+/* ── Mobile layout ── */
+@media (max-width: 767px) {
+  /* Stack columns normally (not reversed) — order property handles position */
+  #qr-flex-row {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* Right col (summary + toggle) sits above the form */
+  #qr-right-col {
+    width: 100% !important;
+    flex: none !important;
+    margin-bottom: 0 !important;
+    order: -1;
+  }
+
+  #qr-form-section {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  /* Show the toggle button on mobile */
+  .qr-mobile-toggle {
+    display: flex !important;
+    width: 100%;
+    background: #1a1a1a;
+    color: #c2934a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  /* Parts + summary hidden by default on mobile — shown when .expanded */
+  #qr-parts-container:not(.expanded),
+  #qr-summary-container:not(.expanded) {
+    display: none !important;
+  }
+
+  /* Table tweaks for narrow screens */
+  .qr-parts-table th:nth-child(2),
+  .qr-parts-table td:nth-child(2) {
+    display: none;
+  }
+  .qr-parts-table th:nth-child(5),
+  .qr-parts-table td:nth-child(5) {
+    display: table-cell !important;
+  }
+  .qr-parts-table {
+    font-size: 12px;
+  }
+  .qr-parts-table td,
+  .qr-parts-table th {
+    padding: 10px 6px;
+  }
+  .qr-item-img {
+    width: 36px !important;
+    height: 36px !important;
+    margin-right: 8px !important;
+  }
+  .qr-qty-controls {
+    gap: 4px;
+  }
+  .qr-qty-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 15px;
+  }
+}
+
+/* ── Quote Review: Parts Table ───────────────────────────── */
 .qr-parts-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .qr-parts-table th { text-align: left; padding: 10px 12px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #c2934a; border-bottom: 1px solid #2a2a2a; }
 .qr-parts-table td { padding: 14px 12px; border-bottom: 1px solid #1a1a1a; vertical-align: middle; color: #fff; }
@@ -446,13 +509,3 @@ label[for="qr-address"] {
 .qr-summary-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1e1e1e; font-size: 14px; color: #ccc; }
 .qr-summary-total { font-weight: 700; font-size: 16px; color: #fff; border-bottom: none; padding-top: 14px; }
 .qr-summary-note { font-size: 12px; color: #888; margin-top: 8px; font-style: italic; }
-
-@media (max-width: 991px) {
-  .qr-parts-table th:nth-child(2), .qr-parts-table td:nth-child(2) { display: none; }
-  .qr-parts-table th:nth-child(5), .qr-parts-table td:nth-child(5) { display: table-cell !important; }
-  .qr-parts-table { font-size: 12px; }
-  .qr-parts-table td, .qr-parts-table th { padding: 10px 6px; }
-  .qr-item-img { width: 36px !important; height: 36px !important; margin-right: 8px !important; }
-  .qr-qty-controls { gap: 4px; }
-  .qr-qty-btn { width: 22px; height: 22px; font-size: 15px; }
-}
