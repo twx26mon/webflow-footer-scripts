@@ -395,7 +395,7 @@ label[for="qr-address"] {
 
 /* ── Quote Review Form: Mobile Summary Dropdown ───────── */
 .qr-mobile-toggle {
-  display: none;
+  display: none !important;
   width: 100%;
   background: #1a1a1a;
   color: #c2934a;
@@ -423,14 +423,17 @@ label[for="qr-address"] {
 }
 
 @media (max-width: 767px) {
-  #qr-flex-row { flex-direction: column !important; gap: 16px !important; }
-  #qr-right-col { order: -1 !important; width: 100% !important; flex: none !important; }
-  #qr-form-section { order: 2 !important; width: 100% !important; flex: none !important; }
+  /* Use column-reverse to reliably stack the right column (Summary) above the left column (Form) */
+  #qr-flex-row { flex-direction: column-reverse !important; gap: 16px !important; }
+  
+  #qr-right-col { width: 100% !important; flex: none !important; margin-bottom: 16px !important; }
+  #qr-form-section { width: 100% !important; flex: none !important; }
+  
   .qr-mobile-toggle { display: flex !important; }
   
-  /* Hide summary and parts until toggle is clicked */
-  #qr-right-col:not(.expanded) #qr-parts-container,
-  #qr-right-col:not(.expanded) #qr-summary-container { display: none !important; }
+  /* Hide parts and summary containers on mobile by default */
+  #qr-parts-container:not(.expanded),
+  #qr-summary-container:not(.expanded) { display: none !important; }
 }
 
 /* ── Quote Review Form: Parts Table ───────────────────────── */

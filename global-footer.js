@@ -1348,9 +1348,18 @@
       toggleBtn.addEventListener("click", () => {
         rightCol.classList.toggle("expanded");
         toggleBtn.classList.toggle("expanded");
+        const currentlyExpanded = toggleBtn.classList.toggle("expanded");
+        if (tableContainer) tableContainer.classList.toggle("expanded", currentlyExpanded);
+        if (summaryContainer) summaryContainer.classList.toggle("expanded", currentlyExpanded);
       });
     }
+    
     if (toggleBtn) {
+      // Re-apply expanded state to containers in case DOM was re-rendered
+      const isExpanded = toggleBtn.classList.contains("expanded");
+      if (tableContainer) tableContainer.classList.toggle("expanded", isExpanded);
+      if (summaryContainer) summaryContainer.classList.toggle("expanded", isExpanded);
+      
       toggleBtn.innerHTML = `
         <span style="display:flex;align-items:center;gap:8px;">
           ORDER SUMMARY
