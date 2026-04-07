@@ -1108,20 +1108,28 @@
     }
 
     let productId = btn.getAttribute("data-id");
+    let code = btn.getAttribute("data-code") || "";
+    let price = btn.getAttribute("data-price") || "";
+    let zoho_id = "";
+
     const canonicalPart = indexes.partsByName.get(productName.toLowerCase());
     if (canonicalPart) {
       productId = canonicalPart.id;
       productName = canonicalPart.name;
       if (!imageUrl) imageUrl = canonicalPart.image;
+      if (!code) code = canonicalPart.code || "";
+      if (!price) price = canonicalPart.price || "";
+      zoho_id = canonicalPart.zoho_id || "";
     }
 
     const part = {
       id: productId || productName,
       name: productName,
-      code: btn.getAttribute("data-code") || "",
-      price: btn.getAttribute("data-price") || "",
+      code: code,
+      price: price,
       image: imageUrl || "",
       qty: 1,
+      zoho_id: zoho_id,
     };
     const existing = state.cart.find((item) => item.id === part.id);
     addPartToCart(part, false);
