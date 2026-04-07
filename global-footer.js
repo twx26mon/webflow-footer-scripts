@@ -1269,7 +1269,7 @@
       formSection.style.display = "block";
     }
     if (rightCol) {
-      rightCol.style.display = "flex";
+      rightCol.style.display = ""; // Let CSS control this entirely
     }
     if (heroLeft) {
       heroLeft.style.width = "100%";
