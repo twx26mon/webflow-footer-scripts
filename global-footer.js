@@ -1822,10 +1822,10 @@
     renderQuoteReview();
     initQRForm();
     // Reveal the form once all JS styling is successfully applied
-    const formBlock =
-      document.getElementById("quote-form-block") ||
-      document.getElementById("qr-form-section");
-    if (formBlock) formBlock.classList.add("qr-ready");
+    const outerBlock = document.getElementById("quote-form-block");
+    if (outerBlock) outerBlock.classList.add("qr-ready");
+    const innerSection = document.getElementById("qr-form-section");
+    if (innerSection) innerSection.classList.add("qr-ready");
   };
 
   if (document.readyState === "loading") {
