@@ -740,3 +740,13 @@ label[for="qr-address"] {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
+
+.brands-nav.browse-brands {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-left: 28px;
+  padding-right: 28px;
+  box-sizing: border-box;
+}
