@@ -2886,12 +2886,12 @@
 
   function initNavScroll() {
     const tryInit = () => {
-      const navList = document.querySelector(".brands-nav");
+      const navList = document.querySelector(".brands-nav, .brands-nav__list");
       if (!navList) return false;
       if (navList.dataset.scrollInit) return true;
       navList.dataset.scrollInit = "true";
       animateNavScroll(navList);
-      setTimeout(() => centerActiveBrand(navList), 1400);
+      setTimeout(() => centerActiveBrand(navList), 2000);
       return true;
     };
 

@@ -837,19 +837,19 @@ label[for="qr-address"] {
   animation: twx-shine-swipe 2s linear forwards;
 }
 
-a.brands-nav__btn.w--current {
+body a.brands-nav__btn.w--current {
   border-color: rgba(194, 147, 74, 0.5) !important;
   background: #000 !important;
   box-shadow: none !important;
   pointer-events: none;
 }
-a.brands-nav__btn.w--current,
-a.brands-nav__btn.w--current:hover,
-a.brands-nav__btn.w--current *,
-a.brands-nav__btn.w--current:hover * {
+body a.brands-nav__btn.w--current,
+body a.brands-nav__btn.w--current:hover,
+body a.brands-nav__btn.w--current *,
+body a.brands-nav__btn.w--current:hover * {
   color: #fff !important;
 }
-a.brands-nav__btn.w--current .brand-header-icon {
+body a.brands-nav__btn.w--current .brand-header-icon {
   transform: rotate(90deg) !important;
   transition: transform 0.2s;
   color: rgba(255, 255, 255, 0.6) !important;
