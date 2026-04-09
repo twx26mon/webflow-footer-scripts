@@ -2874,6 +2874,16 @@
     }, 700);
   }
 
+  function centerActiveBrand(navList) {
+    const activePill = navList.querySelector(".w--current");
+    if (!activePill || typeof activePill.scrollIntoView !== "function") return;
+    activePill.scrollIntoView({
+      inline: "center",
+      block: "nearest",
+      behavior: "smooth",
+    });
+  }
+
   function initNavScroll() {
     const tryInit = () => {
       const navList = document.querySelector(".brands-nav");
@@ -2881,6 +2891,7 @@
       if (navList.dataset.scrollInit) return true;
       navList.dataset.scrollInit = "true";
       animateNavScroll(navList);
+      setTimeout(() => centerActiveBrand(navList), 1400);
       return true;
     };
 
