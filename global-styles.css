@@ -400,6 +400,10 @@ label[for="qr-address"] {
   .brands-nav {
     scrollbar-width: none;
     -ms-overflow-style: none;
+    justify-content: center;
+  }
+  .brands-nav.brands-nav--scrollable {
+    justify-content: flex-start;
   }
   .brands-nav::-webkit-scrollbar {
     display: none;
@@ -694,7 +698,6 @@ label[for="qr-address"] {
   flex-wrap: nowrap;
   width: 100%;
   gap: 8px;
-  justify-content: center;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
