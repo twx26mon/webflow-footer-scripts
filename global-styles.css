@@ -401,9 +401,7 @@ label[for="qr-address"] {
     scrollbar-width: none;
     -ms-overflow-style: none;
     justify-content: center;
-  }
-  .brands-nav.brands-nav--scrollable {
-    justify-content: flex-start;
+    overflow-x: visible;
   }
   .brands-nav::-webkit-scrollbar {
     display: none;
@@ -735,9 +733,9 @@ label[for="qr-address"] {
   align-items: center !important;
   gap: 6px !important;
   position: relative !important;
-  flex: 1 1 80px !important;
-  flex-shrink: 0 !important;
-  min-width: 80px !important;
+  flex: 1 1 0 !important;
+  flex-shrink: 1 !important;
+  min-width: 0 !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;

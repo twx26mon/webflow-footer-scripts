@@ -2880,9 +2880,6 @@
       if (!navList) return false;
       if (navList.dataset.scrollInit) return true;
       navList.dataset.scrollInit = "true";
-      if (navList.scrollWidth > navList.clientWidth + 10) {
-        navList.classList.add("brands-nav--scrollable");
-      }
       animateNavScroll(navList);
       return true;
     };
