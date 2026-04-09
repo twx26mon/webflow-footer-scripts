@@ -1948,24 +1948,26 @@
     // Close button
     var closeBtn = document.querySelector(".nav-close-btn");
     var navMenu = document.querySelector(".nav-menu-mobile");
+    var mobileMenuWrapper = document.querySelector(".mobile-menu");
 
     if (closeBtn && navMenu) {
       closeBtn.addEventListener("click", function (e) {
         e.preventDefault();
-        // Remove Webflow's open classes to close the menu
+        e.stopPropagation();
+        // Close the menu by removing all w--open classes
         navMenu.classList.remove("w--open");
-        var dropdown = document.querySelector(".mobile-menu");
-        if (dropdown) dropdown.classList.remove("w--open");
-        // Also click the native toggle to keep Webflow's state in sync
-        var toggle = document.querySelector(".mobile-menu-icon");
-        if (toggle) toggle.click();
+        navMenu.style.display = "none";
+        if (mobileMenuWrapper) mobileMenuWrapper.classList.remove("w--open");
+        // Reset any open dropdowns inside too
+        navMenu.querySelectorAll(".w--open").forEach(function (el) {
+          el.classList.remove("w--open");
+        });
       });
     }
 
     // Auto-open dropdown if active subpage
-    var menu = document.querySelector(".nav-menu-mobile");
-    if (!menu) return;
-    var activeSublink = menu.querySelector(".menu-sublink.w--current");
+    if (!navMenu) return;
+    var activeSublink = navMenu.querySelector(".menu-sublink.w--current");
     if (!activeSublink) return;
     var dropdown = activeSublink.closest(".w-dropdown");
     if (!dropdown) return;
