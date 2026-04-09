@@ -708,9 +708,12 @@ label[for="qr-address"] {
 
   .brands-nav.browse-brands {
     width: calc(100vw - 56px);
+    max-width: calc(100vw - 56px);
+    margin: 0 auto;
     position: relative;
-    left: 50%;
-    transform: translateX(-50%);
+    left: auto;
+    transform: none;
+    padding: 0;
   }
 
   .brands-nav::-webkit-scrollbar {
