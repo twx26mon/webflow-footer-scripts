@@ -2876,7 +2876,7 @@
 
   function initNavScroll() {
     const tryInit = () => {
-      const navList = document.querySelector(".brands-nav__list");
+      const navList = document.querySelector(".brands-nav");
       if (!navList) return false;
       if (navList.dataset.scrollInit) return true;
       navList.dataset.scrollInit = "true";

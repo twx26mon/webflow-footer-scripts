@@ -396,29 +396,18 @@ label[for="qr-address"] {
   transition: transform 0.2s;
 }
 
-.brands-nav__list {
-  position: relative;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 8px;
-  width: max-content;
-}
-
 @media (min-width: 768px) {
-  .brands-nav__list {
+  .brands-nav {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
-  .brands-nav__list::-webkit-scrollbar {
+  .brands-nav::-webkit-scrollbar {
     display: none;
   }
 }
 
 @media (max-width: 767px) {
-  .brands-nav__list::after {
+  .brands-nav::after {
     content: "";
     position: absolute;
     right: 0;
@@ -435,12 +424,12 @@ label[for="qr-address"] {
     transition: opacity 0.3s ease;
   }
 
-  .brands-nav__list.twx-scroll-hint::after {
+  .brands-nav.twx-scroll-hint::after {
     opacity: 1;
   }
 }
 
-.brands-nav__list.twx-skid-active {
+.brands-nav.twx-skid-active {
   animation: twx-nav-skid 0.45s ease-out;
 }
 
@@ -708,6 +697,13 @@ label[for="qr-address"] {
   justify-content: center;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+@media (max-width: 767px) {
+  .brands-nav {
+    justify-content: flex-start;
+  }
 }
 
 .brands-nav__btn {
@@ -728,6 +724,7 @@ label[for="qr-address"] {
   gap: 6px !important;
   position: relative !important;
   flex: 1 1 80px !important;
+  flex-shrink: 0 !important;
   min-width: 80px !important;
   white-space: nowrap !important;
   overflow: hidden !important;
