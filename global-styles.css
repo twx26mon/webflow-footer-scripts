@@ -702,7 +702,16 @@ label[for="qr-address"] {
 
 @media (max-width: 767px) {
   .brands-nav {
-    justify-content: flex-start;
+    justify-content: flex-start !important;
+  }
+
+  .brands-nav::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .brands-nav::-webkit-scrollbar-thumb {
+    background: #c2934a;
+    border-radius: 4px;
   }
 }
 
