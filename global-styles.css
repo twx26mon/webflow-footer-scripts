@@ -754,8 +754,7 @@ label[for="qr-address"] {
     position: relative;
     left: 50%;
     transform: translateX(-50%);
-    padding-left: 28px;
-    padding-right: 28px;
+    padding: 0;
     box-sizing: border-box;
   }
 }
