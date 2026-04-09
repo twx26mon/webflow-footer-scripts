@@ -401,6 +401,10 @@ label[for="qr-address"] {
   overflow-x: auto;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  width: max-content;
 }
 
 @media (min-width: 768px) {
@@ -693,4 +697,39 @@ label[for="qr-address"] {
     padding-left: 17px !important;
     background: transparent !important;
   }
+}
+
+/* ── Browse Brands nav — premium ghost pill buttons ──────── */
+.brands-nav {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  gap: 8px;
+  justify-content: center;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.brands-nav__btn {
+  color: #c2934a !important;
+  border: 1px solid rgba(194, 147, 74, 0.28) !important;
+  border-radius: 100px !important;
+  padding: 10px 22px !important;
+  background: rgba(194, 147, 74, 0.04) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.25s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  position: relative !important;
+  flex: 1 1 80px !important;
+  min-width: 80px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
