@@ -1944,22 +1944,22 @@
 
 /* ── 6. MOBILE MENU — close button + auto-open dropdown ───── */
 (function () {
-  document.addEventListener('DOMContentLoaded', function () {
-
+  document.addEventListener("DOMContentLoaded", function () {
     // Close button
-    var closeBtn = document.querySelector('.nav-close-btn');
-    var navMenu = document.querySelector('.nav-menu-mobile');
-    var hamburger = document.querySelector('.mobile-menu-icon');
+    var closeBtn = document.querySelector(".nav-close-btn");
+    var navMenu = document.querySelector(".nav-menu-mobile");
+    var hamburger = document.querySelector(".mobile-menu-icon");
 
     if (closeBtn && navMenu && hamburger) {
-      closeBtn.addEventListener('click', function (e) {
+      closeBtn.addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
         // Webflow controls the menu via inline styles, not classes.
         // Reverse the open state by setting the closed inline styles directly.
-        navMenu.style.display = 'none';
-        navMenu.style.opacity = '0';
-        navMenu.style.transform = 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)';
+        navMenu.style.display = "none";
+        navMenu.style.opacity = "0";
+        navMenu.style.transform =
+          "translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)";
         // Also click the hamburger to keep Webflow's internal open/close
         // state in sync so it toggles correctly next time
         hamburger.click();
@@ -1968,16 +1968,16 @@
 
     // Auto-open dropdown if active subpage
     if (!navMenu) return;
-    var activeSublink = navMenu.querySelector('.menu-sublink.w--current');
+    var activeSublink = navMenu.querySelector(".menu-sublink.w--current");
     if (!activeSublink) return;
-    var dropdown = activeSublink.closest('.w-dropdown');
+    var dropdown = activeSublink.closest(".w-dropdown");
     if (!dropdown) return;
-    var toggle = dropdown.querySelector('.w-dropdown-toggle');
-    var list = dropdown.querySelector('.w-dropdown-list');
+    var toggle = dropdown.querySelector(".w-dropdown-toggle");
+    var list = dropdown.querySelector(".w-dropdown-list");
     if (toggle && list) {
-      toggle.classList.add('w--open');
-      list.classList.add('w--open');
-      dropdown.classList.add('w--open');
+      toggle.classList.add("w--open");
+      list.classList.add("w--open");
+      dropdown.classList.add("w--open");
     }
   });
 })();
@@ -2875,8 +2875,6 @@
   }
 
   function initNavScroll() {
-    if (window.innerWidth > 767) return;
-
     const tryInit = () => {
       const navList = document.querySelector(".brands-nav__list");
       if (!navList) return false;

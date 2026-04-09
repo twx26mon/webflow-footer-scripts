@@ -403,6 +403,16 @@ label[for="qr-address"] {
   -webkit-overflow-scrolling: touch;
 }
 
+@media (min-width: 768px) {
+  .brands-nav__list {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .brands-nav__list::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @media (max-width: 767px) {
   .brands-nav__list::after {
     content: "";
