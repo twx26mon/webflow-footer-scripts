@@ -2791,63 +2791,71 @@
 
 /* ── 8. BRANDS NAV MOBILE SCROLL ANIMATION ───────────────── */
 (function () {
-  function initNavScroll() {
-    if (window.innerWidth > 767) return;
-    const navList = document.querySelector(".brands-nav__list");
-    if (!navList) return;
+  function animateNavScroll(navList) {
+    const maxScroll = navList.scrollWidth - navList.clientWidth;
+    if (maxScroll <= 10) return;
 
-    // Ensure it only runs once
-    if (navList.dataset.scrollInit) return;
-    navList.dataset.scrollInit = "true";
+    navList.classList.add("twx-scroll-hint");
+    const removeHint = () => navList.classList.remove("twx-scroll-hint");
+    navList.addEventListener("scroll", removeHint, {
+      passive: true,
+      once: true,
+    });
+    navList.addEventListener("touchstart", removeHint, {
+      passive: true,
+      once: true,
+    });
+    setTimeout(removeHint, 2500);
+
+    navList.scrollLeft = maxScroll;
 
     setTimeout(() => {
-      const maxScroll = navList.scrollWidth - navList.clientWidth;
-      if (maxScroll <= 10) return;
+      const duration = 600;
+      const start = navList.scrollLeft;
+      const end = 0;
+      const startTime = performance.now();
 
-      // Find active brand pill and calculate target scroll position
-      const activeItem = navList.querySelector(".w--current");
-      let targetScroll = 0;
-      if (activeItem) {
-        const listRect = navList.getBoundingClientRect();
-        const itemRect = activeItem.getBoundingClientRect();
-        const itemScrollCenter =
-          navList.scrollLeft +
-          (itemRect.left - listRect.left) +
-          itemRect.width / 2;
-        targetScroll = Math.max(
-          0,
-          Math.min(maxScroll, itemScrollCenter - navList.clientWidth / 2),
-        );
+      function animateScroll(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+
+        navList.scrollLeft = start + (end - start) * easeOut;
+
+        if (progress < 1) {
+          requestAnimationFrame(animateScroll);
+        } else {
+          navList.classList.add("twx-skid-active");
+          setTimeout(() => navList.classList.remove("twx-skid-active"), 450);
+        }
       }
 
-      // 1. Instantly move to far right
-      navList.scrollLeft = maxScroll;
+      requestAnimationFrame(animateScroll);
+    }, 700);
+  }
 
-      // 2. Wait a moment, then rapidly animate scrolling to active brand
-      setTimeout(() => {
-        const duration = 600; // 0.6 seconds fast swipe
-        const start = navList.scrollLeft;
-        const end = targetScroll;
-        const startTime = performance.now();
+  function initNavScroll() {
+    if (window.innerWidth > 767) return;
 
-        function animateScroll(currentTime) {
-          const elapsed = currentTime - startTime;
-          let progress = Math.min(elapsed / duration, 1);
+    const tryInit = () => {
+      const navList = document.querySelector(".brands-nav__list");
+      if (!navList) return false;
+      if (navList.dataset.scrollInit) return true;
+      navList.dataset.scrollInit = "true";
+      animateNavScroll(navList);
+      return true;
+    };
 
-          const easeOut = 1 - Math.pow(1 - progress, 3);
-          navList.scrollLeft = start + (end - start) * easeOut;
-
-          if (progress < 1) {
-            requestAnimationFrame(animateScroll);
-          } else {
-            // 3. Land on active brand and shudder
-            navList.classList.add("twx-skid-active");
-            setTimeout(() => navList.classList.remove("twx-skid-active"), 500);
-          }
+    if (!tryInit()) {
+      let attempt = 0;
+      const maxAttempts = 20;
+      const intervalId = setInterval(() => {
+        attempt += 1;
+        if (tryInit() || attempt >= maxAttempts) {
+          clearInterval(intervalId);
         }
-        requestAnimationFrame(animateScroll);
-      }, 800); // 0.8s delay before it zips back
-    }, 500);
+      }, 150);
+    }
   }
 
   if (document.readyState === "loading") {
