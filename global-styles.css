@@ -648,3 +648,39 @@ label[for="qr-address"] {
   margin-top: 8px;
   font-style: italic;
 }
+
+/* ── Mobile Navigation Dropdown Styling ────────────────────── */
+@media (max-width: 991px) {
+  .nav-link.dropdown {
+    justify-content: left !important;
+    text-align: left !important;
+    color: rgba(191, 191, 191, 1) !important;
+  }
+  .nav-about-drop .w-dropdown-toggle,
+  .nav-about-drop .w-dropdown-toggle * {
+    text-align: left !important;
+    justify-content: left !important;
+    float: none !important;
+  }
+  .Text-Block-30,
+  .nav-about-drop div {
+    text-align: left !important;
+    color: rgba(191, 191, 191, 1) !important;
+  }
+  .nav-menu-mobile .nav-link.w--current {
+    color: #fff !important;
+    border-left: 3px solid #c8a84b !important;
+    padding-left: 13px !important;
+  }
+  .nav-menu-mobile .nav-link.dropdown.w--current {
+    color: #fff !important;
+    border-left: 3px solid #c8a84b !important;
+    padding-left: 13px !important;
+  }
+  .nav-menu-mobile .menu-sublink.w--current {
+    color: #fff !important;
+    border-left: 3px solid #c8a84b !important;
+    padding-left: 17px !important;
+    background: transparent !important;
+  }
+}

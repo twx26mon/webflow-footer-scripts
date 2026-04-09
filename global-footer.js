@@ -1942,7 +1942,37 @@
   window.addEventListener("scroll", onScroll, { passive: true });
 })();
 
-/* ── 6. CONTACT FORM STYLING ─────────────────────────────── */
+/* ── 6. MOBILE MENU — close button + auto-open dropdown ───── */
+(function () {
+  document.addEventListener("DOMContentLoaded", function () {
+    // Close button clicks hamburger to close menu
+    var closeBtn = document.querySelector(".nav-close-btn");
+    var hamburger = document.querySelector(".mobile-menu-icon");
+    if (closeBtn && hamburger) {
+      closeBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        hamburger.click();
+      });
+    }
+
+    // Auto-open dropdown if active subpage
+    var menu = document.querySelector(".nav-menu-mobile");
+    if (!menu) return;
+    var activeSublink = menu.querySelector(".menu-sublink.w--current");
+    if (!activeSublink) return;
+    var dropdown = activeSublink.closest(".w-dropdown");
+    if (!dropdown) return;
+    var toggle = dropdown.querySelector(".w-dropdown-toggle");
+    var list = dropdown.querySelector(".w-dropdown-list");
+    if (toggle && list) {
+      toggle.classList.add("w--open");
+      list.classList.add("w--open");
+      dropdown.classList.add("w--open");
+    }
+  });
+})();
+
+/* ── 7. CONTACT FORM STYLING ─────────────────────────────── */
 (function () {
   if (!window.location.pathname.includes("/contact")) return;
 
