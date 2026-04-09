@@ -704,9 +704,13 @@ label[for="qr-address"] {
 @media (max-width: 767px) {
   .brands-nav {
     justify-content: flex-start !important;
-    padding-left: 28px;
-    padding-right: 28px;
-    box-sizing: border-box;
+  }
+
+  .brands-nav.browse-brands {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .brands-nav::-webkit-scrollbar {
