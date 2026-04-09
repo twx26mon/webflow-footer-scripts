@@ -2850,9 +2850,15 @@
     navList.scrollLeft = maxScroll;
 
     setTimeout(() => {
-      const duration = 600;
+      const activePill = navList.querySelector(".w--current");
+      const end = activePill
+        ? activePill.offsetLeft -
+          navList.clientWidth / 2 +
+          activePill.offsetWidth / 2
+        : 0;
       const start = navList.scrollLeft;
-      const end = 0;
+      const distance = Math.abs(end - start);
+      const duration = Math.min(600, Math.max(300, distance / 2)); // Adjust duration based on distance
       const startTime = performance.now();
 
       function animateScroll(currentTime) {
@@ -2891,7 +2897,6 @@
       if (navList.dataset.scrollInit) return true;
       navList.dataset.scrollInit = "true";
       animateNavScroll(navList);
-      setTimeout(() => centerActiveBrand(navList), 2000);
       return true;
     };
 
