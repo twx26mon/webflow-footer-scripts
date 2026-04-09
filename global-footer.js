@@ -1945,13 +1945,20 @@
 /* ── 6. MOBILE MENU — close button + auto-open dropdown ───── */
 (function () {
   document.addEventListener("DOMContentLoaded", function () {
-    // Close button clicks hamburger to close menu
+    // Close button
     var closeBtn = document.querySelector(".nav-close-btn");
-    var hamburger = document.querySelector(".mobile-menu-icon");
-    if (closeBtn && hamburger) {
+    var navMenu = document.querySelector(".nav-menu-mobile");
+
+    if (closeBtn && navMenu) {
       closeBtn.addEventListener("click", function (e) {
         e.preventDefault();
-        hamburger.click();
+        // Remove Webflow's open classes to close the menu
+        navMenu.classList.remove("w--open");
+        var dropdown = document.querySelector(".mobile-menu");
+        if (dropdown) dropdown.classList.remove("w--open");
+        // Also click the native toggle to keep Webflow's state in sync
+        var toggle = document.querySelector(".mobile-menu-icon");
+        if (toggle) toggle.click();
       });
     }
 
