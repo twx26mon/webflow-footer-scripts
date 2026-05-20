@@ -732,11 +732,25 @@
       const btnText = inCart ? "Update" : "Add to Order";
       const btnClass = inCart ? "wiz-add-btn wiz-update-btn" : "wiz-add-btn";
 
+      // Display unit price on the wizard line when available
+      let unitPrice = null;
+      try {
+        const n = parseFloat(String(part.price || "").replace(/[^0-9.]/g, ""));
+        unitPrice = isNaN(n) ? null : n;
+      } catch (e) {
+        unitPrice = null;
+      }
+      const priceHtml =
+        unitPrice !== null
+          ? `<div class="wiz-result-price" style="font-size:0.9em;color:#444;margin-top:6px;">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</div>`
+          : ``;
+
       row.innerHTML = `
         ${part.image ? `<img src="${part.image}" class="wiz-result-img" alt="">` : ""}
         <div class="wiz-result-info">
           <span class="wiz-result-name">${escapeHtml(part.name)}</span>
           <div style="font-size:0.7em;color:#888;">Compatible with: ${escapeHtml(activeModel.fullName)}</div>
+          ${priceHtml}
           ${inCart ? `<div style="font-size:0.7em;color:#4caf50;font-weight:bold;">✓ In cart: ${currentQty}</div>` : ""}
           <div class="wiz-result-actions">
             <input type="number" class="wiz-result-qty" value="${qtyToAdd}" min="1" aria-label="Quantity">
