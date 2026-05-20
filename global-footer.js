@@ -742,7 +742,7 @@
       }
       const priceHtml =
         unitPrice !== null
-          ? `<div class="wiz-result-price" style="font-size:0.9em;color:#444;margin-top:6px;">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</div>`
+          ? `<div class="wiz-result-price">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</div>`
           : ``;
 
       row.innerHTML = `
