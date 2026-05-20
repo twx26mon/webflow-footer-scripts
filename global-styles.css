@@ -105,7 +105,8 @@
 }
 
 .wiz-result-img {
-  background: transparent;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 /* ── Global Form & Quote Review Form: Inputs ──────────────── */
