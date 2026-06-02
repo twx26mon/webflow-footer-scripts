@@ -44,6 +44,41 @@
 (function () {
   "use strict";
 
+  /* ── Sale price styles ── */
+  (function injectSaleStyles() {
+    if (document.getElementById("twx-sale-styles")) return;
+    const s = document.createElement("style");
+    s.id = "twx-sale-styles";
+    s.textContent = `
+      .twx-price-was {
+        text-decoration: line-through;
+        opacity: 0.45;
+        margin-right: 6px;
+        font-size: 0.85em;
+      }
+      .twx-price-sale {
+        color: #c2934a;
+        font-weight: 700;
+        margin-right: 6px;
+      }
+      .twx-sale-badge {
+        display: inline-block;
+        border: 1px solid #c2934a;
+        color: #c2934a;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        padding: 2px 6px;
+        border-radius: 3px;
+        text-transform: uppercase;
+        vertical-align: middle;
+        position: relative;
+        top: -1px;
+      }
+    `;
+    document.head.appendChild(s);
+  })();
+
   const CONFIG = {
     CART_KEY: "tillageworx_quote_cart",
     DEBUG: false,
@@ -207,6 +242,8 @@
         type: (payload.dataset.type || "").trim(),
         image: (payload.dataset.image || "").trim(),
         price: payloadPrice || domPrice || btnData.price || "",
+        salePrice: (payload.dataset.salePrice || "").trim(),
+        onSale: payload.dataset.onSale === "true",
         code: payloadCode || domCode || btnData.code || "",
         zoho_id: (payload.dataset.zohoId || "").trim(),
         models: Array.from(item.querySelectorAll(".part-model-ref"))
@@ -280,6 +317,8 @@
         code: partData.code || partData.id,
         image: partData.image || "",
         price: partData.price || "",
+        salePrice: partData.salePrice || "",
+        onSale: partData.onSale || false,
         qty: Math.min(CONFIG.MAX_CART_ITEMS, parseInt(partData.qty) || 1),
         machineContext: partData.machineContext || "",
         zoho_id: partData.zoho_id || "",
@@ -388,7 +427,9 @@
         Math.min(CONFIG.MAX_CART_ITEMS, item.qty || 1),
       );
       const unitPrice = parsePrice(item.price);
-      const lineTotal = unitPrice !== null ? unitPrice * safeQty : null;
+      const unitSalePrice = item.onSale ? parsePrice(item.salePrice) : null;
+      const effectiveUnitPrice = unitSalePrice !== null ? unitSalePrice : unitPrice;
+      const lineTotal = effectiveUnitPrice !== null ? effectiveUnitPrice * safeQty : null;
 
       if (lineTotal !== null) {
         subtotal += lineTotal;
@@ -396,13 +437,26 @@
         allPriced = false;
       }
 
-      const priceHtml =
-        unitPrice !== null
-          ? `<div class="cart-item-pricing">
-             <span class="cart-item-unit-price">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</span>
+      let priceHtml;
+      if (effectiveUnitPrice !== null) {
+        if (unitSalePrice !== null && unitPrice !== null) {
+          priceHtml = `<div class="cart-item-pricing">
+             <span class="cart-item-unit-price">
+               <span class="twx-price-was">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+               <span class="twx-price-sale">$${unitSalePrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</span>
+               <span class="twx-sale-badge">SALE</span>
+             </span>
              <span class="cart-item-line-total">$${lineTotal.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-           </div>`
-          : `<div class="cart-item-pricing"><span class="cart-item-no-price">Price on request</span></div>`;
+           </div>`;
+        } else {
+          priceHtml = `<div class="cart-item-pricing">
+             <span class="cart-item-unit-price">$${effectiveUnitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</span>
+             <span class="cart-item-line-total">$${lineTotal.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+           </div>`;
+        }
+      } else {
+        priceHtml = `<div class="cart-item-pricing"><span class="cart-item-no-price">Price on request</span></div>`;
+      }
 
       div.innerHTML = `
         ${item.image ? `<img src="${item.image}" alt="" style="width:48px;height:48px;object-fit:cover;border-radius:8px;margin-right:8px;flex-shrink:0;">` : ""}
@@ -734,16 +788,27 @@
 
       // Display unit price on the wizard line when available
       let unitPrice = null;
+      let unitSalePrice = null;
       try {
         const n = parseFloat(String(part.price || "").replace(/[^0-9.]/g, ""));
         unitPrice = isNaN(n) ? null : n;
+        if (part.onSale && part.salePrice) {
+          const s = parseFloat(String(part.salePrice).replace(/[^0-9.]/g, ""));
+          unitSalePrice = isNaN(s) ? null : s;
+        }
       } catch (e) {
         unitPrice = null;
       }
-      const priceHtml =
-        unitPrice !== null
-          ? `<div class="wiz-result-price">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</div>`
-          : ``;
+      let priceHtml = "";
+      if (unitSalePrice !== null && unitPrice !== null) {
+        priceHtml = `<div class="wiz-result-price">
+          <span class="twx-price-was">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span class="twx-price-sale">$${unitSalePrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</span>
+          <span class="twx-sale-badge">SALE</span>
+        </div>`;
+      } else if (unitPrice !== null) {
+        priceHtml = `<div class="wiz-result-price">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</div>`;
+      }
 
       row.innerHTML = `
         ${part.image ? `<img src="${part.image}" class="wiz-result-img" alt="">` : ""}
@@ -802,6 +867,8 @@
           name: part.name,
           code: part.code || part.id,
           price: part.price || "",
+          salePrice: part.salePrice || "",
+          onSale: part.onSale || false,
           image: part.image || "",
           qty: qtyToAdd,
           machineContext,
@@ -974,6 +1041,8 @@
             id: part.id,
             code: part.code || "",
             price: part.price || "",
+            salePrice: part.salePrice || "",
+            onSale: part.onSale || false,
             qty,
             image: part.image,
             machineContext,
@@ -1131,7 +1200,20 @@
     let productId = btn.getAttribute("data-id");
     let code = btn.getAttribute("data-code") || "";
     let price = btn.getAttribute("data-price") || "";
+    let salePrice = btn.getAttribute("data-sale-price") || "";
+    let onSale = btn.getAttribute("data-on-sale") === "true";
     let zoho_id = "";
+
+    // Fallback: read onSale and salePrice from hidden embed divs
+    // (Switch fields can't be bound directly to data- attributes in Webflow)
+    if (!onSale && card) {
+      const hiddenOnSale = card.querySelector(".hidden-on-sale");
+      if (hiddenOnSale) onSale = hiddenOnSale.textContent.trim() === "true";
+    }
+    if (!salePrice && card) {
+      const hiddenSalePrice = card.querySelector(".hidden-sale-price");
+      if (hiddenSalePrice) salePrice = hiddenSalePrice.textContent.trim();
+    }
 
     const canonicalPart = indexes.partsByName.get(productName.toLowerCase());
     if (canonicalPart) {
@@ -1140,6 +1222,8 @@
       if (!imageUrl) imageUrl = canonicalPart.image;
       if (!code) code = canonicalPart.code || "";
       if (!price) price = canonicalPart.price || "";
+      if (!salePrice) salePrice = canonicalPart.salePrice || "";
+      if (!onSale) onSale = canonicalPart.onSale || false;
       zoho_id = canonicalPart.zoho_id || "";
     }
 
@@ -1148,6 +1232,8 @@
       name: productName,
       code: code,
       price: price,
+      salePrice: salePrice,
+      onSale: onSale,
       image: imageUrl || "",
       qty: 1,
       zoho_id: zoho_id,
@@ -1312,7 +1398,9 @@
     cart.forEach((item) => {
       const safeQty = Math.max(1, item.qty || 1);
       const unitPrice = parsePrice(item.price);
-      const lineTotal = unitPrice !== null ? unitPrice * safeQty : null;
+      const unitSalePrice = item.onSale ? parsePrice(item.salePrice) : null;
+      const effectiveUnitPrice = unitSalePrice !== null ? unitSalePrice : unitPrice;
+      const lineTotal = effectiveUnitPrice !== null ? effectiveUnitPrice * safeQty : null;
 
       if (lineTotal !== null) {
         subtotal += lineTotal;
@@ -1325,6 +1413,18 @@
           ? `$${lineTotal.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
           : `<span style="color:#888;font-style:italic;">TBC</span>`;
 
+      let unitPriceHtml;
+      if (unitSalePrice !== null && unitPrice !== null) {
+        unitPriceHtml = `
+          <span class="twx-price-was">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span class="twx-price-sale">$${unitSalePrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span class="twx-sale-badge">SALE</span>`;
+      } else if (effectiveUnitPrice !== null) {
+        unitPriceHtml = `$${effectiveUnitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      } else {
+        unitPriceHtml = `<span style="color:#888">TBC</span>`;
+      }
+
       rows += `
         <tr data-item-id="${escapeHtml(item.id)}">
           <td>
@@ -1332,7 +1432,7 @@
             <div class="qr-item-name">${escapeHtml(item.name)}</div>
             ${item.code && item.code !== item.id ? `<div class="qr-item-code">Product Code: ${escapeHtml(item.code)}</div>` : ""}
           </td>
-          <td>${unitPrice !== null ? `$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `<span style="color:#888">TBC</span>`}</td>
+          <td>${unitPriceHtml}</td>
           <td>
             <div class="qr-qty-controls">
               <button class="qr-qty-btn qr-qty-minus" data-id="${escapeHtml(item.id)}" aria-label="Decrease quantity">−</button>
