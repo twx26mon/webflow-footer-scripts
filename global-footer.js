@@ -1487,6 +1487,7 @@
     const email = g("qr-email");
     const phone = g("qr-phone");
     const business = g("qr-business");
+    const notes = g("qr-notes");
     if (!firstName) return;
 
     // ── Hide native single-line address field left over from Webflow form ──
@@ -1702,6 +1703,14 @@
       });
     }
 
+    // ── Space above Notes ──
+    if (notes) {
+      const notesContainer = notes.closest(".input-container") || notes.parentElement;
+      if (notesContainer) {
+        notesContainer.style.marginTop = "24px";
+      }
+    }
+
     // ── Honeypot (invisible to humans, catches bots) ──
     const honeypot = document.createElement("input");
     honeypot.type = "text";
@@ -1721,13 +1730,18 @@
     // ── T&C checkbox (inserted just before submit button) ──
     const tcRow = document.createElement("div");
     tcRow.className = "qr-tc-row";
+    tcRow.style.cssText = "display:flex; align-items:center; gap:10px; margin-top:16px; margin-bottom:16px;";
+
     const tcCb = document.createElement("input");
     tcCb.type = "checkbox";
     tcCb.id = "qr-terms";
+    tcCb.style.cssText = "margin:0; width:16px; height:16px; flex-shrink:0; cursor:pointer; accent-color:#c2934a;";
+
     const tcLbl = document.createElement("label");
     tcLbl.setAttribute("for", "qr-terms");
+    tcLbl.style.cssText = "margin:0; font-size:13px; color:#ccc; cursor:pointer; text-transform:none; letter-spacing:0; font-weight:normal;";
     tcLbl.innerHTML =
-      'I agree to the <a href="/terms-and-conditions" target="_blank">Terms &amp; Conditions</a>';
+      'I agree to the <a href="/terms-and-conditions" target="_blank" style="color:#c2934a;">Terms &amp; Conditions</a>';
     tcRow.appendChild(tcCb);
     tcRow.appendChild(tcLbl);
     submitBtn.parentNode.insertBefore(tcRow, submitBtn);
