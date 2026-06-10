@@ -428,8 +428,10 @@
       );
       const unitPrice = parsePrice(item.price);
       const unitSalePrice = item.onSale ? parsePrice(item.salePrice) : null;
-      const effectiveUnitPrice = unitSalePrice !== null ? unitSalePrice : unitPrice;
-      const lineTotal = effectiveUnitPrice !== null ? effectiveUnitPrice * safeQty : null;
+      const effectiveUnitPrice =
+        unitSalePrice !== null ? unitSalePrice : unitPrice;
+      const lineTotal =
+        effectiveUnitPrice !== null ? effectiveUnitPrice * safeQty : null;
 
       if (lineTotal !== null) {
         subtotal += lineTotal;
@@ -1399,8 +1401,10 @@
       const safeQty = Math.max(1, item.qty || 1);
       const unitPrice = parsePrice(item.price);
       const unitSalePrice = item.onSale ? parsePrice(item.salePrice) : null;
-      const effectiveUnitPrice = unitSalePrice !== null ? unitSalePrice : unitPrice;
-      const lineTotal = effectiveUnitPrice !== null ? effectiveUnitPrice * safeQty : null;
+      const effectiveUnitPrice =
+        unitSalePrice !== null ? unitSalePrice : unitPrice;
+      const lineTotal =
+        effectiveUnitPrice !== null ? effectiveUnitPrice * safeQty : null;
 
       if (lineTotal !== null) {
         subtotal += lineTotal;
