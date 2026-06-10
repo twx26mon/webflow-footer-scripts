@@ -40,7 +40,7 @@
 /* ── 1. CSS INJECTION REMOVED ──────────────────────────────── */
 /* CSS is now loaded via <link> tag in Webflow Head Code */
 
-/* ── 2. ORDER CART + MACHINE WIZARD ──────────────────────── */
+/* ── 2. QUOTE CART + MACHINE WIZARD ──────────────────────── */
 (function () {
   "use strict";
 
@@ -463,7 +463,7 @@
     if (!proceedBtn) {
       proceedBtn = document.createElement("a");
       proceedBtn.id = "cart-proceed-btn";
-      proceedBtn.textContent = "PROCEED TO ORDER →";
+      proceedBtn.textContent = "PROCEED TO QUOTE →";
       summary.parentNode.insertBefore(proceedBtn, summary.nextSibling);
     }
     proceedBtn.href = "/quote-review";
@@ -499,7 +499,7 @@
 
     const quoteHeader = document.createElement("div");
     quoteHeader.className = "cart-section-header";
-    quoteHeader.textContent = "Your Order";
+    quoteHeader.textContent = "Your Quote";
     const contentArea = document.querySelector(".quote-cart-content");
     if (contentArea && DOM.cartItems)
       contentArea.insertBefore(quoteHeader, DOM.cartItems);
@@ -689,7 +689,7 @@
 
     const header = document.createElement("div");
     header.className = "wizard-step-title";
-    header.textContent = `Order Parts for ${activeModel.fullName} ${config.size}`;
+    header.textContent = `Quote Parts for ${activeModel.fullName} ${config.size}`;
     DOM.activeStep.appendChild(header);
 
     const machineContextStr =
@@ -703,7 +703,7 @@
 
     const addAllBtn = document.createElement("button");
     addAllBtn.className = "wiz-add-all-btn";
-    addAllBtn.textContent = "Add All Items to Order";
+    addAllBtn.textContent = "Add All Items to Quote";
     addAllBtn.addEventListener("click", () =>
       addAllPartsToCart(matchingParts, config, machineContextStr),
     );
@@ -729,7 +729,7 @@
       const row = document.createElement("div");
       row.className = "wiz-result-item";
       row.dataset.partId = part.id;
-      const btnText = inCart ? "Update" : "Add to Order";
+      const btnText = inCart ? "Update" : "Add to Quote";
       const btnClass = inCart ? "wiz-add-btn wiz-update-btn" : "wiz-add-btn";
 
       // Display unit price on the wizard line when available
@@ -764,7 +764,7 @@
     listDiv.appendChild(fragment);
     if (visibleCount === 0)
       listDiv.innerHTML =
-        '<div style="color:#888;text-align:center;padding:10px;">All parts added to order!</div>';
+        '<div style="color:#888;text-align:center;padding:10px;">All parts added to quote!</div>';
     DOM.activeStep.appendChild(listDiv);
   }
 
@@ -1106,7 +1106,7 @@
   }
 
   function handleAddToQuote(btn, productName) {
-    log("Adding to order:", productName);
+    log("Adding to quote:", productName);
     const card = btn.closest(
       ".carousel-item, .product-card, .brands-product-card, .w-dyn-item",
     );
@@ -1173,9 +1173,9 @@
       <div id="cart-add-parts-box">
         <button id="cart-add-parts-btn"></button>
       </div>
-      <div class="cart-section-header">Your Order</div>
+      <div class="cart-section-header">Your Quote</div>
       <div id="cart-items" class="quote-cart-items"></div>
-      <button id="cart-clearall">Clear Order</button>
+      <button id="cart-clearall">Clear Quote</button>
       <div class="quote-cart-info"></div>
       <div id="cart-form-slot"></div>
     </div>
@@ -1242,7 +1242,7 @@
   }
 })();
 
-/* ── 3. ORDER REVIEW — cart table + summary on /quote-review ─ */
+/* ── 3. QUOTE REVIEW — cart table + summary on /quote-review ─ */
 (function () {
   const CART_KEY = "tillageworx_quote_cart";
 
@@ -1461,19 +1461,19 @@
           <div class="qr-summary-row"><span>GST (10%)</span><span>$${gst.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
           <div class="qr-summary-row"><span>Freight</span><span style="color:#888;font-style:italic;">TBA</span></div>
           <div class="qr-summary-row qr-summary-total"><span>Total (inc. GST)</span><span>$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
-          <div class="qr-freight-disclaimer">Once we receive your request, we will do our best to source the most affordable, reliable freight option.<br><br>We will then email you a Sales Order with freight included for you to accept.<br><br><span class="qr-freight-phone">📞 Questions? Call us on 08 6185 1944</span></div>
+          <div class="qr-freight-disclaimer">Once we receive your request, we will do our best to source the most affordable, reliable freight option.<br><br>We will then email you a Quote with freight included for you to accept.<br><br><span class="qr-freight-phone">📞 Questions? Call us on 08 6185 1944</span></div>
         `;
         if (!allPriced)
-          summaryHtml += `<div class="qr-summary-note" style="margin-top:8px;">Some items are price on request — our team will confirm final pricing before processing your order.</div>`;
+          summaryHtml += `<div class="qr-summary-note" style="margin-top:8px;">Some items are price on request — our team will confirm final pricing before processing your quote.</div>`;
       } else {
-        summaryHtml = `<div class="qr-summary-note">Our team will confirm pricing before processing your order.</div>`;
+        summaryHtml = `<div class="qr-summary-note">Our team will confirm pricing before processing your quote.</div>`;
       }
 
       summaryContainer.innerHTML = summaryHtml;
     }
   }
 
-  /* ── 4. ORDER FORM — direct Zoho Flow webhook submission ─── */
+  /* ── 4. QUOTE FORM — direct Zoho Flow webhook submission ─── */
   function initQRForm() {
     const sec = document.getElementById("qr-form-section");
     if (!sec || sec.dataset.qrFormInit) return;
@@ -1821,7 +1821,7 @@
         })),
       );
 
-      // Snapshot — human-readable order summary stored on the Sales Order
+      // Snapshot — human-readable quote summary stored on the Quote
       const notesVal = gv("qr-notes");
 
       // Hardcoded to strictly alphanumeric string per Zoho Inventory custom field restrictions
@@ -1877,11 +1877,11 @@
             <div style="padding:40px 24px;text-align:center;">
               <div style="font-size:48px;margin-bottom:16px;">✅</div>
               <h3 style="color:#c2934a;font-size:20px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
-                Order Received!
+                Quote Requested!
               </h3>
               <p style="color:#ccc;font-size:15px;line-height:1.7;margin-bottom:24px;">
-                Thanks ${firstNameVal}, your order has been received!<br>
-                We'll email you a Sales Order with freight included ASAP.
+                Thanks ${firstNameVal}, your quote request has been received!<br>
+                We'll email you a Quote with freight included ASAP.
               </p>
               <p style="color:#888;font-size:13px;">
                 Questions? Call us on <a href="tel:0861851944" style="color:#c2934a;font-weight:700;">08 6185 1944</a>
@@ -1896,7 +1896,7 @@
         console.error("[TWX] Submission error:", err);
         submitBtn.style.opacity = "";
         submitBtn.style.pointerEvents = "";
-        submitBtn.textContent = "SUBMIT ORDER";
+        submitBtn.textContent = "SUBMIT QUOTE";
         showError(
           "Something went wrong. Please try again or call us on 08 6185 1944.",
         );
