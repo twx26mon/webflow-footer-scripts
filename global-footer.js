@@ -5,7 +5,8 @@
    OR via an external script tag pointing to the raw GitHub URL.
 
    Contains:
-     1. CSS injection  — injects tillageworx.css at runtime
+   0. CUSTOMER ACCOUNT — price gating  
+   1. CSS injection  — injects tillageworx.css at runtime
      2. Quote Cart     — cart state, machine wizard, add-to-quote buttons
      3. Quote Review   — renders cart table + summary on /quote-review
      4. Quote Form     — collects form fields, submits directly to Zoho Flow
@@ -36,6 +37,158 @@
      #qr-notes                                — additional notes textarea
      #qr-submit-btn                           — form submit button (is an <a> tag)
    ============================================================ */
+
+/* ── 0. CUSTOMER ACCOUNT — price gating ──────────────────── */
+(function () {
+  const SUPABASE_URL = "https://srgndcoiobilpwbliwgn.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_6KrJ0rECybfj3_Pj-nz7yA_K2jaXjnU";
+  const PORTAL_URL = "https://customers.tillageworx.com.au";
+  const GATING_ENABLED = false; // flip to true when portal is live
+
+  function getSession() {
+    try {
+      const raw = localStorage.getItem("sb-srgndcoiobilpwbliwgn-auth-token");
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed?.access_token) return null;
+      if (parsed.expires_at && Date.now() / 1000 > parsed.expires_at)
+        return null;
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function injectGateStyles() {
+    const style = document.createElement("style");
+    style.textContent = `
+      .twx-price-gate {
+        display: flex;
+        gap: 6px;
+        margin-top: 4px;
+      }
+      .twx-view-price-btn {
+        flex: 1;
+        padding: 8px 10px;
+        background: #c9a84c;
+        color: #1a1a1a;
+        border: none;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: opacity 0.15s;
+      }
+      .twx-view-price-btn:hover { opacity: 0.85; }
+      .twx-contact-btn {
+        flex: 1;
+        padding: 8px 10px;
+        background: transparent;
+        color: #888;
+        border: 1px solid #333;
+        border-radius: 8px;
+        font-size: 12px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.15s, color 0.15s;
+      }
+      .twx-contact-btn:hover { border-color: #666; color: #ccc; }
+      .twx-lock-icon {
+        font-size: 11px;
+        color: #666;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 6px;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function gateProductCards() {
+    if (!GATING_ENABLED) return;
+    const session = getSession();
+
+    // Hide or show the cart button in the nav
+    const cartBtn = document.getElementById("open-quote-cart-btn");
+
+    if (session) {
+      // Logged in — show everything, nothing to do
+      // The existing cart code handles all interactions
+      if (cartBtn) cartBtn.style.display = "flex";
+      return;
+    }
+
+    // Not logged in — gate all product cards
+    if (cartBtn) cartBtn.style.display = "none";
+
+    const priceEls = document.querySelectorAll(".brands-card-price");
+    const addBtns = document.querySelectorAll(".brands-card-add");
+
+    priceEls.forEach((el) => {
+      el.style.display = "none";
+    });
+
+    addBtns.forEach((btn) => {
+      btn.style.display = "none";
+
+      // Find the parent card body to inject gate UI
+      const cardBody = btn.closest(".brands-card-body");
+      if (!cardBody || cardBody.querySelector(".twx-price-gate")) return;
+
+      // Insert lock + buttons before where the add button was
+      const gate = document.createElement("div");
+      gate.className = "twx-price-gate-wrap";
+      gate.innerHTML = `
+        <div class="twx-lock-icon">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          Login to view price
+        </div>
+        <div class="twx-price-gate">
+          <a href="${PORTAL_URL}/signup" class="twx-view-price-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            View price
+          </a>
+          <a href="/contact" class="twx-contact-btn">Contact us</a>
+        </div>
+      `;
+      cardBody.appendChild(gate);
+    });
+  }
+
+  // Run after DOM is ready and after Webflow collection renders
+  function init() {
+    injectGateStyles();
+    gateProductCards();
+
+    // Re-run after Webflow collection list renders (it's async)
+    const observer = new MutationObserver(() => {
+      const cards = document.querySelectorAll(".brands-card-add");
+      if (cards.length > 0) {
+        observer.disconnect();
+        gateProductCards();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    setTimeout(() => observer.disconnect(), 8000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
 
 /* ── 1. CSS INJECTION REMOVED ──────────────────────────────── */
 /* CSS is now loaded via <link> tag in Webflow Head Code */
