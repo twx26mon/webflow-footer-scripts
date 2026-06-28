@@ -1024,24 +1024,25 @@
   /* ── Cart visibility ── */
   function showCart() {
     if (!DOM.cart) return;
-      // ── Personalise cart header with customer's first name ──
-  try {
-    const raw = localStorage.getItem('sb-srgndcoiobilpwbliwgn-auth-token');
-    if (raw) {
-      const session = JSON.parse(raw);
-      const firstName = session?.user?.user_metadata?.first_name;
-      if (firstName) {
-        let cartHeader = document.getElementById('twx-cart-header');
-        if (!cartHeader) {
-          cartHeader = document.createElement('div');
-          cartHeader.id = 'twx-cart-header';
-          cartHeader.style.cssText = 'padding:16px 16px 0;font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:0.05em;';
-          DOM.cart.querySelector('.quote-cart-content')?.prepend(cartHeader);
+    // ── Personalise cart header with customer's first name ──
+    try {
+      const raw = localStorage.getItem("sb-srgndcoiobilpwbliwgn-auth-token");
+      if (raw) {
+        const session = JSON.parse(raw);
+        const firstName = session?.user?.user_metadata?.first_name;
+        if (firstName) {
+          let cartHeader = document.getElementById("twx-cart-header");
+          if (!cartHeader) {
+            cartHeader = document.createElement("div");
+            cartHeader.id = "twx-cart-header";
+            cartHeader.style.cssText =
+              "padding:16px 16px 0;font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:0.05em;";
+            DOM.cart.querySelector(".quote-cart-content")?.prepend(cartHeader);
+          }
+          cartHeader.textContent = `${firstName}'s Cart`;
         }
-        cartHeader.textContent = `${firstName}'s Cart`;
       }
-    }
-  } catch (_e) {}
+    } catch (_e) {}
     // Re-load CMS data in case collection rendered after init
     loadCMSData();
     setTimeout(loadCMSData, 500);
@@ -1401,14 +1402,12 @@
     });
     observer.observe(document.body, { childList: true, subtree: true });
     setTimeout(() => observer.disconnect(), 10000);
-    log("Initialized in", `${(performance.now() - startTime).toFixed(2)}ms`);
     // Auto-open cart if URL contains ?cart=open
-    if (new URLSearchParams(window.location.search).get('cart') === 'open') {
+    if (new URLSearchParams(window.location.search).get("cart") === "open") {
       setTimeout(showCart, 500);
     }
 
     log("Initialized in", `${(performance.now() - startTime).toFixed(2)}ms`);
-  }
   }
 
   window.renderCart = renderCart;
