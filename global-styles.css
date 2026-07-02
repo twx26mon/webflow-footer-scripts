@@ -995,6 +995,12 @@ body a.brands-nav__btn.w--current .brand-header-icon {
   font-size: 16px !important;
 }
 
+/* Universal box-sizing — padding and borders included in element width,
+   consistent with portal behaviour */
+*, *::before, *::after {
+  box-sizing: border-box !important;
+}
+
 body {
   margin: 0 !important;
   padding: 0 !important;
