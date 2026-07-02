@@ -1019,6 +1019,20 @@ body {
   margin: 0 !important;
 }
 
+/* Webflow slider widget — strip default side padding */
+.w-slider {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Sections — ensure no inherited side padding */
+section, .w-section {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 /* Webflow injects padding-top on <body> via JS for fixed navs —
    our nav is sticky so this shouldn't be needed, force 0 */
 .w-nav[data-collapse] ~ .page-wrapper,
