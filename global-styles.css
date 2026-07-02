@@ -986,6 +986,41 @@ body a.brands-nav__btn.w--current .brand-header-icon {
 }
 
 /* ============================================================
+   BODY / WRAPPER RESETS — flush nav, no default margins
+   ============================================================ */
+
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Webflow page wrapper */
+.page-wrapper {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Webflow nav widget wrapper — no extra background or padding */
+.w-nav {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Webflow injects padding-top on <body> via JS for fixed navs —
+   our nav is sticky so this shouldn't be needed, force 0 */
+.w-nav[data-collapse] ~ .page-wrapper,
+.w-nav[data-collapse] + * {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Remove Webflow nav overlay gap */
+.w-nav-overlay {
+  top: 0 !important;
+}
+
+/* ============================================================
    NAV STYLE UPDATE — matches customers.tillageworx.com.au TopNav
    ============================================================ */
 
