@@ -989,94 +989,165 @@ body a.brands-nav__btn.w--current .brand-header-icon {
    NAV STYLE UPDATE — matches customers.tillageworx.com.au TopNav
    ============================================================ */
 
-/* ── Info bar (header-information) ──────────────────────────── */
+/* ── Info bar background ─────────────────────────────────────── */
 .header-information {
   background-color: #111 !important;
   border-bottom: 1px solid #1e1e1e !important;
-  padding: 10px 1.75rem !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  flex-direction: row !important;
-  max-width: 100% !important;
+  padding: 0 !important;
 }
 
-.header-information .nav-top-link,
-.header-information a {
+/* Desktop container — single row, 90rem max-width, matches portal container */
+.header-contact-container {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 1.75rem !important;
+  max-width: 90rem !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Left side: phone + email + dealer in one row with gap 24px */
+.header-phone-email-wrapper {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 24px !important;
+}
+
+.header-phone-wrapper,
+.header-email-wrapper {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Phone/email icons — 15px, gold */
+.header-phone-wrapper svg,
+.header-email-wrapper > svg {
+  width: 15px !important;
+  height: 15px !important;
+  flex-shrink: 0 !important;
+}
+
+.header-phone-wrapper svg path,
+.header-email-wrapper > svg path {
+  fill: #c2934a !important;
+}
+
+/* Info bar link text — #aaa, 15px */
+a.topbar-text {
   color: #aaa !important;
   font-size: 15px !important;
   font-family: Arial, sans-serif !important;
   letter-spacing: 0.3px !important;
   text-decoration: none !important;
+  font-weight: 400 !important;
   transition: color 0.15s !important;
 }
 
-.header-information .nav-top-link:hover,
-.header-information a:hover {
+a.topbar-text:hover {
   color: #c2934a !important;
 }
 
-.header-information .find-dealer-link,
-.header-information a[href*="dealer"],
-.header-information a[href*="find"] {
+/* Find a Dealer — gold, bold, 15px (overrides the embedded 18px) */
+.dealer-link {
   color: #c2934a !important;
   font-weight: 600 !important;
+  font-size: 15px !important;
 }
 
-.header-information svg path {
-  fill: #c2934a !important;
+.dealer-link:hover {
+  color: #fff !important;
 }
 
-.header-information .social-icon,
-.header-information .w-inline-block svg path {
+.header-dealer-wrapper {
+  margin-left: 0 !important;
+}
+
+/* Right side: social icons + Follow Us */
+.header-social-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.social-icon-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.social-icon-container .w-inline-block {
+  display: flex !important;
+  align-items: center !important;
+  transition: transform 0.2s ease !important;
+}
+
+.social-icon-container .w-inline-block:hover {
+  transform: scale(1.2) !important;
+}
+
+/* Social SVGs — 18px, grey */
+.social-icon-container svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.social-icon-container svg path {
   fill: #686868 !important;
 }
 
-.header-information .follow-text,
-.header-information .text-block {
-  color: #686868 !important;
-  font-size: 14px !important;
-  font-family: Arial, sans-serif !important;
-  letter-spacing: 0.3px !important;
-}
-
-.header-information .w-inline-block {
-  transition: transform 0.2s ease !important;
+/* "Follow Us" — reset h3 defaults to match portal span style */
+.header-social-text {
   display: flex !important;
   align-items: center !important;
 }
 
-.header-information .w-inline-block:hover {
-  transform: scale(1.2) !important;
+.header-social-text h3 {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: #686868 !important;
+  font-family: Arial, sans-serif !important;
+  letter-spacing: 0.3px !important;
+  margin: 0 !important;
+  text-transform: none !important;
+  line-height: 1 !important;
 }
 
 /* ── Main navbar ─────────────────────────────────────────────── */
-.navbar {
+section.navbar {
   background-color: #050505 !important;
   border-top: 1px solid rgba(194, 147, 74, 0.13) !important;
   border-bottom: 1px solid #1a1a1a !important;
   min-height: 72px !important;
-  max-width: 100% !important;
   padding: 0 1.75rem !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
+  box-sizing: border-box !important;
+  max-width: 100% !important;
 }
 
-.navbar .navbar-brand img,
-.navbar .image {
+/* Logo */
+section.navbar .image {
   width: 240px !important;
   height: auto !important;
 }
 
-.navbar .nav-menu {
+/* Nav menu row */
+section.navbar .nav-menu {
   display: flex !important;
-  align-items: center !important;
-  gap: 0 !important;
+  align-items: stretch !important;
   height: 72px !important;
+  gap: 0 !important;
 }
 
-.navbar .nav-link {
+/* Nav links (a elements) */
+section.navbar a.nav-link {
   color: #888 !important;
   font-size: 15px !important;
   font-family: Arial, sans-serif !important;
@@ -1092,35 +1163,50 @@ body a.brands-nav__btn.w--current .brand-header-icon {
   transition: color 0.15s !important;
 }
 
-.navbar .nav-link:hover {
+section.navbar a.nav-link:hover {
   color: #c2934a !important;
-  border-bottom: 2px solid #c2934a !important;
+  border-bottom-color: #c2934a !important;
 }
 
-.navbar .nav-link.w--current {
+section.navbar a.nav-link.w--current {
   color: #c2934a !important;
-  border-bottom: 2px solid #c2934a !important;
+  border-bottom-color: #c2934a !important;
 }
 
-.navbar .nav-link.dropdown {
+/* Dropdown toggle (div element, not a) */
+section.navbar .w-dropdown-toggle.nav-link {
   color: #888 !important;
   font-size: 15px !important;
   font-family: Arial, sans-serif !important;
   font-weight: 700 !important;
   letter-spacing: 1px !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+  padding: 0 18px !important;
+  height: 72px !important;
+  display: flex !important;
+  align-items: center !important;
+  border-bottom: 2px solid transparent !important;
+  transition: color 0.15s !important;
+  cursor: pointer !important;
 }
 
-.navbar .nav-link.dropdown:hover {
+section.navbar .w-dropdown-toggle.nav-link:hover {
   color: #c2934a !important;
+  border-bottom-color: #c2934a !important;
 }
 
-.navbar .svg-18 {
+/* Dropdown chevron */
+section.navbar .svg-18 {
   width: 16px !important;
   height: 16px !important;
-  color: #686868 !important;
 }
 
-.navbar .dropdown-list-2 {
+section.navbar .svg-18 path {
+  fill: #686868 !important;
+}
+
+/* Dropdown list */
+section.navbar .dropdown-list-2 {
   background-color: #0a0a0a !important;
   border: 1px solid #1e1e1e !important;
   border-top: 2px solid #c2934a !important;
@@ -1128,25 +1214,24 @@ body a.brands-nav__btn.w--current .brand-header-icon {
   border-radius: 0 0 4px 4px !important;
 }
 
-.navbar .menu-sublink {
+section.navbar .menu-sublink {
   color: #888 !important;
   font-size: 13px !important;
   font-family: Arial, sans-serif !important;
   letter-spacing: 0.5px !important;
   padding: 9px 20px !important;
   display: block !important;
+  text-decoration: none !important;
   transition: color 0.15s, background 0.15s !important;
 }
 
-.navbar .menu-sublink:hover {
+section.navbar .menu-sublink:hover {
   color: #c2934a !important;
   background-color: #1a1600 !important;
 }
 
-/* NOTE: .navbar .w-button catches all Webflow buttons inside the navbar.
-   If additional buttons are ever added to the nav, narrow this selector. */
-.navbar .open-quote-cart,
-.navbar .w-button {
+/* GET A QUOTE button */
+section.navbar .open-quote-cart {
   background-color: transparent !important;
   color: #c2934a !important;
   border: 1.5px solid rgba(194, 147, 74, 0.27) !important;
@@ -1158,23 +1243,14 @@ body a.brands-nav__btn.w--current .brand-header-icon {
   border-radius: 0 !important;
   text-shadow: none !important;
   transition: background 0.15s, border-color 0.15s !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
 }
 
-.navbar .open-quote-cart:hover,
-.navbar .w-button:hover {
+section.navbar .open-quote-cart:hover {
   background-color: rgba(194, 147, 74, 0.13) !important;
   border-color: #c2934a !important;
-}
-
-/* ── Max-width container alignment (matches portal 90rem / 1.75rem) ── */
-.navbar > .w-container,
-.header-information > .w-container,
-.navbar > div[class*="container"],
-.header-information > div[class*="container"] {
-  max-width: 90rem !important;
-  margin: 0 auto !important;
-  padding: 0 !important;
-  width: 100% !important;
 }
 
 /* ── Injected portal pill + greeting (from global-footer.js) ── */
