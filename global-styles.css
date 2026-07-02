@@ -1064,8 +1064,25 @@ a.topbar-text:hover {
   color: #fff !important;
 }
 
+/* Dealer wrapper — reset margin from embedded style, match flex layout */
 .header-dealer-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
   margin-left: 0 !important;
+  color: #c2934a !important;
+}
+
+/* Dealer icon — 15px to match phone/email icons */
+.svg-dealer {
+  width: 15px !important;
+  height: 15px !important;
+  flex-shrink: 0 !important;
+}
+
+/* The outer Webflow wrapper div contains only .w-embed — pass through */
+.header-phone-email-wrapper > .header-dealer-wrapper {
+  padding: 0 !important;
 }
 
 /* Right side: social icons + Follow Us */
@@ -1186,7 +1203,6 @@ section.navbar a.nav-link {
 
 section.navbar a.nav-link:hover {
   color: #c2934a !important;
-  border-bottom-color: #c2934a !important;
 }
 
 section.navbar a.nav-link.w--current {
@@ -1219,7 +1235,6 @@ section.navbar .w-dropdown-toggle.nav-link {
 
 section.navbar .w-dropdown-toggle.nav-link:hover {
   color: #c2934a !important;
-  border-bottom-color: #c2934a !important;
 }
 
 /* When dropdown is open: keep text gold but hide bottom border —
