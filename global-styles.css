@@ -1041,6 +1041,7 @@ body {
   background-color: #111 !important;
   border-bottom: 1px solid #1e1e1e !important;
   padding: 0 !important;
+  overflow: visible !important;
 }
 
 /* Desktop container — single row, 90rem max-width, matches portal container */
@@ -1196,7 +1197,8 @@ a.topbar-text:hover {
 }
 
 /* ── Main navbar ─────────────────────────────────────────────── */
-section.navbar {
+section.navbar,
+.navbar {
   background-color: #050505 !important;
   border-top: 1px solid rgba(194, 147, 74, 0.13) !important;
   border-bottom: 1px solid #1a1a1a !important;
@@ -1208,6 +1210,8 @@ section.navbar {
   box-sizing: border-box !important;
   max-width: 100% !important;
   overflow: visible !important;
+  /* Sit below the 60px info bar so both sticky bars stack correctly */
+  top: 60px !important;
 }
 
 /* Logo link — reset Webflow .w-nav-brand default padding */
