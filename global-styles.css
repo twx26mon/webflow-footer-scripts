@@ -1037,7 +1037,7 @@ body {
   flex-direction: row !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 10px 1.75rem !important;
+  padding: 10px 0 !important;
   max-width: 90rem !important;
   margin: 0 auto !important;
   width: 100% !important;
