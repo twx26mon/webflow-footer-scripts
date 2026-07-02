@@ -989,6 +989,12 @@ body a.brands-nav__btn.w--current .brand-header-icon {
    BODY / WRAPPER RESETS — flush nav, no default margins
    ============================================================ */
 
+/* Ensure 1rem = 16px to match portal — Webflow default can be 14px,
+   which makes 90rem narrower than the portal's 1440px */
+:root {
+  font-size: 16px !important;
+}
+
 body {
   margin: 0 !important;
   padding: 0 !important;
