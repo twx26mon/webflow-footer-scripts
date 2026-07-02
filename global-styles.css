@@ -1060,16 +1060,18 @@ body {
   gap: 8px !important;
 }
 
-/* Phone/email icons — 15px, gold */
+/* Phone/email icons — 15px, gold (cover fill, currentColor, and nested elements) */
 .header-phone-wrapper svg,
 .header-email-wrapper > svg {
   width: 15px !important;
   height: 15px !important;
   flex-shrink: 0 !important;
+  color: #c2934a !important;
+  fill: #c2934a !important;
 }
 
-.header-phone-wrapper svg path,
-.header-email-wrapper > svg path {
+.header-phone-wrapper svg *,
+.header-email-wrapper > svg * {
   fill: #c2934a !important;
 }
 
@@ -1088,14 +1090,17 @@ a.topbar-text:hover {
   color: #c2934a !important;
 }
 
-/* Find a Dealer — gold, bold, 15px (overrides the embedded 18px) */
-.dealer-link {
+/* Find a Dealer — gold, bold, 15px (target by class or by parent wrapper) */
+.dealer-link,
+.header-dealer-wrapper a {
   color: #c2934a !important;
   font-weight: 600 !important;
   font-size: 15px !important;
+  text-decoration: none !important;
 }
 
-.dealer-link:hover {
+.dealer-link:hover,
+.header-dealer-wrapper a:hover {
   color: #fff !important;
 }
 
@@ -1108,11 +1113,19 @@ a.topbar-text:hover {
   color: #c2934a !important;
 }
 
-/* Dealer icon — 15px to match phone/email icons */
-.svg-dealer {
+/* Dealer icon — 15px gold (cover fill, currentColor, and nested elements) */
+.svg-dealer,
+.header-dealer-wrapper svg {
   width: 15px !important;
   height: 15px !important;
   flex-shrink: 0 !important;
+  color: #c2934a !important;
+  fill: #c2934a !important;
+}
+
+.svg-dealer *,
+.header-dealer-wrapper svg * {
+  fill: #c2934a !important;
 }
 
 /* The outer Webflow wrapper div contains only .w-embed — pass through */
