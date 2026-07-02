@@ -5,7 +5,8 @@
    OR via an external script tag pointing to the raw GitHub URL.
 
    Contains:
-     1. CSS injection  — injects tillageworx.css at runtime
+   0. CUSTOMER ACCOUNT — price gating  
+   1. CSS injection  — injects tillageworx.css at runtime
      2. Quote Cart     — cart state, machine wizard, add-to-quote buttons
      3. Quote Review   — renders cart table + summary on /quote-review
      4. Quote Form     — collects form fields, submits directly to Zoho Flow
@@ -37,10 +38,162 @@
      #qr-submit-btn                           — form submit button (is an <a> tag)
    ============================================================ */
 
+/* ── 0. CUSTOMER ACCOUNT — price gating ──────────────────── */
+(function () {
+  const SUPABASE_URL = "https://srgndcoiobilpwbliwgn.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_6KrJ0rECybfj3_Pj-nz7yA_K2jaXjnU";
+  const PORTAL_URL = "https://customers.tillageworx.com.au";
+  const GATING_ENABLED = false; // flip to true when portal is live
+
+  function getSession() {
+    try {
+      const raw = localStorage.getItem("sb-srgndcoiobilpwbliwgn-auth-token");
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed?.access_token) return null;
+      if (parsed.expires_at && Date.now() / 1000 > parsed.expires_at)
+        return null;
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function injectGateStyles() {
+    const style = document.createElement("style");
+    style.textContent = `
+      .twx-price-gate {
+        display: flex;
+        gap: 6px;
+        margin-top: 4px;
+      }
+      .twx-view-price-btn {
+        flex: 1;
+        padding: 8px 10px;
+        background: #c9a84c;
+        color: #1a1a1a;
+        border: none;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: opacity 0.15s;
+      }
+      .twx-view-price-btn:hover { opacity: 0.85; }
+      .twx-contact-btn {
+        flex: 1;
+        padding: 8px 10px;
+        background: transparent;
+        color: #888;
+        border: 1px solid #333;
+        border-radius: 8px;
+        font-size: 12px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.15s, color 0.15s;
+      }
+      .twx-contact-btn:hover { border-color: #666; color: #ccc; }
+      .twx-lock-icon {
+        font-size: 11px;
+        color: #666;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 6px;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function gateProductCards() {
+    if (!GATING_ENABLED) return;
+    const session = getSession();
+
+    // Hide or show the cart button in the nav
+    const cartBtn = document.getElementById("open-quote-cart-btn");
+
+    if (session) {
+      // Logged in — show everything, nothing to do
+      // The existing cart code handles all interactions
+      if (cartBtn) cartBtn.style.display = "flex";
+      return;
+    }
+
+    // Not logged in — gate all product cards
+    if (cartBtn) cartBtn.style.display = "none";
+
+    const priceEls = document.querySelectorAll(".brands-card-price");
+    const addBtns = document.querySelectorAll(".brands-card-add");
+
+    priceEls.forEach((el) => {
+      el.style.display = "none";
+    });
+
+    addBtns.forEach((btn) => {
+      btn.style.display = "none";
+
+      // Find the parent card body to inject gate UI
+      const cardBody = btn.closest(".brands-card-body");
+      if (!cardBody || cardBody.querySelector(".twx-price-gate")) return;
+
+      // Insert lock + buttons before where the add button was
+      const gate = document.createElement("div");
+      gate.className = "twx-price-gate-wrap";
+      gate.innerHTML = `
+        <div class="twx-lock-icon">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          Login to view price
+        </div>
+        <div class="twx-price-gate">
+          <a href="${PORTAL_URL}/signup" class="twx-view-price-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            View price
+          </a>
+          <a href="/contact" class="twx-contact-btn">Contact us</a>
+        </div>
+      `;
+      cardBody.appendChild(gate);
+    });
+  }
+
+  // Run after DOM is ready and after Webflow collection renders
+  function init() {
+    injectGateStyles();
+    gateProductCards();
+
+    // Re-run after Webflow collection list renders (it's async)
+    const observer = new MutationObserver(() => {
+      const cards = document.querySelectorAll(".brands-card-add");
+      if (cards.length > 0) {
+        observer.disconnect();
+        gateProductCards();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    setTimeout(() => observer.disconnect(), 8000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
 /* ── 1. CSS INJECTION REMOVED ──────────────────────────────── */
 /* CSS is now loaded via <link> tag in Webflow Head Code */
 
-/* ── 2. ORDER CART + MACHINE WIZARD ──────────────────────── */
+/* ── 2. QUOTE CART + MACHINE WIZARD ──────────────────────── */
 (function () {
   "use strict";
 
@@ -519,7 +672,7 @@
     if (!proceedBtn) {
       proceedBtn = document.createElement("a");
       proceedBtn.id = "cart-proceed-btn";
-      proceedBtn.textContent = "PROCEED TO ORDER →";
+      proceedBtn.textContent = "PROCEED TO QUOTE →";
       summary.parentNode.insertBefore(proceedBtn, summary.nextSibling);
     }
     proceedBtn.href = "/quote-review";
@@ -555,7 +708,7 @@
 
     const quoteHeader = document.createElement("div");
     quoteHeader.className = "cart-section-header";
-    quoteHeader.textContent = "Your Order";
+    quoteHeader.textContent = "Your Quote";
     const contentArea = document.querySelector(".quote-cart-content");
     if (contentArea && DOM.cartItems)
       contentArea.insertBefore(quoteHeader, DOM.cartItems);
@@ -745,7 +898,7 @@
 
     const header = document.createElement("div");
     header.className = "wizard-step-title";
-    header.textContent = `Order Parts for ${activeModel.fullName} ${config.size}`;
+    header.textContent = `Quote Parts for ${activeModel.fullName} ${config.size}`;
     DOM.activeStep.appendChild(header);
 
     const machineContextStr =
@@ -759,7 +912,7 @@
 
     const addAllBtn = document.createElement("button");
     addAllBtn.className = "wiz-add-all-btn";
-    addAllBtn.textContent = "Add All Items to Order";
+    addAllBtn.textContent = "Add All Items to Quote";
     addAllBtn.addEventListener("click", () =>
       addAllPartsToCart(matchingParts, config, machineContextStr),
     );
@@ -785,7 +938,7 @@
       const row = document.createElement("div");
       row.className = "wiz-result-item";
       row.dataset.partId = part.id;
-      const btnText = inCart ? "Update" : "Add to Order";
+      const btnText = inCart ? "Update" : "Add to Quote";
       const btnClass = inCart ? "wiz-add-btn wiz-update-btn" : "wiz-add-btn";
 
       // Display unit price on the wizard line when available
@@ -831,7 +984,7 @@
     listDiv.appendChild(fragment);
     if (visibleCount === 0)
       listDiv.innerHTML =
-        '<div style="color:#888;text-align:center;padding:10px;">All parts added to order!</div>';
+        '<div style="color:#888;text-align:center;padding:10px;">All parts added to quote!</div>';
     DOM.activeStep.appendChild(listDiv);
   }
 
@@ -940,6 +1093,25 @@
   /* ── Cart visibility ── */
   function showCart() {
     if (!DOM.cart) return;
+    // ── Personalise cart header with customer's first name ──
+    try {
+      const raw = localStorage.getItem("sb-srgndcoiobilpwbliwgn-auth-token");
+      if (raw) {
+        const session = JSON.parse(raw);
+        const firstName = session?.user?.user_metadata?.first_name;
+        if (firstName) {
+          let cartHeader = document.getElementById("twx-cart-header");
+          if (!cartHeader) {
+            cartHeader = document.createElement("div");
+            cartHeader.id = "twx-cart-header";
+            cartHeader.style.cssText =
+              "padding:16px 16px 0;font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:0.05em;";
+            DOM.cart.querySelector(".quote-cart-content")?.prepend(cartHeader);
+          }
+          cartHeader.textContent = `${firstName}'s Cart`;
+        }
+      }
+    } catch (_e) {}
     // Re-load CMS data in case collection rendered after init
     loadCMSData();
     setTimeout(loadCMSData, 500);
@@ -1177,7 +1349,7 @@
   }
 
   function handleAddToQuote(btn, productName) {
-    log("Adding to order:", productName);
+    log("Adding to quote:", productName);
     const card = btn.closest(
       ".carousel-item, .product-card, .brands-product-card, .w-dyn-item",
     );
@@ -1261,9 +1433,9 @@
       <div id="cart-add-parts-box">
         <button id="cart-add-parts-btn"></button>
       </div>
-      <div class="cart-section-header">Your Order</div>
+      <div class="cart-section-header">Your Quote</div>
       <div id="cart-items" class="quote-cart-items"></div>
-      <button id="cart-clearall">Clear Order</button>
+      <button id="cart-clearall">Clear Quote</button>
       <div class="quote-cart-info"></div>
       <div id="cart-form-slot"></div>
     </div>
@@ -1318,6 +1490,11 @@
     });
     observer.observe(document.body, { childList: true, subtree: true });
     setTimeout(() => observer.disconnect(), 10000);
+    // Auto-open cart if URL contains ?cart=open
+    if (new URLSearchParams(window.location.search).get("cart") === "open") {
+      setTimeout(showCart, 500);
+    }
+
     log("Initialized in", `${(performance.now() - startTime).toFixed(2)}ms`);
   }
 
@@ -1330,7 +1507,7 @@
   }
 })();
 
-/* ── 3. ORDER REVIEW — cart table + summary on /quote-review ─ */
+/* ── 3. QUOTE REVIEW — cart table + summary on /quote-review ─ */
 (function () {
   const CART_KEY = "tillageworx_quote_cart";
 
@@ -1565,19 +1742,19 @@
           <div class="qr-summary-row"><span>GST (10%)</span><span>$${gst.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
           <div class="qr-summary-row"><span>Freight</span><span style="color:#888;font-style:italic;">TBA</span></div>
           <div class="qr-summary-row qr-summary-total"><span>Total (inc. GST)</span><span>$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
-          <div class="qr-freight-disclaimer">Once we receive your request, we will do our best to source the most affordable, reliable freight option.<br><br>We will then email you a Sales Order with freight included for you to accept.<br><br><span class="qr-freight-phone">📞 Questions? Call us on 08 6185 1944</span></div>
+          <div class="qr-freight-disclaimer">Once we receive your request, we will do our best to source the most affordable, reliable freight option.<br><br>We will then email you a Quote with freight included for you to accept.<br><br><span class="qr-freight-phone">📞 Questions? Call us on 08 6185 1944</span></div>
         `;
         if (!allPriced)
-          summaryHtml += `<div class="qr-summary-note" style="margin-top:8px;">Some items are price on request — our team will confirm final pricing before processing your order.</div>`;
+          summaryHtml += `<div class="qr-summary-note" style="margin-top:8px;">Some items are price on request — our team will confirm final pricing before processing your quote.</div>`;
       } else {
-        summaryHtml = `<div class="qr-summary-note">Our team will confirm pricing before processing your order.</div>`;
+        summaryHtml = `<div class="qr-summary-note">Our team will confirm pricing before processing your quote.</div>`;
       }
 
       summaryContainer.innerHTML = summaryHtml;
     }
   }
 
-  /* ── 4. ORDER FORM — direct Zoho Flow webhook submission ─── */
+  /* ── 4. QUOTE FORM — direct Zoho Flow webhook submission ─── */
   function initQRForm() {
     const sec = document.getElementById("qr-form-section");
     if (!sec || sec.dataset.qrFormInit) return;
@@ -1591,6 +1768,7 @@
     const email = g("qr-email");
     const phone = g("qr-phone");
     const business = g("qr-business");
+    const notes = g("qr-notes");
     if (!firstName) return;
 
     // ── Hide native single-line address field left over from Webflow form ──
@@ -1806,6 +1984,15 @@
       });
     }
 
+    // ── Space above Notes ──
+    if (notes) {
+      const notesContainer =
+        notes.closest(".input-container") || notes.parentElement;
+      if (notesContainer) {
+        notesContainer.style.marginTop = "24px";
+      }
+    }
+
     // ── Honeypot (invisible to humans, catches bots) ──
     const honeypot = document.createElement("input");
     honeypot.type = "text";
@@ -1825,13 +2012,21 @@
     // ── T&C checkbox (inserted just before submit button) ──
     const tcRow = document.createElement("div");
     tcRow.className = "qr-tc-row";
+    tcRow.style.cssText =
+      "display:flex; align-items:center; gap:10px; margin-top:16px; margin-bottom:16px;";
+
     const tcCb = document.createElement("input");
     tcCb.type = "checkbox";
     tcCb.id = "qr-terms";
+    tcCb.style.cssText =
+      "margin:0; width:16px; height:16px; flex-shrink:0; cursor:pointer; accent-color:#c2934a;";
+
     const tcLbl = document.createElement("label");
     tcLbl.setAttribute("for", "qr-terms");
+    tcLbl.style.cssText =
+      "margin:0; font-size:13px; color:#ccc; cursor:pointer; text-transform:none; letter-spacing:0; font-weight:normal;";
     tcLbl.innerHTML =
-      'I agree to the <a href="/terms-and-conditions" target="_blank">Terms &amp; Conditions</a>';
+      'I agree to the <a href="/terms-and-conditions" target="_blank" style="color:#c2934a;">Terms &amp; Conditions</a>';
     tcRow.appendChild(tcCb);
     tcRow.appendChild(tcLbl);
     submitBtn.parentNode.insertBefore(tcRow, submitBtn);
@@ -1925,7 +2120,7 @@
         })),
       );
 
-      // Snapshot — human-readable order summary stored on the Sales Order
+      // Snapshot — human-readable quote summary stored on the Quote
       const notesVal = gv("qr-notes");
 
       // Hardcoded to strictly alphanumeric string per Zoho Inventory custom field restrictions
@@ -1981,11 +2176,11 @@
             <div style="padding:40px 24px;text-align:center;">
               <div style="font-size:48px;margin-bottom:16px;">✅</div>
               <h3 style="color:#c2934a;font-size:20px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
-                Order Received!
+                Quote Requested!
               </h3>
               <p style="color:#ccc;font-size:15px;line-height:1.7;margin-bottom:24px;">
-                Thanks ${firstNameVal}, your order has been received!<br>
-                We'll email you a Sales Order with freight included ASAP.
+                Thanks ${firstNameVal}, your quote request has been received!<br>
+                We'll email you a Quote with freight included ASAP.
               </p>
               <p style="color:#888;font-size:13px;">
                 Questions? Call us on <a href="tel:0861851944" style="color:#c2934a;font-weight:700;">08 6185 1944</a>
@@ -2000,7 +2195,7 @@
         console.error("[TWX] Submission error:", err);
         submitBtn.style.opacity = "";
         submitBtn.style.pointerEvents = "";
-        submitBtn.textContent = "SUBMIT ORDER";
+        submitBtn.textContent = "SUBMIT QUOTE";
         showError(
           "Something went wrong. Please try again or call us on 08 6185 1944.",
         );
