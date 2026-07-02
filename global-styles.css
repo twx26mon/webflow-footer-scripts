@@ -984,3 +984,224 @@ body a.brands-nav__btn.w--current .brand-header-icon {
 .featured-slide__cta:hover * {
   transform: scale(1.04);
 }
+
+/* ============================================================
+   NAV STYLE UPDATE — matches customers.tillageworx.com.au TopNav
+   ============================================================ */
+
+/* ── Info bar (header-information) ──────────────────────────── */
+.header-information {
+  background-color: #111 !important;
+  border-bottom: 1px solid #1e1e1e !important;
+  padding: 10px 1.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-direction: row !important;
+  max-width: 100% !important;
+}
+
+.header-information .nav-top-link,
+.header-information a {
+  color: #aaa !important;
+  font-size: 15px !important;
+  font-family: Arial, sans-serif !important;
+  letter-spacing: 0.3px !important;
+  text-decoration: none !important;
+  transition: color 0.15s !important;
+}
+
+.header-information .nav-top-link:hover,
+.header-information a:hover {
+  color: #c2934a !important;
+}
+
+.header-information .find-dealer-link,
+.header-information a[href*="dealer"],
+.header-information a[href*="find"] {
+  color: #c2934a !important;
+  font-weight: 600 !important;
+}
+
+.header-information svg path {
+  fill: #c2934a !important;
+}
+
+.header-information .social-icon,
+.header-information .w-inline-block svg path {
+  fill: #686868 !important;
+}
+
+.header-information .follow-text,
+.header-information .text-block {
+  color: #686868 !important;
+  font-size: 14px !important;
+  font-family: Arial, sans-serif !important;
+  letter-spacing: 0.3px !important;
+}
+
+.header-information .w-inline-block {
+  transition: transform 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.header-information .w-inline-block:hover {
+  transform: scale(1.2) !important;
+}
+
+/* ── Main navbar ─────────────────────────────────────────────── */
+.navbar {
+  background-color: #050505 !important;
+  border-top: 1px solid rgba(194, 147, 74, 0.13) !important;
+  border-bottom: 1px solid #1a1a1a !important;
+  min-height: 72px !important;
+  max-width: 100% !important;
+  padding: 0 1.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.navbar .navbar-brand img,
+.navbar .image {
+  width: 240px !important;
+  height: auto !important;
+}
+
+.navbar .nav-menu {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  height: 72px !important;
+}
+
+.navbar .nav-link {
+  color: #888 !important;
+  font-size: 15px !important;
+  font-family: Arial, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+  padding: 0 18px !important;
+  height: 72px !important;
+  display: flex !important;
+  align-items: center !important;
+  border-bottom: 2px solid transparent !important;
+  text-decoration: none !important;
+  transition: color 0.15s !important;
+}
+
+.navbar .nav-link:hover {
+  color: #c2934a !important;
+  border-bottom: 2px solid #c2934a !important;
+}
+
+.navbar .nav-link.w--current {
+  color: #c2934a !important;
+  border-bottom: 2px solid #c2934a !important;
+}
+
+.navbar .nav-link.dropdown {
+  color: #888 !important;
+  font-size: 15px !important;
+  font-family: Arial, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+}
+
+.navbar .nav-link.dropdown:hover {
+  color: #c2934a !important;
+}
+
+.navbar .svg-18 {
+  width: 16px !important;
+  height: 16px !important;
+  color: #686868 !important;
+}
+
+.navbar .dropdown-list-2 {
+  background-color: #0a0a0a !important;
+  border: 1px solid #1e1e1e !important;
+  border-top: 2px solid #c2934a !important;
+  padding: 6px 0 !important;
+  border-radius: 0 0 4px 4px !important;
+}
+
+.navbar .menu-sublink {
+  color: #888 !important;
+  font-size: 13px !important;
+  font-family: Arial, sans-serif !important;
+  letter-spacing: 0.5px !important;
+  padding: 9px 20px !important;
+  display: block !important;
+  transition: color 0.15s, background 0.15s !important;
+}
+
+.navbar .menu-sublink:hover {
+  color: #c2934a !important;
+  background-color: #1a1600 !important;
+}
+
+/* NOTE: .navbar .w-button catches all Webflow buttons inside the navbar.
+   If additional buttons are ever added to the nav, narrow this selector. */
+.navbar .open-quote-cart,
+.navbar .w-button {
+  background-color: transparent !important;
+  color: #c2934a !important;
+  border: 1.5px solid rgba(194, 147, 74, 0.27) !important;
+  font-size: 15px !important;
+  font-family: Arial, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  padding: 10px 22px !important;
+  border-radius: 0 !important;
+  text-shadow: none !important;
+  transition: background 0.15s, border-color 0.15s !important;
+}
+
+.navbar .open-quote-cart:hover,
+.navbar .w-button:hover {
+  background-color: rgba(194, 147, 74, 0.13) !important;
+  border-color: #c2934a !important;
+}
+
+/* ── Max-width container alignment (matches portal 90rem / 1.75rem) ── */
+.navbar > .w-container,
+.header-information > .w-container,
+.navbar > div[class*="container"],
+.header-information > div[class*="container"] {
+  max-width: 90rem !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+/* ── Injected portal pill + greeting (from global-footer.js) ── */
+.portal-nav-pill {
+  font-size: 14px !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
+  text-decoration: none !important;
+  background: #1a1a1a !important;
+  border: 1px solid #2a2a2a !important;
+  padding: 5px 14px !important;
+  border-radius: 3px !important;
+  font-family: Arial, sans-serif !important;
+  transition: border-color 0.15s, color 0.15s !important;
+  white-space: nowrap !important;
+}
+
+.portal-nav-pill:hover {
+  border-color: #666 !important;
+  color: #c2934a !important;
+}
+
+.portal-greeting {
+  font-size: 15px !important;
+  color: #c2934a !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.3px !important;
+  font-family: Arial, sans-serif !important;
+}
