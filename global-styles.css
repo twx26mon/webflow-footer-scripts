@@ -1123,19 +1123,28 @@ section.navbar {
   background-color: #050505 !important;
   border-top: 1px solid rgba(194, 147, 74, 0.13) !important;
   border-bottom: 1px solid #1a1a1a !important;
-  min-height: 72px !important;
+  height: 72px !important;
   padding: 0 1.75rem !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   box-sizing: border-box !important;
   max-width: 100% !important;
+  overflow: visible !important;
 }
 
-/* Logo */
+/* Logo link — reset Webflow .w-nav-brand default padding */
+section.navbar .navbar-brand {
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+}
+
 section.navbar .image {
   width: 240px !important;
   height: auto !important;
+  display: block !important;
 }
 
 /* Nav menu row */
@@ -1144,6 +1153,14 @@ section.navbar .nav-menu {
   align-items: stretch !important;
   height: 72px !important;
   gap: 0 !important;
+}
+
+/* Dropdown wrapper — flex stretch, no borders of its own */
+section.navbar .menu-dropdown {
+  display: flex !important;
+  align-items: stretch !important;
+  position: relative !important;
+  border: none !important;
 }
 
 /* Nav links (a elements) */
@@ -1159,8 +1176,12 @@ section.navbar a.nav-link {
   display: flex !important;
   align-items: center !important;
   border-bottom: 2px solid transparent !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
   text-decoration: none !important;
   transition: color 0.15s !important;
+  box-sizing: border-box !important;
 }
 
 section.navbar a.nav-link:hover {
@@ -1173,7 +1194,7 @@ section.navbar a.nav-link.w--current {
   border-bottom-color: #c2934a !important;
 }
 
-/* Dropdown toggle (div element, not a) */
+/* Dropdown toggle (div, not a) */
 section.navbar .w-dropdown-toggle.nav-link {
   color: #888 !important;
   font-size: 15px !important;
@@ -1185,9 +1206,15 @@ section.navbar .w-dropdown-toggle.nav-link {
   height: 72px !important;
   display: flex !important;
   align-items: center !important;
+  gap: 6px !important;
   border-bottom: 2px solid transparent !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  background: none !important;
   transition: color 0.15s !important;
   cursor: pointer !important;
+  box-sizing: border-box !important;
 }
 
 section.navbar .w-dropdown-toggle.nav-link:hover {
@@ -1195,23 +1222,36 @@ section.navbar .w-dropdown-toggle.nav-link:hover {
   border-bottom-color: #c2934a !important;
 }
 
+/* When dropdown is open: keep text gold but hide bottom border —
+   the dropdown's own top border acts as the visual separator */
+section.navbar .w-dropdown.w--open .w-dropdown-toggle.nav-link {
+  color: #c2934a !important;
+  border-bottom-color: transparent !important;
+}
+
 /* Dropdown chevron */
 section.navbar .svg-18 {
   width: 16px !important;
   height: 16px !important;
+  flex-shrink: 0 !important;
 }
 
 section.navbar .svg-18 path {
   fill: #686868 !important;
 }
 
-/* Dropdown list */
+/* Dropdown list — dark box, gold top accent, positioned flush under nav */
 section.navbar .dropdown-list-2 {
   background-color: #0a0a0a !important;
-  border: 1px solid #1e1e1e !important;
+  border: 1px solid #2a2a2a !important;
   border-top: 2px solid #c2934a !important;
   padding: 6px 0 !important;
   border-radius: 0 0 4px 4px !important;
+  position: absolute !important;
+  top: 72px !important;
+  left: 0 !important;
+  min-width: 160px !important;
+  z-index: 100 !important;
 }
 
 section.navbar .menu-sublink {
@@ -1222,6 +1262,7 @@ section.navbar .menu-sublink {
   padding: 9px 20px !important;
   display: block !important;
   text-decoration: none !important;
+  white-space: nowrap !important;
   transition: color 0.15s, background 0.15s !important;
 }
 
@@ -1246,6 +1287,8 @@ section.navbar .open-quote-cart {
   text-decoration: none !important;
   display: inline-flex !important;
   align-items: center !important;
+  white-space: nowrap !important;
+  align-self: center !important;
 }
 
 section.navbar .open-quote-cart:hover {
