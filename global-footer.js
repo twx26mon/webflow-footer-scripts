@@ -111,9 +111,8 @@
         gap: 4px;
         margin-bottom: 6px;
       }
-      /* Parts template — larger buttons to match native Webflow button size */
+      /* Parts template — larger buttons (horizontal, matching native Webflow button) */
       .quote-button-container .twx-price-gate {
-        flex-direction: column;
         gap: 8px;
         margin-top: 8px;
       }
@@ -129,6 +128,10 @@
         font-size: 12px;
         margin-bottom: 8px;
         margin-top: 4px;
+      }
+      /* Brands template fallback — gate injected into raw parent with no padding */
+      .twx-gate-flush {
+        padding: 4px 12px 12px;
       }
     `;
     document.head.appendChild(style);
@@ -162,13 +165,13 @@
       btn.style.display = "none";
 
       // Find the parent card body — fall back to parentElement if exact class not present
-      const cardBody =
-        btn.closest(".brands-card-body") || btn.parentElement;
+      const cardBodyExact = btn.closest(".brands-card-body");
+      const cardBody = cardBodyExact || btn.parentElement;
       if (!cardBody || cardBody.querySelector(".twx-price-gate")) return;
 
-      // Insert lock + buttons before where the add button was
+      // If falling back to parentElement it may have no padding — add via class
       const gate = document.createElement("div");
-      gate.className = "twx-price-gate-wrap";
+      gate.className = "twx-price-gate-wrap" + (cardBodyExact ? "" : " twx-gate-flush");
       gate.innerHTML = `
         <div class="twx-lock-icon">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
@@ -283,12 +286,20 @@
       const cards = document.querySelectorAll(".brands-card-add");
       if (cards.length > 0) {
         observer.disconnect();
-        // Small delay so full card DOM (incl. parent wrappers) is rendered
-        setTimeout(gateProductCards, 150);
+        gateProductCards();
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
     setTimeout(() => observer.disconnect(), 8000);
+  }
+
+  // Pre-hide prices immediately (synchronous — before DOMContentLoaded)
+  // so the CMS collection never flashes prices before the gate runs
+  if (GATING_ENABLED && !getSession()) {
+    const preHide = document.createElement("style");
+    preHide.id = "twx-gate-prehide";
+    preHide.textContent = ".brands-card-price { display: none !important; }";
+    document.head.appendChild(preHide);
   }
 
   if (document.readyState === "loading") {
