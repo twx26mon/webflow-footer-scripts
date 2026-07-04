@@ -2691,7 +2691,7 @@
   // ── Inject styles ──
   const style = document.createElement("style");
   style.textContent = `
-    .twx-about { font-family: inherit; border: 1px solid #1e1e1e; border-radius: 12px; overflow: hidden; }
+    .twx-about { font-family: inherit; border: 1px solid #2a2a2a; border-radius: 12px; overflow: hidden; margin: 24px 1.75rem 48px; }
 
     /* Hero */
     .twx-about-hero {
