@@ -1224,8 +1224,7 @@ section.navbar,
   box-sizing: border-box !important;
   max-width: 100% !important;
   overflow: visible !important;
-  /* Sit below the 60px info bar so both sticky bars stack correctly */
-  top: 60px !important;
+  top: 0 !important;
 }
 
 /* Logo link — reset Webflow .w-nav-brand default padding */
@@ -1313,10 +1312,11 @@ section.navbar .w-dropdown-toggle.nav-link {
 
 section.navbar .w-dropdown-toggle.nav-link:hover {
   color: #c2934a !important;
+  border-bottom-color: transparent !important;
 }
 
-/* When dropdown is open: keep text gold but hide bottom border —
-   the dropdown's own top border acts as the visual separator */
+/* Dropdown toggle — never show underline (hover, open, or current page) */
+section.navbar .w-dropdown-toggle.nav-link.w--current,
 section.navbar .w-dropdown.w--open .w-dropdown-toggle.nav-link {
   color: #c2934a !important;
   border-bottom-color: transparent !important;
@@ -1333,35 +1333,45 @@ section.navbar .svg-18 path {
   fill: #686868 !important;
 }
 
-/* Dropdown list — dark box, gold top accent, positioned flush under nav */
+/* Dropdown list — dark panel, gold top accent */
+section.navbar .w-dropdown-list,
 section.navbar .dropdown-list-2 {
-  background-color: #0a0a0a !important;
-  border: 1px solid #2a2a2a !important;
+  background-color: #111 !important;
+  border: 1px solid #222 !important;
   border-top: 2px solid #c2934a !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
   padding: 6px 0 !important;
-  border-radius: 0 0 4px 4px !important;
+  border-radius: 0 0 6px 6px !important;
   position: absolute !important;
   top: 72px !important;
   left: 0 !important;
-  min-width: 160px !important;
+  min-width: 180px !important;
   z-index: 100 !important;
+  overflow: hidden !important;
 }
 
 section.navbar .menu-sublink {
-  color: #888 !important;
+  color: #aaa !important;
   font-size: 13px !important;
   font-family: Arial, sans-serif !important;
-  letter-spacing: 0.5px !important;
-  padding: 9px 20px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.4px !important;
+  padding: 11px 22px !important;
   display: block !important;
   text-decoration: none !important;
   white-space: nowrap !important;
-  transition: color 0.15s, background 0.15s !important;
+  border-bottom: 1px solid #1c1c1c !important;
+  transition: color 0.15s, background 0.15s, padding-left 0.15s !important;
+}
+
+section.navbar .menu-sublink:last-child {
+  border-bottom: none !important;
 }
 
 section.navbar .menu-sublink:hover {
   color: #c2934a !important;
-  background-color: #1a1600 !important;
+  background-color: rgba(194, 147, 74, 0.06) !important;
+  padding-left: 28px !important;
 }
 
 /* GET A QUOTE button */
