@@ -113,6 +113,9 @@
         margin-bottom: 6px;
       }
       /* Parts template — larger buttons (horizontal, matching native Webflow button) */
+      .quote-button-container .twx-price-gate-wrap {
+        width: 100%;
+      }
       .quote-button-container .twx-price-gate {
         gap: 8px;
         margin-top: 8px;
