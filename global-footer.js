@@ -281,13 +281,14 @@
   function activatePartsNav() {
     const path = window.location.pathname;
     if (!path.startsWith("/brands/") && !path.startsWith("/parts/")) return;
-    // Use .nav-link (not a.nav-link) to catch any element type
+    // Use twx-active instead of w--current — Webflow strips w--current from
+    // anchor links whose href doesn't match the current URL
     document.querySelectorAll("section.navbar .nav-link").forEach(function (el) {
       if (
         el.getAttribute("href") === "/parts" ||
         el.textContent.trim().toUpperCase() === "PARTS"
       ) {
-        el.classList.add("w--current");
+        el.classList.add("twx-active");
       }
     });
   }
