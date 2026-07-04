@@ -43,7 +43,7 @@
   const SUPABASE_URL = "https://srgndcoiobilpwbliwgn.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_6KrJ0rECybfj3_Pj-nz7yA_K2jaXjnU";
   const PORTAL_URL = "https://customers.tillageworx.com.au";
-  const GATING_ENABLED = false; // flip to true when portal is live
+  const GATING_ENABLED = true;
 
   function getSession() {
     try {
@@ -166,10 +166,59 @@
     });
   }
 
+  function injectInfoBarAuth() {
+    const session = getSession();
+    const socialEl = document.querySelector(".social-icon-container");
+    if (!socialEl || !socialEl.parentNode) return;
+
+    const existing = document.getElementById("twx-nav-auth");
+    if (existing) existing.remove();
+
+    const el = document.createElement("div");
+    el.id = "twx-nav-auth";
+    el.style.cssText =
+      "display:flex;align-items:center;gap:16px;margin-right:4px;";
+
+    if (session) {
+      const firstName = session.user?.user_metadata?.first_name || "";
+      el.innerHTML = `
+        <span style="color:#aaa;font-size:12px;font-family:Arial,sans-serif;letter-spacing:0.3px;">
+          G'day, <strong style="color:#fff;">${firstName}</strong>
+        </span>
+        <a href="${PORTAL_URL}/dashboard"
+           style="color:#c2934a;font-size:12px;font-family:Arial,sans-serif;font-weight:700;text-decoration:none;letter-spacing:0.5px;text-transform:uppercase;">
+          Dashboard
+        </a>
+        <button id="twx-signout-btn"
+                style="background:none;border:none;color:#686868;font-size:12px;font-family:Arial,sans-serif;cursor:pointer;padding:0;letter-spacing:0.3px;">
+          Sign out
+        </button>
+      `;
+      socialEl.parentNode.insertBefore(el, socialEl);
+      document.getElementById("twx-signout-btn").addEventListener("click", function () {
+        localStorage.removeItem("sb-srgndcoiobilpwbliwgn-auth-token");
+        window.location.reload();
+      });
+    } else {
+      el.innerHTML = `
+        <a href="${PORTAL_URL}/login"
+           style="color:#aaa;font-size:12px;font-family:Arial,sans-serif;text-decoration:none;letter-spacing:0.3px;">
+          Customer login
+        </a>
+        <a href="${PORTAL_URL}/signup"
+           style="color:#c2934a;font-size:12px;font-family:Arial,sans-serif;font-weight:700;text-decoration:none;letter-spacing:0.5px;text-transform:uppercase;">
+          Create account
+        </a>
+      `;
+      socialEl.parentNode.insertBefore(el, socialEl);
+    }
+  }
+
   // Run after DOM is ready and after Webflow collection renders
   function init() {
     injectGateStyles();
     gateProductCards();
+    injectInfoBarAuth();
 
     // Re-run after Webflow collection list renders (it's async)
     const observer = new MutationObserver(() => {
