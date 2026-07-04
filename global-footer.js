@@ -111,6 +111,25 @@
         gap: 4px;
         margin-bottom: 6px;
       }
+      /* Parts template — larger buttons to match native Webflow button size */
+      .quote-button-container .twx-price-gate {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .quote-button-container .twx-view-price-btn,
+      .quote-button-container .twx-contact-btn {
+        padding: 13px 20px;
+        font-size: 14px;
+        border-radius: 4px;
+        letter-spacing: 0.5px;
+        font-family: Arial, sans-serif;
+      }
+      .quote-button-container .twx-lock-icon {
+        font-size: 12px;
+        margin-bottom: 8px;
+        margin-top: 4px;
+      }
     `;
     document.head.appendChild(style);
   }
