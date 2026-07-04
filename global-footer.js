@@ -674,6 +674,321 @@
     if (state.wizState.size) finishWizard();
   }
 
+  /* ── Guest quote modal ── */
+  function openGuestQuoteModal() {
+    const existing = document.getElementById("twx-gq-modal");
+    if (existing) existing.remove();
+
+    const cartSummaryHtml = state.cart
+      .map((item) => {
+        const qty = Math.max(1, item.qty || 1);
+        return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #1e1e1e;font-size:12px;font-family:Arial,sans-serif;">
+          <span style="color:#ccc;flex:1;padding-right:8px;line-height:1.4;">${escapeHtml(item.name)}</span>
+          <span style="color:#686868;flex-shrink:0;">× ${qty}</span>
+        </div>`;
+      })
+      .join("");
+
+    const modal = document.createElement("div");
+    modal.id = "twx-gq-modal";
+    modal.style.cssText =
+      "position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;";
+
+    modal.innerHTML = `
+      <div style="background:#111;border:1px solid #2a2a2a;border-radius:12px;width:100%;max-width:480px;padding:28px 24px;position:relative;max-height:90vh;overflow-y:auto;">
+        <button id="twx-gq-close" type="button" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#555;font-size:26px;cursor:pointer;line-height:1;padding:0;font-family:Arial,sans-serif;">×</button>
+
+        <div style="font-family:'Oswald',Arial,sans-serif;color:#c2934a;font-size:18px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Submit Your Quote</div>
+        <div style="font-family:Arial,sans-serif;color:#686868;font-size:13px;margin-bottom:20px;line-height:1.5;">We'll email you a quote with freight included as soon as possible.</div>
+
+        <div style="margin-bottom:16px;background:#0e0e0e;border:1px solid #1e1e1e;border-radius:8px;padding:12px 14px;">
+          <div style="font-family:'Oswald',Arial,sans-serif;font-size:10px;color:#c2934a;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">YOUR QUOTE (${state.cart.length} item${state.cart.length !== 1 ? "s" : ""})</div>
+          ${cartSummaryHtml}
+        </div>
+
+        <div style="display:flex;gap:12px;margin-bottom:12px;">
+          <div style="flex:1;">
+            <label style="display:block;font-family:Arial,sans-serif;font-size:10px;color:#888;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;margin-bottom:4px;">First Name *</label>
+            <input id="twx-gq-first" type="text" placeholder="First name" style="width:100%;padding:9px 11px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;color:#fff;font-size:13px;box-sizing:border-box;font-family:Arial,sans-serif;">
+          </div>
+          <div style="flex:1;">
+            <label style="display:block;font-family:Arial,sans-serif;font-size:10px;color:#888;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Last Name</label>
+            <input id="twx-gq-last" type="text" placeholder="Last name" style="width:100%;padding:9px 11px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;color:#fff;font-size:13px;box-sizing:border-box;font-family:Arial,sans-serif;">
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-family:Arial,sans-serif;font-size:10px;color:#888;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Email Address *</label>
+          <input id="twx-gq-email" type="email" placeholder="your@email.com" style="width:100%;padding:9px 11px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;color:#fff;font-size:13px;box-sizing:border-box;font-family:Arial,sans-serif;">
+        </div>
+
+        <div style="display:flex;gap:12px;margin-bottom:12px;">
+          <div style="flex:1;">
+            <label style="display:block;font-family:Arial,sans-serif;font-size:10px;color:#888;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Phone Number</label>
+            <input id="twx-gq-phone" type="tel" placeholder="04xx xxx xxx" style="width:100%;padding:9px 11px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;color:#fff;font-size:13px;box-sizing:border-box;font-family:Arial,sans-serif;">
+          </div>
+          <div style="flex:1;">
+            <label style="display:block;font-family:Arial,sans-serif;font-size:10px;color:#888;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Delivery Postcode *</label>
+            <input id="twx-gq-postcode" type="text" placeholder="e.g. 6430" maxlength="4" style="width:100%;padding:9px 11px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;color:#fff;font-size:13px;box-sizing:border-box;font-family:Arial,sans-serif;">
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-family:Arial,sans-serif;font-size:10px;color:#888;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Comments / Special Instructions</label>
+          <textarea id="twx-gq-comments" rows="3" placeholder="Any special instructions or questions..." style="width:100%;padding:9px 11px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;color:#fff;font-size:13px;box-sizing:border-box;font-family:Arial,sans-serif;resize:vertical;line-height:1.5;"></textarea>
+        </div>
+
+        <div id="twx-gq-error" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:12px;padding:10px 12px;background:rgba(231,76,60,0.1);border-radius:4px;font-family:Arial,sans-serif;line-height:1.5;"></div>
+
+        <button id="twx-gq-submit" type="button" style="display:block;width:100%;background:#c2934a;border:none;border-radius:6px;color:#111;text-align:center;font-weight:700;font-family:Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:14px 24px;cursor:pointer;transition:background 0.15s;box-sizing:border-box;">SUBMIT QUOTE →</button>
+
+        <div style="text-align:center;margin-top:14px;font-family:Arial,sans-serif;font-size:12px;color:#444;">
+          Already have an account? <a href="/login?return=${encodeURIComponent(window.location.href)}" style="color:#c2934a;text-decoration:none;font-weight:700;">Sign in</a>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => document.getElementById("twx-gq-first")?.focus(), 100);
+
+    function closeModal() {
+      document.getElementById("twx-gq-modal")?.remove();
+    }
+
+    document.getElementById("twx-gq-close").addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+    document.getElementById("twx-gq-submit").addEventListener("click", async function () {
+      const firstNameVal = document.getElementById("twx-gq-first")?.value?.trim() || "";
+      const lastNameVal = document.getElementById("twx-gq-last")?.value?.trim() || "";
+      const emailVal = document.getElementById("twx-gq-email")?.value?.trim() || "";
+      const phoneVal = document.getElementById("twx-gq-phone")?.value?.trim() || "";
+      const postcodeVal = document.getElementById("twx-gq-postcode")?.value?.trim() || "";
+      const commentsVal = document.getElementById("twx-gq-comments")?.value?.trim() || "";
+      const errorEl = document.getElementById("twx-gq-error");
+
+      function showErr(msg) {
+        errorEl.textContent = msg;
+        errorEl.style.display = "block";
+      }
+
+      if (!firstNameVal) { showErr("Please enter your first name."); return; }
+      if (!emailVal || !emailVal.includes("@")) { showErr("Please enter a valid email address."); return; }
+      if (!postcodeVal || postcodeVal.length < 4) { showErr("Please enter your 4-digit delivery postcode."); return; }
+
+      errorEl.style.display = "none";
+      const submitBtn = document.getElementById("twx-gq-submit");
+      submitBtn.style.opacity = "0.6";
+      submitBtn.style.pointerEvents = "none";
+      submitBtn.textContent = "SUBMITTING...";
+
+      const cartJson = JSON.stringify(
+        state.cart.map((item) => ({
+          SKU: item.code || item.id,
+          Name: item.name,
+          Quantity: Math.max(1, item.qty || 1),
+          ZohoItemID: item.zoho_id || "",
+        }))
+      );
+
+      const payload = {
+        honeypot: "",
+        customer_email: emailVal,
+        customer_first_name: firstNameVal,
+        customer_last_name: lastNameVal,
+        customer_name: [firstNameVal, lastNameVal].filter(Boolean).join(" "),
+        customer_phone: phoneVal,
+        invoice_postcode: postcodeVal,
+        delivery_postcode: postcodeVal,
+        notes: commentsVal,
+        cart_json: cartJson,
+        snapshot: "WEBFLOW",
+      };
+
+      try {
+        const resp = await fetch("https://twx-zoho-proxy.monica-6b5.workers.dev", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (resp.ok) {
+          localStorage.removeItem(CONFIG.CART_KEY);
+          state.cart = [];
+          renderCart();
+
+          const modalInner = modal.querySelector("div");
+          modalInner.innerHTML = `
+            <div style="text-align:center;padding:20px 0;">
+              <div style="font-size:48px;margin-bottom:16px;">✅</div>
+              <div style="font-family:'Oswald',Arial,sans-serif;color:#c2934a;font-size:20px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Quote Submitted!</div>
+              <p style="font-family:Arial,sans-serif;color:#ccc;font-size:14px;line-height:1.7;margin-bottom:8px;">
+                Thanks ${escapeHtml(firstNameVal)}! We'll email a quote with freight included ASAP.
+              </p>
+              <p style="font-family:Arial,sans-serif;color:#686868;font-size:13px;margin-bottom:24px;">
+                Check your inbox at ${escapeHtml(emailVal)}
+              </p>
+              <p style="font-family:Arial,sans-serif;color:#888;font-size:13px;margin-bottom:20px;">Questions? Call us on <a href="tel:0861851944" style="color:#c2934a;font-weight:700;">08 6185 1944</a></p>
+              <button type="button" id="twx-gq-done" style="background:#1e1e1e;border:1px solid #2a2a2a;border-radius:6px;color:#aaa;font-family:Arial,sans-serif;font-size:13px;letter-spacing:1px;padding:12px 32px;cursor:pointer;">Close</button>
+            </div>
+          `;
+          document.getElementById("twx-gq-done")?.addEventListener("click", closeModal);
+        } else {
+          throw new Error("Submission failed");
+        }
+      } catch (err) {
+        submitBtn.style.opacity = "";
+        submitBtn.style.pointerEvents = "";
+        submitBtn.textContent = "SUBMIT QUOTE →";
+        showErr("Something went wrong. Please try again or call us on 08 6185 1944.");
+      }
+    });
+  }
+
+  /* ── Member order modal ── */
+  function openMemberOrderModal() {
+    const session = getSession();
+    if (!session) { window.location.href = "/login?return=" + encodeURIComponent(window.location.href); return; }
+
+    const existing = document.getElementById("twx-mo-modal");
+    if (existing) existing.remove();
+
+    const cartCount = state.cart.length;
+    const cartSummaryHtml = state.cart
+      .map((item) => {
+        const qty = Math.max(1, item.qty || 1);
+        return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #1e1e1e;font-size:12px;font-family:Arial,sans-serif;">
+          <span style="color:#ccc;flex:1;padding-right:8px;line-height:1.4;">${escapeHtml(item.name)}</span>
+          <span style="color:#686868;flex-shrink:0;">× ${qty}</span>
+        </div>`;
+      })
+      .join("");
+
+    const modal = document.createElement("div");
+    modal.id = "twx-mo-modal";
+    modal.style.cssText =
+      "position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;";
+
+    modal.innerHTML = `
+      <div style="background:#111;border:1px solid #2a2a2a;border-radius:12px;width:100%;max-width:460px;padding:28px 24px;position:relative;max-height:90vh;overflow-y:auto;">
+        <button id="twx-mo-close" type="button" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#555;font-size:26px;cursor:pointer;line-height:1;padding:0;font-family:Arial,sans-serif;">×</button>
+
+        <div style="font-family:'Oswald',Arial,sans-serif;color:#c2934a;font-size:18px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Place Your Order</div>
+        <div style="font-family:Arial,sans-serif;color:#686868;font-size:13px;margin-bottom:20px;line-height:1.5;">We'll add freight and email you to approve the final total before processing.</div>
+
+        <div style="margin-bottom:16px;background:#0e0e0e;border:1px solid #1e1e1e;border-radius:8px;padding:12px 14px;">
+          <div style="font-family:'Oswald',Arial,sans-serif;font-size:10px;color:#c2934a;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">YOUR ORDER (${cartCount} item${cartCount !== 1 ? "s" : ""})</div>
+          ${cartSummaryHtml}
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-family:Arial,sans-serif;font-size:10px;color:#888;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Notes / Special Instructions <span style="color:#444;font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <textarea id="twx-mo-notes" rows="3" placeholder="Any special delivery instructions, machine details, or questions..." style="width:100%;padding:9px 11px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;color:#fff;font-size:13px;box-sizing:border-box;font-family:Arial,sans-serif;resize:vertical;line-height:1.5;"></textarea>
+        </div>
+
+        <div id="twx-mo-error" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:12px;padding:10px 12px;background:rgba(231,76,60,0.1);border-radius:4px;font-family:Arial,sans-serif;line-height:1.5;"></div>
+
+        <div style="display:flex;gap:10px;">
+          <button id="twx-mo-cancel" type="button" style="flex:1;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#666;font-family:Arial,sans-serif;font-size:13px;padding:13px 16px;cursor:pointer;">Cancel</button>
+          <button id="twx-mo-submit" type="button" style="flex:2;background:#c2934a;border:none;border-radius:6px;color:#111;font-weight:700;font-family:Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:13px 16px;cursor:pointer;">PLACE ORDER →</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => document.getElementById("twx-mo-notes")?.focus(), 100);
+
+    function closeModal() {
+      document.getElementById("twx-mo-modal")?.remove();
+    }
+
+    document.getElementById("twx-mo-close").addEventListener("click", closeModal);
+    document.getElementById("twx-mo-cancel").addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+    document.getElementById("twx-mo-submit").addEventListener("click", async function () {
+      const sess = getSession();
+      if (!sess) { window.location.href = "/login?return=" + encodeURIComponent(window.location.href); return; }
+
+      const meta = sess.user?.user_metadata || {};
+      const notesVal = document.getElementById("twx-mo-notes")?.value?.trim() || "";
+      const errorEl = document.getElementById("twx-mo-error");
+      const submitBtn = document.getElementById("twx-mo-submit");
+
+      submitBtn.style.opacity = "0.6";
+      submitBtn.style.pointerEvents = "none";
+      submitBtn.textContent = "PLACING ORDER...";
+
+      const firstName = meta.first_name || "";
+      const lastName = meta.last_name || "";
+      const billingStreet = meta.billing_street || "";
+      const billingTown = meta.billing_town || "";
+      const billingState = meta.billing_state || "";
+      const billingPostcode = meta.billing_postcode || "";
+      const isSameAddr = meta.same_as_billing !== false;
+      const deliveryStreet = isSameAddr ? billingStreet : (meta.delivery_street || billingStreet);
+      const deliveryTown = isSameAddr ? billingTown : (meta.delivery_town || billingTown);
+      const deliveryState = isSameAddr ? billingState : (meta.delivery_state || billingState);
+      const deliveryPostcode = isSameAddr ? billingPostcode : (meta.delivery_postcode || billingPostcode);
+      const deliveryAddress = [deliveryStreet, deliveryTown, deliveryState, deliveryPostcode].filter(Boolean).join(", ");
+
+      const cartJson = JSON.stringify(
+        state.cart.map((item) => ({
+          SKU: item.code || item.id,
+          Name: item.name,
+          Quantity: Math.max(1, item.qty || 1),
+          ZohoItemID: item.zoho_id || "",
+        }))
+      );
+
+      const payload = {
+        honeypot: "",
+        customer_email: sess.user.email || "",
+        customer_first_name: firstName,
+        customer_last_name: lastName,
+        customer_name: [firstName, lastName].filter(Boolean).join(" "),
+        customer_phone: meta.mobile || "",
+        business_name: meta.business_name || "",
+        invoice_street: billingStreet,
+        invoice_town: billingTown,
+        invoice_state: billingState,
+        invoice_postcode: billingPostcode,
+        delivery_street: deliveryStreet,
+        delivery_town: deliveryTown,
+        delivery_state: deliveryState,
+        delivery_postcode: deliveryPostcode,
+        delivery_address: deliveryAddress,
+        notes: notesVal,
+        cart_json: cartJson,
+        snapshot: "PORTAL",
+      };
+
+      try {
+        const resp = await fetch("https://twx-zoho-proxy.monica-6b5.workers.dev", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (resp.ok) {
+          localStorage.removeItem(CONFIG.CART_KEY);
+          state.cart = [];
+          renderCart();
+          closeModal();
+          window.location.href = "https://customers.tillageworx.com.au/orders?new=1";
+        } else {
+          throw new Error("Submission failed");
+        }
+      } catch (err) {
+        errorEl.textContent = "Something went wrong. Please try again or call us on 08 6185 1944.";
+        errorEl.style.display = "block";
+        submitBtn.style.opacity = "";
+        submitBtn.style.pointerEvents = "";
+        submitBtn.textContent = "PLACE ORDER →";
+      }
+    });
+  }
+
   /* ── Cart render ── */
   function renderCart() {
     if (!DOM.cartItems) return;
@@ -811,18 +1126,21 @@
       summary.innerHTML = `<div class="cart-summary-note">Pricing will be confirmed on the next step.</div>`;
     }
 
-    let proceedBtn = document.getElementById("cart-proceed-btn");
-    if (!proceedBtn) {
-      proceedBtn = document.createElement("a");
-      proceedBtn.id = "cart-proceed-btn";
-      summary.parentNode.insertBefore(proceedBtn, summary.nextSibling);
-    }
+    // Always recreate to avoid duplicate event listeners on re-renders
+    const existingProceedBtn = document.getElementById("cart-proceed-btn");
+    if (existingProceedBtn) existingProceedBtn.remove();
+
+    const proceedBtn = document.createElement("button");
+    proceedBtn.id = "cart-proceed-btn";
+    proceedBtn.type = "button";
+    summary.parentNode.insertBefore(proceedBtn, summary.nextSibling);
+
     if (!session) {
-      proceedBtn.textContent = "Sign in to place an order →";
-      proceedBtn.href = "/login?return=" + encodeURIComponent(window.location.href);
+      proceedBtn.textContent = "SUBMIT QUOTE →";
+      proceedBtn.addEventListener("click", openGuestQuoteModal);
     } else {
-      proceedBtn.textContent = "PROCEED TO QUOTE →";
-      proceedBtn.href = "/quote-review";
+      proceedBtn.textContent = "PLACE ORDER →";
+      proceedBtn.addEventListener("click", openMemberOrderModal);
     }
 
     updateButtons();
