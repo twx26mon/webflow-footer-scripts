@@ -278,12 +278,27 @@
     }
   }
 
+  function activatePartsNav() {
+    const path = window.location.pathname;
+    // Mark PARTS as active when on any brand or part template page
+    if (!path.startsWith("/brands/") && !path.startsWith("/parts/")) return;
+    document.querySelectorAll("section.navbar a.nav-link").forEach(function (link) {
+      if (
+        link.pathname === "/parts" ||
+        link.textContent.trim().toUpperCase() === "PARTS"
+      ) {
+        link.classList.add("w--current");
+      }
+    });
+  }
+
   // Run after DOM is ready and after Webflow collection renders
   function init() {
     injectGateStyles();
     gateProductCards();
     gatePartsTemplate();
     injectInfoBarAuth();
+    activatePartsNav();
 
     // Re-run after Webflow collection list renders (it's async)
     const observer = new MutationObserver(() => {

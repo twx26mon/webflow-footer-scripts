@@ -1310,14 +1310,21 @@ section.navbar .w-dropdown-toggle.nav-link {
   box-sizing: border-box !important;
 }
 
+/* Hover only — gold text, no underline */
 section.navbar .w-dropdown-toggle.nav-link:hover {
   color: #c2934a !important;
   border-bottom-color: transparent !important;
 }
 
-/* Dropdown toggle — never show underline (hover, open, or current page) */
-section.navbar .w-dropdown-toggle.nav-link.w--current,
-section.navbar .w-dropdown.w--open .w-dropdown-toggle.nav-link {
+/* Active sub-page under ABOUT — show gold underline */
+section.navbar .w-dropdown-toggle.nav-link.w--current {
+  color: #c2934a !important;
+  border-bottom-color: #c2934a !important;
+}
+
+/* Dropdown open — suppress underline even if current (the dropdown panel is the visual indicator) */
+section.navbar .w-dropdown.w--open .w-dropdown-toggle.nav-link,
+section.navbar .w-dropdown.w--open .w-dropdown-toggle.nav-link.w--current {
   color: #c2934a !important;
   border-bottom-color: transparent !important;
 }
@@ -1334,8 +1341,8 @@ section.navbar .svg-18 path {
 }
 
 /* Dropdown list — dark panel, gold top accent */
-section.navbar .w-dropdown-list,
-section.navbar .dropdown-list-2 {
+section.navbar .dropdown-list-about,
+section.navbar .w-dropdown-list {
   background-color: #111 !important;
   border: 1px solid #222 !important;
   border-top: 2px solid #c2934a !important;
