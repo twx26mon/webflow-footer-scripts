@@ -280,14 +280,26 @@
 
   function activatePartsNav() {
     const path = window.location.pathname;
-    // Mark PARTS as active when on any brand or part template page
     if (!path.startsWith("/brands/") && !path.startsWith("/parts/")) return;
-    document.querySelectorAll("section.navbar a.nav-link").forEach(function (link) {
+    // Use .nav-link (not a.nav-link) to catch any element type
+    document.querySelectorAll("section.navbar .nav-link").forEach(function (el) {
       if (
-        link.pathname === "/parts" ||
-        link.textContent.trim().toUpperCase() === "PARTS"
+        el.getAttribute("href") === "/parts" ||
+        el.textContent.trim().toUpperCase() === "PARTS"
       ) {
-        link.classList.add("w--current");
+        el.classList.add("w--current");
+      }
+    });
+  }
+
+  // Webflow adds w--current to sub-links inside dropdowns, not the toggle itself.
+  // This bubbles that active state up so our CSS can underline the toggle.
+  function activateDropdownNav() {
+    document.querySelectorAll("section.navbar .w-dropdown").forEach(function (dropdown) {
+      const toggle = dropdown.querySelector(".w-dropdown-toggle.nav-link");
+      const activeChild = dropdown.querySelector(".w-dropdown-list .w--current");
+      if (toggle && activeChild) {
+        toggle.classList.add("w--current");
       }
     });
   }
@@ -299,6 +311,7 @@
     gatePartsTemplate();
     injectInfoBarAuth();
     activatePartsNav();
+    activateDropdownNav();
 
     // Re-run after Webflow collection list renders (it's async)
     const observer = new MutationObserver(() => {
