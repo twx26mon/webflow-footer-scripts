@@ -175,15 +175,15 @@
     // Hide or show the cart button in the nav
     const cartBtn = document.getElementById("open-quote-cart-btn");
 
+    // Cart button always visible — guests get quote mode, members get order mode
+    if (cartBtn) cartBtn.style.display = "flex";
+
     if (session) {
       // Logged in — show everything, nothing to do
-      // The existing cart code handles all interactions
-      if (cartBtn) cartBtn.style.display = "flex";
       return;
     }
 
-    // Not logged in — gate all product cards
-    if (cartBtn) cartBtn.style.display = "none";
+    // Not logged in — gate product cards only
 
     const priceEls = document.querySelectorAll(".brands-card-price");
     const addBtns = document.querySelectorAll(".brands-card-add");
@@ -767,7 +767,9 @@
       }
 
       let priceHtml;
-      if (effectiveUnitPrice !== null) {
+      if (!getSession()) {
+        priceHtml = "";
+      } else if (effectiveUnitPrice !== null) {
         if (unitSalePrice !== null && unitPrice !== null) {
           priceHtml = `<div class="cart-item-pricing">
              <span class="cart-item-unit-price">
@@ -821,11 +823,18 @@
       DOM.cartItems.parentNode.insertBefore(summary, ref);
     }
 
-    if (allPriced && subtotal > 0) {
+    const session = getSession();
+
+    if (!session) {
+      summary.innerHTML = `
+        <div class="cart-summary-note" style="text-align:center;padding:14px 0 6px;">Sign in to view pricing and place an order.</div>
+      `;
+    } else if (allPriced && subtotal > 0) {
       const gst = subtotal * 0.1,
         total = subtotal + gst;
       summary.innerHTML = `
         <div class="cart-summary-row"><span>Subtotal</span><span>$${subtotal.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
+        <div class="cart-summary-row"><span>Freight</span><span style="color:#686868;">TBA</span></div>
         <div class="cart-summary-row"><span>GST (10%)</span><span>$${gst.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
         <div class="cart-summary-row cart-summary-total"><span>Total (inc. GST)</span><span>$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
       `;
@@ -834,6 +843,7 @@
         total = subtotal + gst;
       summary.innerHTML = `
         <div class="cart-summary-row"><span>Subtotal (priced items)</span><span>$${subtotal.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
+        <div class="cart-summary-row"><span>Freight</span><span style="color:#686868;">TBA</span></div>
         <div class="cart-summary-row"><span>GST (10%)</span><span>$${gst.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
         <div class="cart-summary-row cart-summary-total"><span>Total (inc. GST)</span><span>$${total.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
         <div class="cart-summary-note">Some items are price on request — full pricing on next step.</div>
@@ -846,10 +856,15 @@
     if (!proceedBtn) {
       proceedBtn = document.createElement("a");
       proceedBtn.id = "cart-proceed-btn";
-      proceedBtn.textContent = "PROCEED TO QUOTE →";
       summary.parentNode.insertBefore(proceedBtn, summary.nextSibling);
     }
-    proceedBtn.href = "/quote-review";
+    if (!session) {
+      proceedBtn.textContent = "Sign in to place an order →";
+      proceedBtn.href = "/login?return=" + encodeURIComponent(window.location.href);
+    } else {
+      proceedBtn.textContent = "PROCEED TO QUOTE →";
+      proceedBtn.href = "/quote-review";
+    }
 
     updateButtons();
   }

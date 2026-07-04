@@ -1435,3 +1435,15 @@ section.navbar .open-quote-cart:hover {
   letter-spacing: 0.3px !important;
   font-family: Arial, sans-serif !important;
 }
+
+/* Cart close button — gold so it's noticeable */
+.quote-cart-close-btn {
+  background: #c2934a !important;
+  color: #111 !important;
+  border-color: #c2934a !important;
+}
+.quote-cart-close-btn:hover {
+  background: #b07d37 !important;
+  border-color: #b07d37 !important;
+  color: #111 !important;
+}
