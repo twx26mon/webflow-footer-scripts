@@ -195,14 +195,14 @@
         priceEl.style.display = "none";
         if (parent.querySelector(".twx-price-gate")) return;
 
-        // Get product name from the card heading for the cart handler
-        let productName = "";
-        if (card) {
-          const titleEl = card.querySelector(
-            "h3, h4, .product-title, .product-name, .brands-card-title"
-          );
-          if (titleEl) productName = titleEl.textContent.trim();
-        }
+        // Read product data from part-data-payload (CMS embed with all attributes)
+        const payload = card?.querySelector(".part-data-payload");
+        const productName = (
+          payload?.dataset?.name ||
+          card?.querySelector("h3, h4, .product-title, .product-name, .brands-card-title")?.textContent?.trim() ||
+          ""
+        );
+        const esc = (v) => (v || "").replace(/"/g, "&quot;");
 
         // Hide the native add button (whatever class it has)
         const addBtn = parent.querySelector(".brands-card-add");
@@ -216,8 +216,15 @@
           </a>
           <button type="button"
             class="twx-contact-btn"
-            data-add-to-quote="${productName.replace(/"/g, "&quot;")}"
-            style="cursor:pointer;border:1px solid #333;">
+            data-add-to-quote="${esc(productName)}"
+            data-name="${esc(payload?.dataset?.name)}"
+            data-id="${esc(payload?.dataset?.id)}"
+            data-code="${esc(payload?.dataset?.code)}"
+            data-image="${esc(payload?.dataset?.image)}"
+            data-price="${esc(payload?.dataset?.price)}"
+            data-sale-price="${esc(payload?.dataset?.salePrice)}"
+            data-on-sale="${esc(payload?.dataset?.onSale)}"
+            data-zoho-id="${esc(payload?.dataset?.zohoId)}">
             Add to Quote
           </button>
         `;
