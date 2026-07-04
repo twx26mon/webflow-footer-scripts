@@ -137,6 +137,33 @@
       .twx-gate-flush {
         padding: 4px 12px 12px;
       }
+      /* Info bar auth links */
+      .twx-nav-login {
+        color: #aaa;
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+        text-decoration: none;
+        letter-spacing: 0.3px;
+        transition: color 0.15s;
+      }
+      .twx-nav-login:hover { color: #fff; }
+      .twx-nav-signup {
+        color: #c2934a;
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+        font-weight: 700;
+        text-decoration: none;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border: 1px solid rgba(194, 147, 74, 0.35);
+        border-radius: 4px;
+        padding: 5px 12px;
+        transition: background 0.15s, border-color 0.15s;
+      }
+      .twx-nav-signup:hover {
+        background: rgba(194, 147, 74, 0.1);
+        border-color: #c2934a;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -264,15 +291,10 @@
         window.location.reload();
       });
     } else {
+      const returnUrl = encodeURIComponent(window.location.href);
       el.innerHTML = `
-        <a href="${PORTAL_URL}/login"
-           style="color:#aaa;font-size:12px;font-family:Arial,sans-serif;text-decoration:none;letter-spacing:0.3px;">
-          Customer login
-        </a>
-        <a href="${PORTAL_URL}/signup"
-           style="color:#c2934a;font-size:12px;font-family:Arial,sans-serif;font-weight:700;text-decoration:none;letter-spacing:0.5px;text-transform:uppercase;">
-          Create account
-        </a>
+        <a href="${PORTAL_URL}/login?return=${returnUrl}" class="twx-nav-login">Customer login</a>
+        <a href="${PORTAL_URL}/signup?return=${returnUrl}" class="twx-nav-signup">Create account</a>
       `;
       socialEl.parentNode.insertBefore(el, socialEl);
     }
@@ -2669,7 +2691,7 @@
   // ── Inject styles ──
   const style = document.createElement("style");
   style.textContent = `
-    .twx-about { font-family: inherit; }
+    .twx-about { font-family: inherit; border: 1px solid #1e1e1e; border-radius: 12px; overflow: hidden; }
 
     /* Hero */
     .twx-about-hero {
