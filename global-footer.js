@@ -64,8 +64,9 @@
     style.textContent = `
       .twx-price-gate {
         display: flex;
-        gap: 6px;
+        gap: 10px;
         margin-top: 4px;
+        width: 100%;
       }
       .twx-view-price-btn {
         flex: 1;
