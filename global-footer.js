@@ -142,8 +142,9 @@
     addBtns.forEach((btn) => {
       btn.style.display = "none";
 
-      // Find the parent card body to inject gate UI
-      const cardBody = btn.closest(".brands-card-body");
+      // Find the parent card body — fall back to parentElement if exact class not present
+      const cardBody =
+        btn.closest(".brands-card-body") || btn.parentElement;
       if (!cardBody || cardBody.querySelector(".twx-price-gate")) return;
 
       // Insert lock + buttons before where the add button was
@@ -164,6 +165,43 @@
       `;
       cardBody.appendChild(gate);
     });
+  }
+
+  function gatePartsTemplate() {
+    if (!GATING_ENABLED) return;
+    const session = getSession();
+    if (session) return;
+
+    // Hide price blocks
+    document.querySelectorAll(".product-price-stk, .product-price").forEach((el) => {
+      el.style.display = "none";
+    });
+
+    // Hide add-to-quote button
+    document.querySelectorAll(".add-to-quote-btn").forEach((btn) => {
+      btn.style.display = "none";
+    });
+
+    // Inject gate UI into quote-button-container
+    const container = document.querySelector(".quote-button-container");
+    if (!container || container.querySelector(".twx-price-gate")) return;
+
+    const gate = document.createElement("div");
+    gate.className = "twx-price-gate-wrap";
+    gate.innerHTML = `
+      <div class="twx-lock-icon">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        Login to view price
+      </div>
+      <div class="twx-price-gate">
+        <a href="${PORTAL_URL}/signup" class="twx-view-price-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          View price
+        </a>
+        <a href="/contact" class="twx-contact-btn">Contact us</a>
+      </div>
+    `;
+    container.insertBefore(gate, container.firstChild);
   }
 
   function injectInfoBarAuth() {
@@ -218,6 +256,7 @@
   function init() {
     injectGateStyles();
     gateProductCards();
+    gatePartsTemplate();
     injectInfoBarAuth();
 
     // Re-run after Webflow collection list renders (it's async)
@@ -225,7 +264,8 @@
       const cards = document.querySelectorAll(".brands-card-add");
       if (cards.length > 0) {
         observer.disconnect();
-        gateProductCards();
+        // Small delay so full card DOM (incl. parent wrappers) is rendered
+        setTimeout(gateProductCards, 150);
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
