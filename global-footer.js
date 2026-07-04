@@ -172,89 +172,35 @@
     if (!GATING_ENABLED) return;
     const session = getSession();
 
-    // Hide or show the cart button in the nav
     const cartBtn = document.getElementById("open-quote-cart-btn");
-
-    // Cart button always visible — guests get quote mode, members get order mode
     if (cartBtn) cartBtn.style.display = "flex";
 
-    if (session) {
-      // Logged in — show everything, nothing to do
-      return;
-    }
-
-    // Not logged in — gate product cards only
-
-    const priceEls = document.querySelectorAll(".brands-card-price");
-    const addBtns = document.querySelectorAll(".brands-card-add");
-
-    priceEls.forEach((el) => {
-      el.style.display = "none";
+    // Hide prices for guests, show for logged-in
+    document.querySelectorAll(".brands-card-price").forEach((el) => {
+      el.style.display = session ? "" : "none";
     });
 
-    addBtns.forEach((btn) => {
-      btn.style.display = "none";
-
-      // Find the parent card body — fall back to parentElement if exact class not present
-      const cardBodyExact = btn.closest(".brands-card-body");
-      const cardBody = cardBodyExact || btn.parentElement;
-      if (!cardBody || cardBody.querySelector(".twx-price-gate")) return;
-
-      // If falling back to parentElement it may have no padding — add via class
-      const gate = document.createElement("div");
-      gate.className = "twx-price-gate-wrap" + (cardBodyExact ? "" : " twx-gate-flush");
-      gate.innerHTML = `
-        <div class="twx-lock-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          Login to view price
-        </div>
-        <div class="twx-price-gate">
-          <a href="${PORTAL_URL}/signup" class="twx-view-price-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            View price
-          </a>
-          <a href="/contact" class="twx-contact-btn">Contact us</a>
-        </div>
-      `;
-      cardBody.appendChild(gate);
+    // Always show add buttons — guests get "Add to Quote", members get "Add to Order"
+    document.querySelectorAll(".brands-card-add").forEach((btn) => {
+      btn.style.display = "";
+      btn.textContent = session ? "Add to Order" : "Add to Quote";
     });
   }
 
   function gatePartsTemplate() {
     if (!GATING_ENABLED) return;
     const session = getSession();
-    if (session) return;
 
-    // Hide price blocks
+    // Hide prices for guests, show for logged-in
     document.querySelectorAll(".product-price-stk, .product-price").forEach((el) => {
-      el.style.display = "none";
+      el.style.display = session ? "" : "none";
     });
 
-    // Hide add-to-quote button
+    // Always show add button — guests get "Add to Quote", members get "Add to Order"
     document.querySelectorAll(".add-to-quote-btn").forEach((btn) => {
-      btn.style.display = "none";
+      btn.style.display = "";
+      btn.textContent = session ? "Add to Order" : "Add to Quote";
     });
-
-    // Inject gate UI into quote-button-container
-    const container = document.querySelector(".quote-button-container");
-    if (!container || container.querySelector(".twx-price-gate")) return;
-
-    const gate = document.createElement("div");
-    gate.className = "twx-price-gate-wrap";
-    gate.innerHTML = `
-      <div class="twx-lock-icon">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        Login to view price
-      </div>
-      <div class="twx-price-gate">
-        <a href="${PORTAL_URL}/signup" class="twx-view-price-btn">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          View price
-        </a>
-        <a href="/contact" class="twx-contact-btn">Contact us</a>
-      </div>
-    `;
-    container.insertBefore(gate, container.firstChild);
   }
 
   function injectInfoBarAuth() {
@@ -370,6 +316,19 @@
 /* ── 2. QUOTE CART + MACHINE WIZARD ──────────────────────── */
 (function () {
   "use strict";
+
+  function getSession() {
+    try {
+      const raw = localStorage.getItem("sb-srgndcoiobilpwbliwgn-auth-token");
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed?.access_token) return null;
+      if (parsed.expires_at && Date.now() / 1000 > parsed.expires_at) return null;
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
 
   /* ── Sale price styles ── */
   (function injectSaleStyles() {
@@ -1101,7 +1060,7 @@
 
     const addAllBtn = document.createElement("button");
     addAllBtn.className = "wiz-add-all-btn";
-    addAllBtn.textContent = "Add All Items to Quote";
+    addAllBtn.textContent = getSession() ? "Add All Items to Order" : "Add All Items to Quote";
     addAllBtn.addEventListener("click", () =>
       addAllPartsToCart(matchingParts, config, machineContextStr),
     );
@@ -1127,10 +1086,11 @@
       const row = document.createElement("div");
       row.className = "wiz-result-item";
       row.dataset.partId = part.id;
-      const btnText = inCart ? "Update" : "Add to Quote";
+      const wizSession = getSession();
+      const btnText = inCart ? "Update" : (wizSession ? "Add to Order" : "Add to Quote");
       const btnClass = inCart ? "wiz-add-btn wiz-update-btn" : "wiz-add-btn";
 
-      // Display unit price on the wizard line when available
+      // Display unit price on the wizard line for logged-in users only
       let unitPrice = null;
       let unitSalePrice = null;
       try {
@@ -1144,14 +1104,16 @@
         unitPrice = null;
       }
       let priceHtml = "";
-      if (unitSalePrice !== null && unitPrice !== null) {
-        priceHtml = `<div class="wiz-result-price">
-          <span class="twx-price-was">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          <span class="twx-price-sale">$${unitSalePrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</span>
-          <span class="twx-sale-badge">SALE</span>
-        </div>`;
-      } else if (unitPrice !== null) {
-        priceHtml = `<div class="wiz-result-price">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</div>`;
+      if (wizSession) {
+        if (unitSalePrice !== null && unitPrice !== null) {
+          priceHtml = `<div class="wiz-result-price">
+            <span class="twx-price-was">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            <span class="twx-price-sale">$${unitSalePrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</span>
+            <span class="twx-sale-badge">SALE</span>
+          </div>`;
+        } else if (unitPrice !== null) {
+          priceHtml = `<div class="wiz-result-price">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</div>`;
+        }
       }
 
       row.innerHTML = `
