@@ -2700,7 +2700,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
-      padding: 100px 8vw 60px;
+      padding: 100px 8vw 60px !important;
       position: relative;
       overflow: hidden;
       background: #000;
