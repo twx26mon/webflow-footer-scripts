@@ -274,8 +274,10 @@
 
         btn.style.display = "";
         btn.textContent = "Add to Quote";
-        // Ensure the Section 2 click handler can identify this button
         if (!btn.dataset.addToQuote) btn.dataset.addToQuote = btn.dataset.name || "";
+        // Swap Webflow's .w-button styles out for our gate button styles
+        btn.classList.remove("w-button");
+        btn.classList.add("twx-contact-btn");
 
         // Wrap btn + login link + lock header in a gate
         const wrap = document.createElement("div");
