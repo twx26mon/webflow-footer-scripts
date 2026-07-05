@@ -115,6 +115,7 @@
       /* Parts template — larger buttons (horizontal, matching native Webflow button) */
       .quote-button-container .twx-price-gate-wrap {
         width: 100%;
+        margin-bottom: 4px;
       }
       .quote-button-container .twx-price-gate {
         gap: 8px;
@@ -132,6 +133,13 @@
         font-size: 12px;
         margin-bottom: 8px;
         margin-top: 4px;
+      }
+      /* Override any Webflow hover rule on .add-to-quote-btn inside the gate */
+      .twx-price-gate .add-to-quote-btn:hover {
+        background: transparent !important;
+        background-color: transparent !important;
+        border-color: #666 !important;
+        color: #ccc !important;
       }
       /* Brands template fallback — gate injected into raw parent with no padding */
       .twx-gate-flush {
