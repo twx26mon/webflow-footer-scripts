@@ -1440,12 +1440,12 @@ section.navbar .image {
     width: 160px !important;
   }
 
-  /* Reserve space in navbar for both cart (44px) + hamburger (44px) */
+  /* Cart btn is a flex child of the navbar (moved by JS), so no right padding needed */
   section.navbar {
     padding-right: 0 !important;
   }
 
-  /* Hamburger button — 44px wide so cart button (fixed, right: 44px) sits cleanly to its left */
+  /* Hamburger button */
   .mobile-menu-icon {
     display: flex !important;
     align-items: center !important;
@@ -1454,10 +1454,31 @@ section.navbar .image {
     height: 72px !important;
     padding: 0 !important;
     flex-shrink: 0 !important;
+    position: relative !important;
+    cursor: pointer !important;
   }
 
   .mobile-menu-icon svg path {
     fill: #fff !important;
+  }
+
+  /* Hamburger → X when menu is open */
+  .mobile-menu-icon.twx-menu-open > * {
+    display: none !important;
+  }
+
+  .mobile-menu-icon.twx-menu-open::after {
+    content: '✕';
+    color: #c2934a !important;
+    font-size: 26px !important;
+    font-weight: 300 !important;
+    font-family: Arial, sans-serif !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    height: 72px !important;
   }
 
   /* Mobile nav panel — full-screen fixed overlay */

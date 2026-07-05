@@ -62,10 +62,11 @@
     background: #b07d37;
   }
   @media (max-width: 991px) {
-    /* Sit in the navbar row, to the left of the hamburger (~44px wide) */
+    /* JS moves this element into section.navbar as a flex child */
     .open-quote-cart-btn {
-      top: 0;
-      right: 44px;
+      position: static;
+      top: auto;
+      right: auto;
       width: 44px;
       height: 72px;
       background: transparent;
@@ -73,6 +74,7 @@
       box-shadow: none;
       border-radius: 0;
       font-size: 1.3rem;
+      flex-shrink: 0;
     }
     .open-quote-cart-btn:hover {
       background: rgba(194, 147, 74, 0.1);

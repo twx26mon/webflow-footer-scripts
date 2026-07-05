@@ -435,7 +435,43 @@
   function updateMobileOrderBtn() {
     const btn = document.querySelector(".open-quote-cart.mobile");
     if (!btn) return;
-    btn.textContent = getSession() ? "ORDER" : "QUOTE";
+    btn.textContent = getSession() ? "PLACE ORDER" : "GET A QUOTE";
+  }
+
+  function moveCartBtnIntoNavbar() {
+    if (window.innerWidth > 991) return;
+    const btn = document.querySelector(".open-quote-cart-btn");
+    const navbar = document.querySelector("section.navbar");
+    if (!btn || !navbar) return;
+    const hamburger = navbar.querySelector(".mobile-menu-icon");
+    if (hamburger) {
+      navbar.insertBefore(btn, hamburger);
+    } else {
+      navbar.appendChild(btn);
+    }
+  }
+
+  function initMobileNavToggle() {
+    const hamburger = document.querySelector(".mobile-menu-icon");
+    if (!hamburger) return;
+    const closeBtn = document.querySelector(".nav-close-btn");
+
+    hamburger.addEventListener("click", function () {
+      hamburger.classList.add("twx-menu-open");
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function () {
+        hamburger.classList.remove("twx-menu-open");
+      });
+    }
+
+    // Also close when tapping a nav link
+    document.querySelectorAll(".nav-menu-mobile a, .nav-menu-mobile .menu-sublink").forEach(function (link) {
+      link.addEventListener("click", function () {
+        hamburger.classList.remove("twx-menu-open");
+      });
+    });
   }
 
   function injectMobileNavSocials() {
@@ -466,6 +502,8 @@
     injectInfoBarAuth();
     updateMobileOrderBtn();
     injectMobileNavSocials();
+    moveCartBtnIntoNavbar();
+    initMobileNavToggle();
     activatePartsNav();
     activateDropdownNav();
 
