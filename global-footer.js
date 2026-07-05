@@ -327,44 +327,77 @@
 
   function injectInfoBarAuth() {
     const session = getSession();
+    const returnUrl = encodeURIComponent(window.location.href);
+
+    // ── Desktop info bar ──────────────────────────────────────
     const socialEl = document.querySelector(".social-icon-container");
-    if (!socialEl || !socialEl.parentNode) return;
+    if (socialEl && socialEl.parentNode) {
+      const existing = document.getElementById("twx-nav-auth");
+      if (existing) existing.remove();
 
-    const existing = document.getElementById("twx-nav-auth");
-    if (existing) existing.remove();
+      const el = document.createElement("div");
+      el.id = "twx-nav-auth";
+      el.style.cssText =
+        "display:flex;align-items:center;gap:16px;margin-right:4px;";
 
-    const el = document.createElement("div");
-    el.id = "twx-nav-auth";
-    el.style.cssText =
-      "display:flex;align-items:center;gap:16px;margin-right:4px;";
+      if (session) {
+        const firstName = session.user?.user_metadata?.first_name || "";
+        el.innerHTML = `
+          <span style="color:#aaa;font-size:12px;font-family:Arial,sans-serif;letter-spacing:0.3px;">
+            G'day, <strong style="color:#fff;">${firstName}</strong>
+          </span>
+          <a href="${PORTAL_URL}/dashboard"
+             style="color:#c2934a;font-size:12px;font-family:Arial,sans-serif;font-weight:700;text-decoration:none;letter-spacing:0.5px;text-transform:uppercase;">
+            Dashboard
+          </a>
+          <button id="twx-signout-btn"
+                  style="background:none;border:none;color:#686868;font-size:12px;font-family:Arial,sans-serif;cursor:pointer;padding:0;letter-spacing:0.3px;">
+            Sign out
+          </button>
+        `;
+        socialEl.parentNode.insertBefore(el, socialEl);
+        document.getElementById("twx-signout-btn").addEventListener("click", function () {
+          localStorage.removeItem("sb-srgndcoiobilpwbliwgn-auth-token");
+          window.location.reload();
+        });
+      } else {
+        el.innerHTML = `
+          <a href="${PORTAL_URL}/login?return=${returnUrl}" class="twx-nav-login">Customer login</a>
+          <a href="${PORTAL_URL}/signup?return=${returnUrl}" class="twx-nav-signup">Create account</a>
+        `;
+        socialEl.parentNode.insertBefore(el, socialEl);
+      }
+    }
 
-    if (session) {
-      const firstName = session.user?.user_metadata?.first_name || "";
-      el.innerHTML = `
-        <span style="color:#aaa;font-size:12px;font-family:Arial,sans-serif;letter-spacing:0.3px;">
-          G'day, <strong style="color:#fff;">${firstName}</strong>
-        </span>
-        <a href="${PORTAL_URL}/dashboard"
-           style="color:#c2934a;font-size:12px;font-family:Arial,sans-serif;font-weight:700;text-decoration:none;letter-spacing:0.5px;text-transform:uppercase;">
-          Dashboard
-        </a>
-        <button id="twx-signout-btn"
-                style="background:none;border:none;color:#686868;font-size:12px;font-family:Arial,sans-serif;cursor:pointer;padding:0;letter-spacing:0.3px;">
-          Sign out
-        </button>
-      `;
-      socialEl.parentNode.insertBefore(el, socialEl);
-      document.getElementById("twx-signout-btn").addEventListener("click", function () {
-        localStorage.removeItem("sb-srgndcoiobilpwbliwgn-auth-token");
-        window.location.reload();
-      });
-    } else {
-      const returnUrl = encodeURIComponent(window.location.href);
-      el.innerHTML = `
-        <a href="${PORTAL_URL}/login?return=${returnUrl}" class="twx-nav-login">Customer login</a>
-        <a href="${PORTAL_URL}/signup?return=${returnUrl}" class="twx-nav-signup">Create account</a>
-      `;
-      socialEl.parentNode.insertBefore(el, socialEl);
+    // ── Mobile nav panel ──────────────────────────────────────
+    const navMenu = document.querySelector(".nav-menu-mobile");
+    if (navMenu) {
+      const existingMobile = document.getElementById("twx-nav-auth-mobile");
+      if (existingMobile) existingMobile.remove();
+
+      const mobileEl = document.createElement("div");
+      mobileEl.id = "twx-nav-auth-mobile";
+      mobileEl.className = "twx-mobile-auth";
+
+      if (session) {
+        const firstName = session.user?.user_metadata?.first_name || "";
+        mobileEl.innerHTML = `
+          <div class="twx-mobile-auth-greeting">G'day, <strong>${firstName}</strong></div>
+          <a href="${PORTAL_URL}/dashboard" class="twx-mobile-auth-link">My Account</a>
+          <button id="twx-signout-btn-mobile" class="twx-mobile-signout">Sign out</button>
+        `;
+        navMenu.appendChild(mobileEl);
+        document.getElementById("twx-signout-btn-mobile").addEventListener("click", function () {
+          localStorage.removeItem("sb-srgndcoiobilpwbliwgn-auth-token");
+          window.location.reload();
+        });
+      } else {
+        mobileEl.innerHTML = `
+          <a href="${PORTAL_URL}/login?return=${returnUrl}" class="twx-mobile-auth-link">Customer login</a>
+          <a href="${PORTAL_URL}/signup?return=${returnUrl}" class="twx-mobile-auth-signup">Create account</a>
+        `;
+        navMenu.appendChild(mobileEl);
+      }
     }
   }
 
