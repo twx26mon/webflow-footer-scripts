@@ -1430,69 +1430,9 @@ section.navbar .image {
 /* ── Mobile nav (≤991px) ──────────────────────────────────────── */
 @media (max-width: 991px) {
 
-  /* Hide desktop info bar, let Webflow show the mobile one */
-  .header-contact-container {
+  /* Hide entire info bar on mobile — socials/dealer move into nav panel */
+  .header-information {
     display: none !important;
-  }
-
-  /* Mobile info bar — socials + dealer pin left-aligned, no phone/email */
-  .header-contact-mobile-wrapper {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 16px !important;
-    padding: 8px 1.25rem !important;
-    background: #111 !important;
-    border-bottom: 1px solid #1e1e1e !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Social icons (FB, IG) */
-  .header-contact-mobile-wrapper .header-social-wrapper {
-    display: flex !important;
-    align-items: center !important;
-    gap: 12px !important;
-  }
-
-  .header-contact-mobile-wrapper .svg-14,
-  .header-contact-mobile-wrapper .svg-15 {
-    width: 18px !important;
-    height: 18px !important;
-  }
-
-  .header-contact-mobile-wrapper .header-social-wrapper svg path {
-    fill: #686868 !important;
-    transition: fill 0.15s !important;
-  }
-
-  .header-contact-mobile-wrapper .header-social-wrapper .w-inline-block:hover svg path {
-    fill: #c2934a !important;
-  }
-
-  /* Dealer pin — show alongside socials */
-  .header-contact-mobile {
-    display: flex !important;
-    align-items: center !important;
-  }
-
-  /* Hide email and phone icon links */
-  .header-contact-mobile > a {
-    display: none !important;
-  }
-
-  .header-contact-mobile svg {
-    width: 20px !important;
-    height: 20px !important;
-    display: block !important;
-  }
-
-  .header-contact-mobile svg path {
-    fill: #686868 !important;
-    transition: fill 0.15s !important;
-  }
-
-  .header-contact-mobile .w-embed a:hover svg path {
-    fill: #c2934a !important;
   }
 
   /* Shrink logo on mobile */
@@ -1574,6 +1514,12 @@ section.navbar .image {
     padding-left: calc(1.25rem - 3px) !important;
   }
 
+  /* ABOUT dropdown parent — force block so it doesn't sit inline with HOME */
+  .nav-menu-mobile .nav-about-drop {
+    display: block !important;
+    width: 100% !important;
+  }
+
   /* ABOUT dropdown toggle */
   .nav-menu-mobile .w-dropdown-toggle.nav-link,
   .nav-menu-mobile .nav-link.dropdown {
@@ -1581,6 +1527,28 @@ section.navbar .image {
     align-items: center !important;
     justify-content: space-between !important;
     height: auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ABOUT text node inside toggle */
+  .nav-menu-mobile .text-block-30 {
+    flex: 1 !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    color: #aaa !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Webflow dropdown chevron — remove float */
+  .nav-menu-mobile .w-icon-dropdown-toggle {
+    float: none !important;
+    color: #686868 !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
   }
 
   /* ABOUT sub-links */
@@ -1619,29 +1587,30 @@ section.navbar .image {
     background: transparent !important;
   }
 
-  /* ORDER button in mobile menu — gold filled to match live site */
+  /* ORDER / QUOTE button in mobile menu — ghost style matching desktop */
   .open-quote-cart.mobile {
     display: block !important;
     margin: 20px 1.25rem 8px !important;
-    padding: 16px 20px !important;
-    background: #c2934a !important;
-    color: #111 !important;
-    border: none !important;
+    padding: 14px 20px !important;
+    background: transparent !important;
+    color: #c2934a !important;
+    border: 1.5px solid rgba(194, 147, 74, 0.4) !important;
     font-size: 14px !important;
     font-family: Arial, sans-serif !important;
     font-weight: 700 !important;
     letter-spacing: 1px !important;
     text-align: center !important;
     text-decoration: none !important;
-    border-radius: 4px !important;
+    border-radius: 0 !important;
     text-transform: uppercase !important;
-    transition: background 0.15s !important;
+    transition: background 0.15s, border-color 0.15s !important;
     box-sizing: border-box !important;
     width: calc(100% - 2.5rem) !important;
   }
 
   .open-quote-cart.mobile:hover {
-    background: #b07d37 !important;
+    background: rgba(194, 147, 74, 0.1) !important;
+    border-color: #c2934a !important;
   }
 
   /* ── Portal auth block (injected by global-footer.js) ── */
@@ -1717,6 +1686,33 @@ section.navbar .image {
 
   .twx-mobile-signout:hover {
     color: #fff !important;
+  }
+
+  /* Social + dealer footer injected at bottom of nav panel */
+  .twx-mobile-nav-footer {
+    display: flex !important;
+    align-items: center !important;
+    gap: 20px !important;
+    padding: 20px 1.25rem !important;
+    border-top: 1px solid #1e1e1e !important;
+    margin-top: 8px !important;
+  }
+
+  .twx-mobile-social-link {
+    display: flex !important;
+    align-items: center !important;
+    color: #686868 !important;
+    text-decoration: none !important;
+    transition: color 0.15s !important;
+  }
+
+  .twx-mobile-social-link:hover {
+    color: #c2934a !important;
+  }
+
+  .twx-mobile-social-link svg path {
+    fill: currentColor !important;
+    transition: fill 0.15s !important;
   }
 
 } /* end mobile nav */

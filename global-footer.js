@@ -428,12 +428,40 @@
     });
   }
 
+  function updateMobileOrderBtn() {
+    const btn = document.querySelector(".open-quote-cart.mobile");
+    if (!btn) return;
+    btn.textContent = getSession() ? "ORDER" : "QUOTE";
+  }
+
+  function injectMobileNavSocials() {
+    const navMenu = document.querySelector(".nav-menu-mobile");
+    if (!navMenu || document.getElementById("twx-mobile-nav-footer")) return;
+    const footer = document.createElement("div");
+    footer.id = "twx-mobile-nav-footer";
+    footer.className = "twx-mobile-nav-footer";
+    footer.innerHTML = `
+      <a href="https://www.facebook.com/tillageworx" target="_blank" rel="noopener" class="twx-mobile-social-link" aria-label="Facebook">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5 3.66 9.15 8.44 9.9v-7h-2.54v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7c4.78-.75 8.44-4.9 8.44-9.9C22 6.53 17.5 2.04 12 2.04z" fill="currentColor"/></svg>
+      </a>
+      <a href="https://www.instagram.com/tillageworx/" target="_blank" rel="noopener" class="twx-mobile-social-link" aria-label="Instagram">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4c0 3.2-2.6 5.8-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8C2 4.6 4.6 2 7.8 2zm-.2 2a3.6 3.6 0 0 0-3.6 3.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6zM17.25 5.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10A5 5 0 0 1 12 7zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" fill="currentColor"/></svg>
+      </a>
+      <a href="/find-a-dealer" class="twx-mobile-social-link" aria-label="Find a Dealer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg>
+      </a>
+    `;
+    navMenu.appendChild(footer);
+  }
+
   // Run after DOM is ready and after Webflow collection renders
   function init() {
     injectGateStyles();
     gateProductCards();
     gatePartsTemplate();
     injectInfoBarAuth();
+    updateMobileOrderBtn();
+    injectMobileNavSocials();
     activatePartsNav();
     activateDropdownNav();
 
