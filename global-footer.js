@@ -291,11 +291,12 @@
         loginLink.className = "twx-view-price-btn";
         loginLink.textContent = "View Price";
 
-        gate.appendChild(loginLink);
-        gate.appendChild(btn);
         wrap.appendChild(lockIcon);
         wrap.appendChild(gate);
+        gate.appendChild(loginLink);
+        // Insert wrap into DOM BEFORE moving btn, so btn.parentNode is still valid
         btn.parentNode.insertBefore(wrap, btn);
+        gate.appendChild(btn);
       }
     });
   }
