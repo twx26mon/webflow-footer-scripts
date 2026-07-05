@@ -274,6 +274,8 @@
 
         btn.style.display = "";
         btn.textContent = "Add to Quote";
+        // Ensure the Section 2 click handler can identify this button
+        if (!btn.dataset.addToQuote) btn.dataset.addToQuote = btn.dataset.name || "";
 
         // Wrap btn + login link + lock header in a gate
         const wrap = document.createElement("div");
