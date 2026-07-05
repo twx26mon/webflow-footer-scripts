@@ -1437,15 +1437,23 @@ section.navbar .image {
 
   /* Shrink logo on mobile */
   section.navbar .image {
-    width: 180px !important;
+    width: 160px !important;
   }
 
-  /* Hamburger button */
+  /* Reserve space in navbar for both cart (44px) + hamburger (44px) */
+  section.navbar {
+    padding-right: 0 !important;
+  }
+
+  /* Hamburger button — 44px wide so cart button (fixed, right: 44px) sits cleanly to its left */
   .mobile-menu-icon {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 4px !important;
+    width: 44px !important;
+    height: 72px !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
   }
 
   .mobile-menu-icon svg path {
@@ -1535,17 +1543,27 @@ section.navbar .image {
     box-sizing: border-box !important;
   }
 
-  /* ABOUT text node inside toggle */
+  /* ABOUT text node inside toggle — match font of other nav links */
   .nav-menu-mobile .text-block-30 {
     order: 0 !important;
     flex: 1 !important;
     font-size: 14px !important;
     font-weight: 700 !important;
+    font-family: Arial, sans-serif !important;
     letter-spacing: 1px !important;
     text-transform: uppercase !important;
     color: #aaa !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+
+  /* Remove Webflow's background highlight when ABOUT dropdown is open */
+  .nav-menu-mobile .nav-about-drop.w--open > .w-dropdown-toggle,
+  .nav-menu-mobile .w-dropdown-toggle:focus,
+  .nav-menu-mobile .w-dropdown-toggle:active {
+    background: transparent !important;
+    background-color: transparent !important;
+    outline: none !important;
   }
 
   /* Webflow dropdown chevron — force after text, remove float */
@@ -1723,6 +1741,21 @@ section.navbar .image {
   }
 
 } /* end mobile nav */
+
+/* ── Brands card gate buttons — stack vertically on small screens ── */
+@media (max-width: 767px) {
+  .brands-card-body .twx-price-gate {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .brands-card-body .twx-view-price-btn,
+  .brands-card-body .twx-contact-btn {
+    flex: none !important;
+    width: 100% !important;
+    padding: 9px 10px !important;
+  }
+}
 
 
 /* ── Cart close button — gold ─────────────────────────────────── */

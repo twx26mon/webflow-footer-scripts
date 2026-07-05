@@ -62,11 +62,20 @@
     background: #b07d37;
   }
   @media (max-width: 991px) {
+    /* Sit in the navbar row, to the left of the hamburger (~44px wide) */
     .open-quote-cart-btn {
-      top: 72px;
+      top: 0;
+      right: 44px;
       width: 44px;
-      height: 44px;
+      height: 72px;
+      background: transparent;
+      color: #c2934a;
+      box-shadow: none;
+      border-radius: 0;
       font-size: 1.3rem;
+    }
+    .open-quote-cart-btn:hover {
+      background: rgba(194, 147, 74, 0.1);
     }
   }
   .open-quote-cart-btn[hidden] {
