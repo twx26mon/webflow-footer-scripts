@@ -177,58 +177,66 @@
     if (cartBtn) cartBtn.style.display = "flex";
 
     document.querySelectorAll(".brands-card-price").forEach((priceEl) => {
-      const card = priceEl.closest(
-        ".w-dyn-item, .brands-product-card, .product-card, .carousel-item"
-      );
-      const parent = priceEl.parentNode;
-      if (!parent) return;
+      // Card is the .w-dyn-item; body is .brands-card-body (parent of priceEl)
+      const card = priceEl.closest(".w-dyn-item, .brands-card-item");
+      const body = priceEl.parentNode;
+      if (!card || !body) return;
+
+      // .brands-card-add sits OUTSIDE .brands-card-body — search at card level
+      const addBtn = card.querySelector(".brands-card-add");
+      const stkEl = card.querySelector(".brands-card-stk");
 
       if (session) {
-        // Member: show price, remove any injected gate, restore native add btn
+        // Member: show price + stk, restore add btn, remove any injected gate
         priceEl.style.display = "";
-        const gate = parent.querySelector(".twx-price-gate");
-        if (gate) gate.remove();
-        const addBtn = parent.querySelector(".brands-card-add");
-        if (addBtn) { addBtn.style.display = ""; addBtn.textContent = "Add to Order"; }
+        if (stkEl) stkEl.style.display = "";
+        body.querySelectorAll(".twx-price-gate-wrap").forEach((g) => g.remove());
+        if (addBtn) {
+          addBtn.style.display = "";
+          addBtn.textContent = "Add to Order";
+        }
       } else {
-        // Guest: hide price, inject two-button gate
+        // Guest: hide price, stk, and native add btn
         priceEl.style.display = "none";
-        if (parent.querySelector(".twx-price-gate")) return;
-
-        // Read product data from part-data-payload (CMS embed with all attributes)
-        const payload = card?.querySelector(".part-data-payload");
-        const productName = (
-          payload?.dataset?.name ||
-          card?.querySelector("h3, h4, .product-title, .product-name, .brands-card-title")?.textContent?.trim() ||
-          ""
-        );
-        const esc = (v) => (v || "").replace(/"/g, "&quot;");
-
-        // Hide the native add button (whatever class it has)
-        const addBtn = parent.querySelector(".brands-card-add");
+        if (stkEl) stkEl.style.display = "none";
         if (addBtn) addBtn.style.display = "none";
 
-        const gate = document.createElement("div");
-        gate.className = "twx-price-gate";
-        gate.innerHTML = `
-          <a href="${PORTAL_URL}/login?return=${returnUrl}" class="twx-view-price-btn">
-            🔒 Log in / sign up<br>to view price
-          </a>
-          <button type="button"
-            class="twx-contact-btn"
-            data-add-to-quote="${esc(productName)}"
-            data-name="${esc(payload?.dataset?.name)}"
-            data-id="${esc(payload?.dataset?.id)}"
-            data-code="${esc(payload?.dataset?.code)}"
-            data-image="${esc(payload?.dataset?.image)}"
-            data-price="${esc(payload?.dataset?.price)}"
-            data-sale-price="${esc(payload?.dataset?.salePrice)}"
-            data-on-sale="${esc(payload?.dataset?.onSale)}"
-            data-zoho-id="${esc(payload?.dataset?.zohoId)}">
-            Add to Quote
-          </button>
+        // Idempotency — skip if gate already injected inside body
+        if (body.querySelector(".twx-price-gate-wrap")) return;
+
+        // Read product data directly from the .brands-card-add element
+        const esc = (v) => (v || "").replace(/"/g, "&quot;");
+        const pName = esc(addBtn?.dataset?.name || addBtn?.dataset?.addToQuote || "");
+        const pId   = esc(addBtn?.dataset?.id || "");
+        const pCode = esc(addBtn?.dataset?.code || "");
+        const pPrice = esc(addBtn?.dataset?.price || "");
+        const pSalePrice = esc(addBtn?.dataset?.salePrice || "");
+        const pOnSale = esc(addBtn?.dataset?.onSale || "");
+        const pImage = esc(addBtn?.dataset?.image || "");
+        const pZohoId = esc(addBtn?.dataset?.zohoId || "");
+
+        const wrap = document.createElement("div");
+        wrap.className = "twx-price-gate-wrap";
+        wrap.innerHTML = `
+          <div class="twx-lock-icon">🔒 Sign in to view price</div>
+          <div class="twx-price-gate">
+            <a href="${PORTAL_URL}/login?return=${returnUrl}" class="twx-view-price-btn">View Price</a>
+            <button type="button"
+              class="twx-contact-btn"
+              data-add-to-quote="${pName}"
+              data-name="${pName}"
+              data-id="${pId}"
+              data-code="${pCode}"
+              data-price="${pPrice}"
+              data-sale-price="${pSalePrice}"
+              data-on-sale="${pOnSale}"
+              data-image="${pImage}"
+              data-zoho-id="${pZohoId}">
+              Add to Quote
+            </button>
+          </div>
         `;
-        parent.insertBefore(gate, priceEl.nextSibling);
+        body.insertBefore(wrap, priceEl.nextSibling);
       }
     });
   }
@@ -244,37 +252,50 @@
     });
 
     document.querySelectorAll(".add-to-quote-btn").forEach((btn) => {
+      // Skip brands card add buttons — handled by gateProductCards, not here
+      if (btn.classList.contains("brands-card-add")) return;
       // Skip buttons inside the cart or wizard
       if (btn.closest("#quote-cart, #machine-wizard-container")) return;
 
       if (session) {
         // Member: unwrap from any gate, update text
+        const wrap = btn.closest(".twx-price-gate-wrap");
         const gate = btn.closest(".twx-price-gate");
-        if (gate) {
-          gate.parentNode.insertBefore(btn, gate);
-          gate.remove();
+        const container = wrap || gate;
+        if (container) {
+          container.parentNode.insertBefore(btn, container);
+          container.remove();
         }
         btn.style.display = "";
         btn.textContent = "Add to Order";
       } else {
         // Guest: already wrapped? skip
-        if (btn.closest(".twx-price-gate")) return;
+        if (btn.closest(".twx-price-gate-wrap, .twx-price-gate")) return;
 
         btn.style.display = "";
         btn.textContent = "Add to Quote";
 
-        // Wrap btn + login link in a flex gate
+        // Wrap btn + login link + lock header in a gate
+        const wrap = document.createElement("div");
+        wrap.className = "twx-price-gate-wrap";
+
+        const lockIcon = document.createElement("div");
+        lockIcon.className = "twx-lock-icon";
+        lockIcon.textContent = "🔒 Sign in to view price";
+
         const gate = document.createElement("div");
         gate.className = "twx-price-gate";
-        btn.parentNode.insertBefore(gate, btn);
 
         const loginLink = document.createElement("a");
         loginLink.href = `${PORTAL_URL}/login?return=${returnUrl}`;
         loginLink.className = "twx-view-price-btn";
-        loginLink.textContent = "🔒 Log in / sign up to view price";
+        loginLink.textContent = "View Price";
 
         gate.appendChild(loginLink);
         gate.appendChild(btn);
+        wrap.appendChild(lockIcon);
+        wrap.appendChild(gate);
+        btn.parentNode.insertBefore(wrap, btn);
       }
     });
   }
