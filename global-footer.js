@@ -398,6 +398,10 @@
         `;
         navMenu.appendChild(mobileEl);
       }
+
+      // Move ORDER/QUOTE button to after auth block
+      const orderBtn = navMenu.querySelector(".open-quote-cart.mobile");
+      if (orderBtn) navMenu.appendChild(orderBtn);
     }
   }
 

@@ -61,9 +61,9 @@
   .open-quote-cart-btn:hover {
     background: #b07d37;
   }
-  @media (max-width: 700px) {
+  @media (max-width: 991px) {
     .open-quote-cart-btn {
-      top: 12px;
+      top: 72px;
       width: 44px;
       height: 44px;
       font-size: 1.3rem;
