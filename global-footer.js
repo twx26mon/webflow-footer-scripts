@@ -172,6 +172,18 @@
         background: rgba(194, 147, 74, 0.1);
         border-color: #c2934a;
       }
+      /* Machine wizard add-to-quote button */
+      .wiz-add-btn {
+        background: transparent;
+        color: #c2934a;
+        border: 1px solid #c2934a;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+      }
+      .wiz-add-btn:hover {
+        background: rgba(194, 147, 74, 0.12);
+      }
     `;
     document.head.appendChild(style);
   }
