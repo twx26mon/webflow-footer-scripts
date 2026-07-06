@@ -505,15 +505,25 @@
     });
 
     // Wrap the middle hero paragraph in a hideable span (hidden on mobile via CSS)
-    // Structure: <strong>P1</strong>P2<br><br>Fill out...P3
+    // Collects all DOM nodes between </strong> and the "Fill out" text node
     var heroText = document.querySelector('p.hero-text');
     if (!heroText) return;
-    var html = heroText.innerHTML;
-    var wrapped = html.replace(
-      /(<\/strong>)([\s\S]+?<br><br>)(Fill out)/,
-      '$1<span class="hero-para-2">$2</span>$3'
-    );
-    if (wrapped !== html) heroText.innerHTML = wrapped;
+    var strong = heroText.querySelector('strong');
+    if (!strong) return;
+    var span = document.createElement('span');
+    span.className = 'hero-para-2';
+    var nodesToWrap = [];
+    var sibling = strong.nextSibling;
+    while (sibling) {
+      var next = sibling.nextSibling;
+      if (sibling.nodeType === Node.TEXT_NODE && sibling.textContent.includes('Fill out')) break;
+      nodesToWrap.push(sibling);
+      sibling = next;
+    }
+    if (nodesToWrap.length > 0) {
+      heroText.insertBefore(span, nodesToWrap[0]);
+      nodesToWrap.forEach(function (n) { span.appendChild(n); });
+    }
   }
 
   // Run after DOM is ready and after Webflow collection renders

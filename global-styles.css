@@ -1833,6 +1833,19 @@ section.navbar .image {
   }
 }
 
+/* On phones: stack paired fields vertically, remove Webflow fixed heights */
+@media (max-width: 767px) {
+  .twx-form-row {
+    flex-direction: column !important;
+  }
+
+  .twx-form-row > * {
+    width: 100% !important;
+    height: auto !important;
+    min-height: unset !important;
+  }
+}
+
 /* Hide middle hero paragraph on phones — keeps copy short */
 @media (max-width: 767px) {
   .hero-para-2 {
