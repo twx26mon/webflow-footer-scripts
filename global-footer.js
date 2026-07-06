@@ -3655,14 +3655,15 @@
 
     /* Mobile */
     @media (max-width: 767px) {
-      .twx-about-hero { min-height: 65vh; padding-top: 80px; }
+      .twx-about { margin-left: 0; margin-right: 0; border-radius: 0; }
+      .twx-about-hero { min-height: 65vh; padding: 80px 1.25rem 48px; }
       .twx-hero-scroll-hint { bottom: 16px; }
       .twx-section-inner { grid-template-columns: 1fr; gap: 16px; }
       .twx-section-num { font-size: 5rem; position: static; }
       .twx-values-grid { grid-template-columns: 1fr; }
       .twx-team-grid { grid-template-columns: 1fr; }
-      .twx-about-cta { flex-direction: column; text-align: center; }
-      .twx-about-section { padding: 60px 6vw; }
+      .twx-about-cta { flex-direction: column; text-align: center; padding: 48px 1.25rem; }
+      .twx-about-section { padding: 48px 1.25rem; }
     }
   `;
   document.head.appendChild(style);
