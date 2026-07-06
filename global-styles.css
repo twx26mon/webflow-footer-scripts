@@ -1843,6 +1843,7 @@ section.navbar .image {
     width: 100% !important;
     height: auto !important;
     min-height: unset !important;
+    flex: 0 0 auto !important;
   }
 }
 
