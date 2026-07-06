@@ -494,6 +494,28 @@
     navMenu.appendChild(footer);
   }
 
+  function initContactPage() {
+    if (!window.location.pathname.includes('/contact')) return;
+
+    // Add class to paired field rows so CSS can remove row-gap when they stack on mobile
+    document.querySelectorAll(
+      '#email-form > .input-outer-container, #email-form > div[style*="flex-wrap"]'
+    ).forEach(function (el) {
+      el.classList.add('twx-form-row');
+    });
+
+    // Wrap the middle hero paragraph in a hideable span (hidden on mobile via CSS)
+    // Structure: <strong>P1</strong>P2<br><br>Fill out...P3
+    var heroText = document.querySelector('p.hero-text');
+    if (!heroText) return;
+    var html = heroText.innerHTML;
+    var wrapped = html.replace(
+      /(<\/strong>)([\s\S]+?<br><br>)(Fill out)/,
+      '$1<span class="hero-para-2">$2</span>$3'
+    );
+    if (wrapped !== html) heroText.innerHTML = wrapped;
+  }
+
   // Run after DOM is ready and after Webflow collection renders
   function init() {
     injectGateStyles();
@@ -506,6 +528,7 @@
     initMobileNavToggle();
     activatePartsNav();
     activateDropdownNav();
+    initContactPage();
 
     // Re-run after Webflow collection list renders (it's async)
     const observer = new MutationObserver(() => {

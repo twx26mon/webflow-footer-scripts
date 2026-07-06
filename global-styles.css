@@ -1790,3 +1790,52 @@ section.navbar .image {
   border-color: #b07d37 !important;
   color: #111 !important;
 }
+
+/* ── Contact page — hero & form ────────────────────────────────── */
+
+.heading-hero {
+  font-family: 'Oswald', Arial, sans-serif !important;
+  text-transform: uppercase !important;
+  letter-spacing: 2px !important;
+  color: #fff !important;
+  margin-bottom: 20px !important;
+}
+
+.heading-hero .highlight strong {
+  color: #c2934a !important;
+}
+
+.hero-text {
+  color: #aaa !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.75 !important;
+}
+
+.hero-text strong {
+  color: #fff !important;
+}
+
+/* Stack layout and compact form on tablet and below */
+@media (max-width: 991px) {
+  .hero-pages {
+    flex-direction: column !important;
+  }
+
+  /* Reduce form card side padding so inputs have more room */
+  .hero-pages-left.w-form {
+    padding: 20px !important;
+  }
+
+  /* Remove row-gap from paired field rows when they wrap to single column */
+  .twx-form-row {
+    gap: 0 !important;
+  }
+}
+
+/* Hide middle hero paragraph on phones — keeps copy short */
+@media (max-width: 767px) {
+  .hero-para-2 {
+    display: none !important;
+  }
+}
