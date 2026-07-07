@@ -524,6 +524,14 @@
       heroText.insertBefore(span, nodesToWrap[0]);
       nodesToWrap.forEach(function (n) { span.appendChild(n); });
     }
+
+    // On mobile, swap hero-para-3 text to a shorter version with phone number
+    if (window.innerWidth <= 767) {
+      var heroPara3 = document.querySelector('.hero-para-3');
+      if (heroPara3) {
+        heroPara3.textContent = 'Fill out the form below, or give us a call on 08 6185 1944 to chat to someone from the Tillageworx Team.';
+      }
+    }
   }
 
   // Run after DOM is ready and after Webflow collection renders
