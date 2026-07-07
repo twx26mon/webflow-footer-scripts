@@ -160,6 +160,22 @@
       .twx-gate-flush {
         padding: 4px 12px 12px;
       }
+      /* Info bar — Go to Dashboard pill button (mirrors portal Return to Website) */
+      .twx-nav-dashboard-btn {
+        font-size: 12px;
+        color: #fff;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        padding: 5px 14px;
+        border-radius: 3px;
+        transition: border-color 0.15s, color 0.15s;
+        white-space: nowrap;
+      }
+      .twx-nav-dashboard-btn:hover { border-color: #666; color: #c2934a; }
       /* Info bar auth links */
       .twx-nav-login {
         color: #aaa;
@@ -372,10 +388,7 @@
           <span style="color:#c2934a;font-size:12px;font-family:Arial,sans-serif;font-weight:700;letter-spacing:0.3px;">
             G'day, ${firstName}
           </span>
-          <a href="${PORTAL_URL}/dashboard"
-             style="color:#c2934a;font-size:12px;font-family:Arial,sans-serif;font-weight:700;text-decoration:none;letter-spacing:0.5px;text-transform:uppercase;">
-            Dashboard
-          </a>
+          <a href="${PORTAL_URL}/dashboard" class="twx-nav-dashboard-btn">← Go to Dashboard</a>
           <button id="twx-signout-btn"
                   style="background:none;border:none;color:#686868;font-size:12px;font-family:Arial,sans-serif;cursor:pointer;padding:0;letter-spacing:0.3px;">
             Sign out
@@ -462,9 +475,9 @@
     const mobileBtn = document.querySelector(".open-quote-cart.mobile");
     if (mobileBtn) mobileBtn.textContent = getSession() ? "PLACE ORDER" : "GET A QUOTE";
 
-    // Update desktop cart button text — only if it's text-only (no SVG/img child)
+    // Update desktop cart button text (desktop only — on mobile it's a cart icon)
     const cartBtn = document.getElementById("open-quote-cart-btn");
-    if (cartBtn && !cartBtn.querySelector("svg, img")) {
+    if (cartBtn && window.innerWidth > 991) {
       cartBtn.textContent = getSession() ? "ORDER" : "GET A QUOTE";
     }
   }
