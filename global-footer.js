@@ -212,6 +212,15 @@
         transition: opacity 0.15s;
       }
       .twx-member-add:hover { opacity: 0.85 !important; }
+      /* Modal scrollbars */
+      #twx-gq-modal > div::-webkit-scrollbar,
+      #twx-mo-modal > div::-webkit-scrollbar { width: 4px; }
+      #twx-gq-modal > div::-webkit-scrollbar-track,
+      #twx-mo-modal > div::-webkit-scrollbar-track { background: #1a1a1a; border-radius: 4px; }
+      #twx-gq-modal > div::-webkit-scrollbar-thumb,
+      #twx-mo-modal > div::-webkit-scrollbar-thumb { background: #c2934a; border-radius: 4px; }
+      #twx-gq-modal > div::-webkit-scrollbar-thumb:hover,
+      #twx-mo-modal > div::-webkit-scrollbar-thumb:hover { background: #d4a55e; }
       /* Machine wizard add-to-quote button */
       .wiz-add-btn {
         background: transparent;
@@ -1188,7 +1197,7 @@
         <button id="twx-mo-close" type="button" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#555;font-size:26px;cursor:pointer;line-height:1;padding:0;font-family:Arial,sans-serif;">×</button>
 
         <div style="font-family:'Oswald',Arial,sans-serif;color:#c2934a;font-size:18px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Place Your Order</div>
-        <div style="font-family:Arial,sans-serif;color:#686868;font-size:13px;margin-bottom:20px;line-height:1.5;">We'll add freight and email you to approve the final total before processing.</div>
+        <div style="font-family:Arial,sans-serif;color:#686868;font-size:13px;margin-bottom:20px;line-height:1.5;">Once we receive your order request, we'll send you a sales order, including freight, for you to accept. We will always do our best to source the most affordable, reliable freight option.</div>
 
         <div style="margin-bottom:16px;background:#0e0e0e;border:1px solid #1e1e1e;border-radius:8px;padding:12px 14px;">
           <div style="font-family:'Oswald',Arial,sans-serif;font-size:10px;color:#c2934a;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">YOUR ORDER (${cartCount} item${cartCount !== 1 ? "s" : ""})</div>
@@ -1285,11 +1294,67 @@
         });
 
         if (resp.ok) {
+          const submittedCart = [...state.cart];
           localStorage.removeItem(CONFIG.CART_KEY);
           state.cart = [];
           renderCart();
-          closeModal();
-          window.location.href = "https://customers.tillageworx.com.au/orders?new=1";
+
+          // Calculate subtotal from submitted cart
+          let subtotal = 0;
+          submittedCart.forEach((item) => {
+            const qty = Math.max(1, item.qty || 1);
+            const onSale = item.onSale === "true" || item.onSale === true;
+            const raw = String(onSale ? (item.salePrice || item.price || "") : (item.price || ""));
+            subtotal += (parseFloat(raw.replace(/[^0-9.]/g, "")) || 0) * qty;
+          });
+          const subtotalStr = subtotal > 0 ? `$${subtotal.toFixed(2)}` : "TBA";
+
+          const itemsHtml = submittedCart.map((item) => {
+            const qty = Math.max(1, item.qty || 1);
+            const onSale = item.onSale === "true" || item.onSale === true;
+            const raw = String(onSale ? (item.salePrice || item.price || "") : (item.price || ""));
+            const unitPrice = parseFloat(raw.replace(/[^0-9.]/g, "")) || 0;
+            const linePrice = unitPrice ? `$${(unitPrice * qty).toFixed(2)}` : "";
+            const imgTag = item.image
+              ? `<img src="${escapeHtml(item.image)}" style="width:44px;height:44px;object-fit:cover;border-radius:4px;background:#0e0e0e;flex-shrink:0;" />`
+              : `<div style="width:44px;height:44px;background:#1a1a1a;border-radius:4px;flex-shrink:0;"></div>`;
+            return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1e1e1e;">
+              ${imgTag}
+              <span style="color:#ccc;flex:1;font-size:12px;font-family:Arial,sans-serif;line-height:1.4;">${escapeHtml(item.name)}</span>
+              <span style="color:#686868;font-size:12px;font-family:Arial,sans-serif;flex-shrink:0;">× ${qty}</span>
+              ${linePrice ? `<span style="color:#fff;font-size:12px;font-family:Arial,sans-serif;min-width:60px;text-align:right;">${linePrice}</span>` : ""}
+            </div>`;
+          }).join("");
+
+          const modalInner = modal.querySelector("div");
+          modalInner.innerHTML = `
+            <button id="twx-mo-success-close" type="button" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#555;font-size:26px;cursor:pointer;line-height:1;padding:0;font-family:Arial,sans-serif;">×</button>
+            <div style="font-family:'Oswald',Arial,sans-serif;color:#c2934a;font-size:18px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Order Submitted!</div>
+            <p style="font-family:Arial,sans-serif;color:#686868;font-size:13px;margin-bottom:20px;line-height:1.6;">
+              Once we receive your order request, we'll send you a sales order, including freight, for you to accept. We will always do our best to source the most affordable, reliable freight option.
+            </p>
+            <div style="margin-bottom:12px;background:#0e0e0e;border:1px solid #1e1e1e;border-radius:8px;padding:12px 14px;">
+              <div style="font-family:'Oswald',Arial,sans-serif;font-size:10px;color:#c2934a;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">YOUR ORDER (${submittedCart.length} ITEM${submittedCart.length !== 1 ? "S" : ""})</div>
+              ${itemsHtml}
+            </div>
+            <div style="background:#0e0e0e;border:1px solid #1e1e1e;border-radius:8px;padding:12px 14px;margin-bottom:20px;">
+              <div style="display:flex;justify-content:space-between;padding:4px 0;font-family:Arial,sans-serif;font-size:12px;color:#888;">
+                <span>Subtotal (ex. GST &amp; freight)</span>
+                <span style="color:#fff;">${subtotalStr}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:4px 0;font-family:Arial,sans-serif;font-size:12px;color:#888;border-top:1px solid #1e1e1e;margin-top:4px;">
+                <span>Freight</span>
+                <span style="color:#c2934a;">TBA</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:8px 0 2px;font-family:'Oswald',Arial,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.5px;border-top:1px solid #2a2a2a;margin-top:4px;">
+                <span style="color:#fff;">TOTAL (INCL. GST)</span>
+                <span style="color:#c2934a;">TBA</span>
+              </div>
+            </div>
+            <button id="twx-mo-done" type="button" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:6px;color:#aaa;font-family:Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:12px 32px;cursor:pointer;">Close</button>
+          `;
+          document.getElementById("twx-mo-success-close").addEventListener("click", closeModal);
+          document.getElementById("twx-mo-done").addEventListener("click", closeModal);
         } else {
           throw new Error("Submission failed");
         }
@@ -1888,10 +1953,10 @@
             cartHeader = document.createElement("div");
             cartHeader.id = "twx-cart-header";
             cartHeader.style.cssText =
-              "padding:16px 16px 0;font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:0.05em;";
+              "padding:16px 16px 0;font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:1px;text-transform:uppercase;";
             DOM.cart.querySelector(".quote-cart-content")?.prepend(cartHeader);
           }
-          cartHeader.textContent = `${firstName}'s Cart`;
+          cartHeader.textContent = `${firstName.toUpperCase()}'S CART`;
         }
       }
     } catch (_e) {}
@@ -2065,11 +2130,16 @@
         btn.classList.contains("open-quote-cart-btn") ||
         btn.id === "open-quote-cart-btn"
       ) {
-        btn.innerHTML =
-          '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>';
-        btn.style.display = "flex";
-        btn.style.alignItems = "center";
-        btn.style.justifyContent = "center";
+        if (window.innerWidth > 991) {
+          // Desktop: show text label — matches the nav "ORDER" / "GET A QUOTE" convention
+          btn.textContent = getSession() ? "ORDER" : "GET A QUOTE";
+        } else {
+          btn.innerHTML =
+            '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>';
+          btn.style.display = "flex";
+          btn.style.alignItems = "center";
+          btn.style.justifyContent = "center";
+        }
       }
     });
   }
