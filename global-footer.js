@@ -187,6 +187,15 @@
         background: rgba(194, 147, 74, 0.1);
         border-color: #c2934a;
       }
+      /* Member "Add to Order" button on parts template — gold fill */
+      .twx-member-add {
+        background: #c9a84c !important;
+        color: #1a1a1a !important;
+        border: none !important;
+        cursor: pointer;
+        transition: opacity 0.15s;
+      }
+      .twx-member-add:hover { opacity: 0.85 !important; }
       /* Machine wizard add-to-quote button */
       .wiz-add-btn {
         background: transparent;
@@ -228,7 +237,7 @@
         body.querySelectorAll(".twx-price-gate-wrap").forEach((g) => g.remove());
         if (addBtn) {
           addBtn.style.display = "";
-          addBtn.textContent = "Add to Order";
+          // Don't overwrite innerHTML — keep Webflow's cart icon as-is
         }
       } else {
         // Guest: hide price, stk, and native add btn
@@ -293,7 +302,7 @@
       if (btn.closest("#quote-cart, #machine-wizard-container")) return;
 
       if (session) {
-        // Member: unwrap from any gate, update text
+        // Member: unwrap from any gate, update text and apply gold styling
         const wrap = btn.closest(".twx-price-gate-wrap");
         const gate = btn.closest(".twx-price-gate");
         const container = wrap || gate;
@@ -303,6 +312,8 @@
         }
         btn.style.display = "";
         btn.textContent = "Add to Order";
+        btn.classList.remove("twx-contact-btn");
+        btn.classList.add("twx-member-add");
       } else {
         // Guest: already wrapped? skip
         if (btn.closest(".twx-price-gate-wrap, .twx-price-gate")) return;
@@ -358,8 +369,8 @@
       if (session) {
         const firstName = session.user?.user_metadata?.first_name || "";
         el.innerHTML = `
-          <span style="color:#aaa;font-size:12px;font-family:Arial,sans-serif;letter-spacing:0.3px;">
-            G'day, <strong style="color:#fff;">${firstName}</strong>
+          <span style="color:#c2934a;font-size:12px;font-family:Arial,sans-serif;font-weight:700;letter-spacing:0.3px;">
+            G'day, ${firstName}
           </span>
           <a href="${PORTAL_URL}/dashboard"
              style="color:#c2934a;font-size:12px;font-family:Arial,sans-serif;font-weight:700;text-decoration:none;letter-spacing:0.5px;text-transform:uppercase;">
@@ -448,9 +459,14 @@
   }
 
   function updateMobileOrderBtn() {
-    const btn = document.querySelector(".open-quote-cart.mobile");
-    if (!btn) return;
-    btn.textContent = getSession() ? "PLACE ORDER" : "GET A QUOTE";
+    const mobileBtn = document.querySelector(".open-quote-cart.mobile");
+    if (mobileBtn) mobileBtn.textContent = getSession() ? "PLACE ORDER" : "GET A QUOTE";
+
+    // Update desktop cart button text — only if it's text-only (no SVG/img child)
+    const cartBtn = document.getElementById("open-quote-cart-btn");
+    if (cartBtn && !cartBtn.querySelector("svg, img")) {
+      cartBtn.textContent = getSession() ? "ORDER" : "GET A QUOTE";
+    }
   }
 
   function moveCartBtnIntoNavbar() {
