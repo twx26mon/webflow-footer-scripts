@@ -45,6 +45,21 @@
   const PORTAL_URL = "https://customers.tillageworx.com.au";
   const GATING_ENABLED = true;
 
+  // After login the portal redirects back with #twx_session=... in the hash.
+  // Write it to localStorage so getSession() works on this domain, then clean the URL.
+  (function () {
+    try {
+      var m = window.location.hash.match(/[#&]twx_session=([^&]*)/);
+      if (m) {
+        var s = JSON.parse(decodeURIComponent(m[1]));
+        if (s && s.access_token) {
+          localStorage.setItem("sb-srgndcoiobilpwbliwgn-auth-token", JSON.stringify(s));
+          history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+      }
+    } catch (e) {}
+  })();
+
   function getSession() {
     try {
       const raw = localStorage.getItem("sb-srgndcoiobilpwbliwgn-auth-token");
