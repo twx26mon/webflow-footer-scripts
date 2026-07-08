@@ -484,11 +484,9 @@
     const mobileBtn = document.querySelector(".open-quote-cart.mobile");
     if (mobileBtn) mobileBtn.textContent = getSession() ? "PLACE ORDER" : "GET A QUOTE";
 
-    // Update desktop cart button text (desktop only — on mobile it's a cart icon)
-    const cartBtn = document.getElementById("open-quote-cart-btn");
-    if (cartBtn && window.innerWidth > 991) {
-      cartBtn.textContent = getSession() ? "ORDER" : "GET A QUOTE";
-    }
+    // Update the nav bar button text (desktop nav combo class open-quote-cart nav-bar)
+    const navBtn = document.querySelector(".open-quote-cart.nav-bar");
+    if (navBtn) navBtn.textContent = getSession() ? "ORDER" : "GET A QUOTE";
   }
 
   function moveCartBtnIntoNavbar() {
@@ -2130,16 +2128,11 @@
         btn.classList.contains("open-quote-cart-btn") ||
         btn.id === "open-quote-cart-btn"
       ) {
-        if (window.innerWidth > 991) {
-          // Desktop: show text label — matches the nav "ORDER" / "GET A QUOTE" convention
-          btn.textContent = getSession() ? "ORDER" : "GET A QUOTE";
-        } else {
-          btn.innerHTML =
-            '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>';
-          btn.style.display = "flex";
-          btn.style.alignItems = "center";
-          btn.style.justifyContent = "center";
-        }
+        btn.innerHTML =
+          '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>';
+        btn.style.display = "flex";
+        btn.style.alignItems = "center";
+        btn.style.justifyContent = "center";
       }
     });
   }
