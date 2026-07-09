@@ -233,8 +233,8 @@
       .wiz-add-btn:hover {
         background: rgba(194, 147, 74, 0.12);
       }
-      /* Clear cart button — darker on hover */
-      #cart-clearall { transition: filter 0.15s; }
+      /* Clear cart button — gold, darker on hover */
+      #cart-clearall { color: #c2934a !important; transition: filter 0.15s; }
       #cart-clearall:hover { filter: brightness(0.65); }
       /* Sign out button */
       #twx-signout-btn { color: #aaa !important; transition: color 0.15s; }
@@ -1409,7 +1409,7 @@
 
     const cartInfoEl = DOM.cart?.querySelector(".quote-cart-info");
     if (cartInfoEl) cartInfoEl.innerHTML = getSession()
-      ? ""
+      ? `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to confirm your quote.</p>`
       : `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to submit a Sales Order request.</p>`;
 
     const hasItems = state.cart.length > 0;
@@ -1521,7 +1521,7 @@
 
     if (!session) {
       summary.innerHTML = `
-        <div class="cart-summary-note" style="text-align:center;padding:14px 0 6px;line-height:1.7;">
+        <div class="cart-summary-note" style="text-align:center;padding:14px 0 6px;line-height:1.7;color:#aaa;font-family:Arial,sans-serif;font-size:13px;">
           <a href="https://customers.tillageworx.com.au/login?return=${encodeURIComponent(window.location.href)}" style="color:#c2934a;text-decoration:none;font-weight:700;">Sign in</a>
           or
           <a href="https://customers.tillageworx.com.au/signup?return=${encodeURIComponent(window.location.href)}" style="color:#c2934a;text-decoration:none;font-weight:700;">Create an Account</a>
