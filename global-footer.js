@@ -233,6 +233,39 @@
       .wiz-add-btn:hover {
         background: rgba(194, 147, 74, 0.12);
       }
+      /* Clear cart button — darker on hover */
+      #cart-clearall { transition: filter 0.15s; }
+      #cart-clearall:hover { filter: brightness(0.65); }
+      /* Sign out button */
+      #twx-signout-btn { color: #aaa !important; transition: color 0.15s; }
+      #twx-signout-btn:hover { color: #fff !important; }
+      /* ABOUT dropdown — styled to match nav */
+      .dropdown-list-about.w-dropdown-list {
+        background: #0e0e0e;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        padding: 6px;
+        min-width: 160px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      }
+      .dropdown-list-about .menu-sublink {
+        display: block;
+        color: #bbb;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: color 0.15s, background 0.15s;
+      }
+      .dropdown-list-about .menu-sublink:hover,
+      .dropdown-list-about .menu-sublink.w--current {
+        color: #c2934a;
+        background: rgba(194, 147, 74, 0.08);
+      }
     `;
     document.head.appendChild(style);
   }
@@ -1370,12 +1403,22 @@
   function renderCart() {
     if (!DOM.cartItems) return;
 
+    // Update header and info text every render
+    const cartSectionHeader = DOM.cart?.querySelector(".cart-section-header");
+    if (cartSectionHeader) cartSectionHeader.textContent = getSession() ? "Your Order" : "Your Quote";
+
+    const cartInfoEl = DOM.cart?.querySelector(".quote-cart-info");
+    if (cartInfoEl) cartInfoEl.innerHTML = getSession()
+      ? ""
+      : `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to submit a Sales Order request.</p>`;
+
     const hasItems = state.cart.length > 0;
     DOM.cartItems.style.display = hasItems ? "block" : "none";
     if (DOM.clearBtn) DOM.clearBtn.style.display = hasItems ? "block" : "none";
 
     if (!hasItems) {
-      DOM.cartItems.innerHTML = "";
+      DOM.cartItems.innerHTML = `<div style="text-align:center;padding:24px 0 8px;font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#444;letter-spacing:1.5px;text-transform:uppercase;">Your cart is empty</div>`;
+      DOM.cartItems.style.display = "block";
       const existing = document.getElementById("cart-pricing-summary");
       if (existing) existing.remove();
       const existingBtn = document.getElementById("cart-proceed-btn");
@@ -1478,7 +1521,12 @@
 
     if (!session) {
       summary.innerHTML = `
-        <div class="cart-summary-note" style="text-align:center;padding:14px 0 6px;">Sign in to view pricing and place an order.</div>
+        <div class="cart-summary-note" style="text-align:center;padding:14px 0 6px;line-height:1.7;">
+          <a href="https://customers.tillageworx.com.au/login?return=${encodeURIComponent(window.location.href)}" style="color:#c2934a;text-decoration:none;font-weight:700;">Sign in</a>
+          or
+          <a href="https://customers.tillageworx.com.au/signup?return=${encodeURIComponent(window.location.href)}" style="color:#c2934a;text-decoration:none;font-weight:700;">Create an Account</a>
+          to view pricing and place an order.
+        </div>
       `;
     } else if (allPriced && subtotal > 0) {
       const gst = subtotal * 0.1,
@@ -1513,10 +1561,10 @@
     summary.parentNode.insertBefore(proceedBtn, summary.nextSibling);
 
     if (!session) {
-      proceedBtn.textContent = "SUBMIT QUOTE →";
+      proceedBtn.textContent = "PROCEED";
       proceedBtn.addEventListener("click", openGuestQuoteModal);
     } else {
-      proceedBtn.textContent = "PLACE ORDER →";
+      proceedBtn.textContent = "PROCEED";
       proceedBtn.addEventListener("click", openMemberOrderModal);
     }
 
@@ -1535,15 +1583,15 @@
       });
     }
 
-    const header = document.createElement("div");
-    header.className = "wizard-main-header";
-    header.textContent = "Find parts for my machine";
-    DOM.addBox.insertBefore(header, DOM.browseBtn?.nextSibling);
-
     const wizContainer = document.createElement("div");
     wizContainer.id = "machine-wizard-container";
     wizContainer.innerHTML = `<div id="wiz-breadcrumbs"></div><div id="wiz-active-step"></div>`;
-    DOM.addBox.insertBefore(wizContainer, header.nextSibling);
+    DOM.addBox.insertBefore(wizContainer, DOM.browseBtn?.nextSibling);
+
+    const header = document.createElement("div");
+    header.className = "wizard-main-header";
+    header.textContent = "Find parts for my machine";
+    wizContainer.prepend(header);
 
     DOM.wizContainer = wizContainer;
     DOM.breadcrumbs = document.getElementById("wiz-breadcrumbs");
