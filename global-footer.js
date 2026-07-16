@@ -1561,7 +1561,7 @@
     summary.parentNode.insertBefore(proceedBtn, summary.nextSibling);
 
     if (!session) {
-      proceedBtn.textContent = "PROCEED";
+      proceedBtn.textContent = "PROCEED WITH QUOTE";
       proceedBtn.addEventListener("click", openGuestQuoteModal);
     } else {
       proceedBtn.textContent = "PROCEED";
