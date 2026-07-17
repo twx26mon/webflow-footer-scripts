@@ -1468,9 +1468,6 @@
     if (cartSectionHeader) cartSectionHeader.textContent = getSession() ? "Your Order" : "Your Quote";
 
     const cartInfoEl = DOM.cart?.querySelector(".quote-cart-info");
-    if (cartInfoEl) cartInfoEl.innerHTML = getSession()
-      ? `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to confirm your quote.</p>`
-      : `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to submit a Sales Order request.</p>`;
 
     const hasItems = state.cart.length > 0;
     DOM.cartItems.style.display = hasItems ? "block" : "none";
@@ -1483,9 +1480,14 @@
       if (existing) existing.remove();
       const existingBtn = document.getElementById("cart-proceed-btn");
       if (existingBtn) existingBtn.remove();
+      if (cartInfoEl) cartInfoEl.innerHTML = "";
       updateButtons();
       return;
     }
+
+    if (cartInfoEl) cartInfoEl.innerHTML = getSession()
+      ? `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to confirm your quote.</p>`
+      : `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to submit a Sales Order request.</p>`;
 
     const fragment = document.createDocumentFragment();
 
