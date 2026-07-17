@@ -618,6 +618,61 @@
     }
   }
 
+  // Contact page form — POST via the Worker instead of Webflow's native
+  // form handling. The sitewide honeypot (Section 9) already injects
+  // .twx-global-honeypot into every <form> and blocks bot submissions on
+  // the capture phase before this listener ever runs; a real submission
+  // still forwards the (empty) honeypot value server-side as defense in
+  // depth. Field names are read generically from the form so this doesn't
+  // need updating if the Webflow form fields are edited later.
+  function initContactFormSubmit() {
+    if (!window.location.pathname.includes('/contact')) return;
+    var form = document.getElementById('email-form');
+    if (!form || form.dataset.twxWorkerSubmit) return;
+    form.dataset.twxWorkerSubmit = '1';
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var formData = new FormData(form);
+      var fields = {};
+      var honeypot = '';
+      formData.forEach(function (value, key) {
+        if (key === 'company_website_url') { honeypot = value; return; }
+        fields[key] = value;
+      });
+
+      var submitBtn = form.querySelector('[type="submit"]');
+      var originalLabel = submitBtn ? submitBtn.value : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        if ('value' in submitBtn) submitBtn.value = 'Sending...';
+      }
+
+      var formBlock = form.closest('.w-form');
+
+      fetch('https://twx-zoho-proxy.monica-6b5.workers.dev/contact-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ honeypot: honeypot, fields: fields }),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Contact form submission failed');
+          form.style.display = 'none';
+          var success = formBlock && formBlock.querySelector('.w-form-done');
+          if (success) success.style.display = 'block';
+        })
+        .catch(function () {
+          var errorEl = formBlock && formBlock.querySelector('.w-form-fail');
+          if (errorEl) errorEl.style.display = 'block';
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            if ('value' in submitBtn) submitBtn.value = originalLabel;
+          }
+        });
+    });
+  }
+
   // Run after DOM is ready and after Webflow collection renders
   function init() {
     injectGateStyles();
@@ -631,6 +686,7 @@
     activatePartsNav();
     activateDropdownNav();
     initContactPage();
+    initContactFormSubmit();
 
     // Re-run after Webflow collection list renders (it's async)
     const observer = new MutationObserver(() => {
@@ -1092,6 +1148,8 @@
           <textarea id="twx-gq-comments" rows="3" placeholder="Any special instructions or questions..." style="width:100%;padding:9px 11px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;color:#fff;font-size:13px;box-sizing:border-box;font-family:Arial,sans-serif;resize:vertical;line-height:1.5;"></textarea>
         </div>
 
+        <input id="twx-gq-honeypot" type="text" name="company_website_url" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;">
+
         <div id="twx-gq-error" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:12px;padding:10px 12px;background:rgba(231,76,60,0.1);border-radius:4px;font-family:Arial,sans-serif;line-height:1.5;"></div>
 
         <button id="twx-gq-submit" type="button" style="display:block;width:100%;background:#c2934a;border:none;border-radius:6px;color:#111;text-align:center;font-weight:700;font-family:Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:14px 24px;cursor:pointer;transition:background 0.15s;box-sizing:border-box;">SUBMIT QUOTE →</button>
@@ -1146,7 +1204,7 @@
       );
 
       const payload = {
-        honeypot: "",
+        honeypot: document.getElementById("twx-gq-honeypot")?.value || "",
         customer_email: emailVal,
         customer_first_name: firstNameVal,
         customer_last_name: lastNameVal,
@@ -1240,6 +1298,8 @@
           <textarea id="twx-mo-notes" rows="3" placeholder="Any special delivery instructions, machine details, or questions..." style="width:100%;padding:9px 11px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;color:#fff;font-size:13px;box-sizing:border-box;font-family:Arial,sans-serif;resize:vertical;line-height:1.5;"></textarea>
         </div>
 
+        <input id="twx-mo-honeypot" type="text" name="company_website_url" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;">
+
         <div id="twx-mo-error" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:12px;padding:10px 12px;background:rgba(231,76,60,0.1);border-radius:4px;font-family:Arial,sans-serif;line-height:1.5;"></div>
 
         <div style="display:flex;gap:10px;">
@@ -1296,7 +1356,7 @@
       );
 
       const payload = {
-        honeypot: "",
+        honeypot: document.getElementById("twx-mo-honeypot")?.value || "",
         customer_email: sess.user.email || "",
         customer_first_name: firstName,
         customer_last_name: lastName,
@@ -3022,7 +3082,7 @@
 
       // ── Build payload — field names must match Zoho Flow exactly ──
       const payload = {
-        honeypot: "",
+        honeypot: g("qr-honeypot")?.value || "",
         customer_email: emailVal,
         customer_first_name: firstNameVal,
         customer_last_name: gv("qr-last-name"),
