@@ -1499,7 +1499,7 @@
     }
 
     if (cartInfoEl) cartInfoEl.innerHTML = getSession()
-      ? `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to confirm your quote.</p>`
+      ? `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to confirm your Sales Order.</p>`
       : `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to submit a Sales Order request.</p>`;
 
     const fragment = document.createDocumentFragment();
