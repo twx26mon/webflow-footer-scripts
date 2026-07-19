@@ -553,8 +553,12 @@
     if (!hamburger) return;
     const closeBtn = document.querySelector(".nav-close-btn");
 
+    // Toggle, not just add — otherwise clicking the hamburger a second time
+    // to close the menu leaves the icon stuck showing the X, since nothing
+    // else removes the class when the hamburger itself (rather than the
+    // dedicated close button or a nav link) is what closes the menu.
     hamburger.addEventListener("click", function () {
-      hamburger.classList.add("twx-menu-open");
+      hamburger.classList.toggle("twx-menu-open");
     });
 
     if (closeBtn) {
@@ -2388,7 +2392,21 @@
     if (!wizardOpened) showCart();
   }
 
-  /* ── Cart DOM injection (for pages without quote-cart element) ── */
+  /* ── Cart DOM injection ──────────────────────────────────
+     Previously this markup lived in a Webflow Embed element (class
+     code-embed-6) pasted directly into the Designer — fragile, since a
+     single accidental Display:None on that element took out the whole
+     cart/floating-button sitewide (found 19 Jul 2026). Now created here
+     unconditionally instead, so the page never depends on a hand-placed
+     Designer element existing/being visible. The early-return guards are
+     a safety net only, in case the old Embed is still on a page that
+     hasn't been cleaned up yet.
+     Dropped #cart-form-slot (a Webflow native Form Block was meant to be
+     moved into it) and the static .cart-section-header div — both are
+     unused/duplicated: nothing in this file moves a form into
+     #cart-form-slot, and .cart-section-header is already created and
+     inserted by initWizard() (see below), so including it here too would
+     produce two of them. */
   function injectCartIfMissing() {
     if (document.getElementById("quote-cart")) return; // already exists
 
@@ -2397,27 +2415,35 @@
     cart.id = "quote-cart";
     cart.className = "quote-cart closed";
     cart.innerHTML = `
-    <button id="quote-cart-close-btn" class="quote-cart-close-btn"></button>
+    <button id="quote-cart-close-btn" class="quote-cart-close-btn" aria-label="Close quote cart">❮</button>
     <div class="quote-cart-content">
       <div id="cart-add-parts-box">
-        <button id="cart-add-parts-btn"></button>
+        <button id="cart-add-parts-btn">Add Parts</button>
       </div>
-      <div class="cart-section-header">Your Quote</div>
       <div id="cart-items" class="quote-cart-items"></div>
-      <button id="cart-clearall">Clear Quote</button>
-      <div class="quote-cart-info"></div>
-      <div id="cart-form-slot"></div>
+      <button id="cart-clearall">Clear All</button>
+      <div class="quote-cart-info">
+        <p>
+          Once we receive your request, your Quote will be emailed to you including freight cost.<br>
+          We will always do our best to source the most affordable, reliable freight option.<br><br>
+          <strong>Prefer to chat? Give us a call!</strong><br>
+          <a href="tel:0861851944">08 6185 1944</a>
+        </p>
+      </div>
     </div>
   `;
     document.body.appendChild(cart);
 
-    // Inject the floating open button
+    // Inject the floating open button — styled entirely via the
+    // .open-quote-cart-btn class in quote-cart-site-head-code.css; no
+    // inline style here (the old fallback had one that fought the class
+    // rules — different position/size on desktop vs what's actually used).
     if (!document.getElementById("open-quote-cart-btn")) {
       const btn = document.createElement("button");
       btn.id = "open-quote-cart-btn";
       btn.className = "open-quote-cart-btn";
-      btn.style.cssText =
-        "position:fixed;bottom:50%;right:0;width:56px;height:56px;background:#c2934a;border:none;border-radius:8px 0 0 8px;z-index:10001;box-shadow:0 4px 24px rgba(0,0,0,0.22);cursor:pointer;display:flex;align-items:center;justify-content:center;";
+      btn.setAttribute("aria-label", "Open quote cart");
+      btn.textContent = "❯";
       document.body.appendChild(btn);
     }
   }
@@ -3245,6 +3271,13 @@
         // Also click the hamburger to keep Webflow's internal open/close
         // state in sync so it toggles correctly next time
         hamburger.click();
+        // hamburger.click() above also re-fires our own toggle listener in
+        // Section 0 (initMobileNavToggle) — since the class was just
+        // removed a moment ago by this same handler, toggling flips it
+        // straight back to added, leaving the icon stuck showing the X.
+        // Force it closed here as the authoritative last step, regardless
+        // of what the simulated click's side effects did.
+        hamburger.classList.remove("twx-menu-open");
       });
     }
 
