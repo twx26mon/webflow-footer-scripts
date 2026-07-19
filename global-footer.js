@@ -2469,6 +2469,24 @@
     btn.setAttribute("aria-label", "Open quote cart");
     btn.textContent = "❯";
     document.body.appendChild(btn);
+
+    // Section 0's moveCartBtnIntoNavbar() (which docks this button next to
+    // the hamburger on mobile) runs before this Section-2 IIFE gets far
+    // enough to create the button in the first place — so if the button
+    // didn't already exist at that point (e.g. the old Designer embed was
+    // hidden/missing), that move silently no-ops and never retries, and
+    // the button is just left wherever body.appendChild put it (the very
+    // end of body, i.e. visually at the bottom of the page). Redo the same
+    // relocation here for a freshly-created button.
+    if (window.innerWidth <= 991) {
+      const navbar = document.querySelector("section.navbar");
+      const hamburger = navbar ? navbar.querySelector(".mobile-menu-icon") : null;
+      if (hamburger) {
+        hamburger.parentNode.insertBefore(btn, hamburger);
+      } else if (navbar) {
+        navbar.appendChild(btn);
+      }
+    }
   }
 
   /* ── Init ── */
