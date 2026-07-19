@@ -409,6 +409,15 @@
     });
   }
 
+  // Local copy — this IIFE (Section 0) is a separate scope from the one(s)
+  // that already define escapeHtml() further down the file, so it isn't
+  // visible here. Do not remove thinking it's a duplicate.
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   function injectInfoBarAuth() {
     const session = getSession();
     const returnUrl = encodeURIComponent(window.location.href);
