@@ -693,6 +693,59 @@
     });
   }
 
+  // Newsletter CTA form (the "Stay Updated..." card, a shared Webflow
+  // Component reused on most pages) — POST via the Worker to Zoho Campaigns
+  // instead of Webflow's native form handling. Same technique as
+  // initContactFormSubmit() above: sitewide honeypot (Section 9) already
+  // guards it, email is read generically (first field whose name contains
+  // "email") so it doesn't need updating if the field is ever renamed.
+  function initNewsletterFormSubmit() {
+    var form = document.getElementById('wf-form-Newsletter-Form');
+    if (!form || form.dataset.twxWorkerSubmit) return;
+    form.dataset.twxWorkerSubmit = '1';
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var formData = new FormData(form);
+      var email = '';
+      var honeypot = '';
+      formData.forEach(function (value, key) {
+        if (key === 'company_website_url') { honeypot = value; return; }
+        if (!email && /email/i.test(key)) email = value;
+      });
+
+      var submitBtn = form.querySelector('[type="submit"]');
+      var originalLabel = submitBtn ? submitBtn.value : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        if ('value' in submitBtn) submitBtn.value = 'Sending...';
+      }
+
+      var formBlock = form.closest('.w-form');
+
+      fetch('https://twx-zoho-proxy.monica-6b5.workers.dev/newsletter-subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ honeypot: honeypot, email: email }),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Newsletter subscribe failed');
+          form.style.display = 'none';
+          var success = formBlock && formBlock.querySelector('.w-form-done');
+          if (success) success.style.display = 'block';
+        })
+        .catch(function () {
+          var errorEl = formBlock && formBlock.querySelector('.w-form-fail');
+          if (errorEl) errorEl.style.display = 'block';
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            if ('value' in submitBtn) submitBtn.value = originalLabel;
+          }
+        });
+    });
+  }
+
   // Run after DOM is ready and after Webflow collection renders
   function init() {
     injectGateStyles();
@@ -707,6 +760,7 @@
     activateDropdownNav();
     initContactPage();
     initContactFormSubmit();
+    initNewsletterFormSubmit();
 
     // Re-run after Webflow collection list renders (it's async)
     const observer = new MutationObserver(() => {
