@@ -1504,7 +1504,7 @@
 
     if (cartInfoEl) cartInfoEl.innerHTML = getSession()
       ? `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to confirm your Sales Order.</p>`
-      : `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to submit a Sales Order request.</p>`;
+      : `<p style="font-family:Arial,sans-serif;font-size:12px;color:#686868;margin:8px 0 0;line-height:1.5;">Click proceed to submit a Quote request.</p>`;
 
     const fragment = document.createDocumentFragment();
 
@@ -2407,8 +2407,29 @@
      #cart-form-slot, and .cart-section-header is already created and
      inserted by initWizard() (see below), so including it here too would
      produce two of them. */
+  // A display:none ancestor (e.g. the old code-embed-6 Designer element
+  // toggled off — has now happened twice) hides an element from view but
+  // NOT from getElementById, so an existence check alone isn't enough to
+  // tell "gone" from "present but invisible."
+  function isHiddenByAncestor(el) {
+    let node = el;
+    while (node) {
+      if (node.nodeType === 1 && window.getComputedStyle(node).display === "none") return true;
+      node = node.parentElement;
+    }
+    return false;
+  }
+
   function injectCartIfMissing() {
-    if (document.getElementById("quote-cart")) return; // already exists
+    const existingCart = document.getElementById("quote-cart");
+    if (existingCart && !isHiddenByAncestor(existingCart)) return; // already exists and visible
+
+    // Either genuinely missing, or present but hidden by some ancestor —
+    // clear out any such hidden remnant so it doesn't sit around as dead,
+    // confusing duplicate markup once we create our own live version.
+    if (existingCart) existingCart.remove();
+    const existingBtn = document.getElementById("open-quote-cart-btn");
+    if (existingBtn) existingBtn.remove();
 
     // Inject the quote cart panel
     const cart = document.createElement("div");
@@ -2438,14 +2459,13 @@
     // .open-quote-cart-btn class in quote-cart-site-head-code.css; no
     // inline style here (the old fallback had one that fought the class
     // rules — different position/size on desktop vs what's actually used).
-    if (!document.getElementById("open-quote-cart-btn")) {
-      const btn = document.createElement("button");
-      btn.id = "open-quote-cart-btn";
-      btn.className = "open-quote-cart-btn";
-      btn.setAttribute("aria-label", "Open quote cart");
-      btn.textContent = "❯";
-      document.body.appendChild(btn);
-    }
+    // Any stray existing button was already removed above.
+    const btn = document.createElement("button");
+    btn.id = "open-quote-cart-btn";
+    btn.className = "open-quote-cart-btn";
+    btn.setAttribute("aria-label", "Open quote cart");
+    btn.textContent = "❯";
+    document.body.appendChild(btn);
   }
 
   /* ── Init ── */
