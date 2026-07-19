@@ -425,7 +425,7 @@
         "display:flex;align-items:center;gap:16px;margin-right:4px;";
 
       if (session) {
-        const firstName = session.user?.user_metadata?.first_name || "";
+        const firstName = escapeHtml(session.user?.user_metadata?.first_name || "");
         el.innerHTML = `
           <span style="color:#c2934a;font-size:12px;font-family:Arial,sans-serif;font-weight:700;letter-spacing:0.3px;">
             G'day, ${firstName}
@@ -461,7 +461,7 @@
       mobileEl.className = "twx-mobile-auth";
 
       if (session) {
-        const firstName = session.user?.user_metadata?.first_name || "";
+        const firstName = escapeHtml(session.user?.user_metadata?.first_name || "");
         mobileEl.innerHTML = `
           <div class="twx-mobile-auth-greeting">G'day, <strong>${firstName}</strong></div>
           <a href="${PORTAL_URL}/dashboard" class="twx-mobile-auth-link">My Account</a>
