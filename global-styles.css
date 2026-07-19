@@ -1445,6 +1445,17 @@ section.navbar .image {
     padding-right: 0 !important;
   }
 
+  /* .mobile-menu wraps the hamburger and is flex-direction:column by
+     default (fine when the hamburger is its only child). moveCartBtnIntoNavbar()
+     now inserts the floating cart button as a sibling right before the
+     hamburger inside this same wrapper, so it needs to lay out as a row
+     or the two icons stack vertically instead of sitting side by side. */
+  .mobile-menu {
+    flex-direction: row !important;
+    align-items: center !important;
+    height: auto !important;
+  }
+
   /* Hamburger button */
   .mobile-menu-icon {
     display: flex !important;
