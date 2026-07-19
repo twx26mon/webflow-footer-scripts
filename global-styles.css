@@ -1873,3 +1873,82 @@ section.navbar .image {
     display: none !important;
   }
 }
+
+/* ── Newsletter CTA (locked Webflow Component — can't edit the Designer
+   canvas directly, so styled here as class overrides instead). Measured
+   against the live default 19 Jul 2026: container had a translucent grey
+   background (not a proper dark card), the heading was a muted #888
+   instead of a real brand colour, and the body text/input/button were
+   all set to Inter — not used anywhere else on the site (body copy is
+   Arial everywhere else; Oswald is reserved for headings). The button
+   was already close to on-brand (#c2934a gold, uppercase, bold) so its
+   look is left alone beyond locking in the font-family for consistency. ── */
+.bottom-cta-container {
+  background: #0e0e0e !important;
+  border: 1px solid #2a2a2a !important;
+  border-radius: 4px !important;
+}
+
+.newsletter-title strong.about {
+  color: #fff !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+.card-text {
+  font-family: Arial, sans-serif !important;
+  color: #aaa !important;
+  letter-spacing: 0.3px !important;
+}
+
+.text-field.w-input {
+  background: #1a1a1a !important;
+  border: 1px solid #2a2a2a !important;
+  color: #fff !important;
+  font-family: Arial, sans-serif !important;
+}
+
+.text-field.w-input::placeholder {
+  color: #686868 !important;
+}
+
+.text-field.w-input:focus {
+  border-color: #c2934a !important;
+  outline: none !important;
+}
+
+.btn-primary.w-button {
+  font-family: Arial, sans-serif !important;
+  letter-spacing: 0.3px !important;
+  transition: filter 0.15s !important;
+}
+
+.btn-primary.w-button:hover {
+  filter: brightness(0.85) !important;
+}
+
+.form-block .w-form-done,
+.form-block .w-form-fail {
+  font-family: Arial, sans-serif !important;
+  font-size: 13px !important;
+  color: #aaa !important;
+}
+
+.form-block .w-form-fail {
+  color: #e8722a !important;
+}
+
+@media (max-width: 767px) {
+  .bottom-cta-container {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    text-align: center !important;
+  }
+  .form-2 {
+    flex-direction: column !important;
+  }
+  .text-field.w-input,
+  .btn-primary.w-button {
+    width: 100% !important;
+  }
+}
