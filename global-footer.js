@@ -606,31 +606,34 @@
     });
 
     // Wrap the middle hero paragraph in a hideable span (hidden on mobile via CSS)
-    // Collects all DOM nodes between </strong> and the "Fill out" text node
+    // Collects all DOM nodes between </strong> and the "Fill out" text node.
+    // Guarded independently (not a shared early-return with the block below) —
+    // if the page's .hero-text markup ever changes shape and this lookup
+    // fails, the unrelated hero-para-3 swap below must still run.
     var heroText = document.querySelector('p.hero-text');
-    if (!heroText) return;
-    var strong = heroText.querySelector('strong');
-    if (!strong) return;
-    var span = document.createElement('span');
-    span.className = 'hero-para-2';
-    var nodesToWrap = [];
-    var sibling = strong.nextSibling;
-    while (sibling) {
-      var next = sibling.nextSibling;
-      if (sibling.nodeType === Node.TEXT_NODE && sibling.textContent.includes('Fill out')) break;
-      nodesToWrap.push(sibling);
-      sibling = next;
-    }
-    if (nodesToWrap.length > 0) {
-      heroText.insertBefore(span, nodesToWrap[0]);
-      nodesToWrap.forEach(function (n) { span.appendChild(n); });
+    var strong = heroText ? heroText.querySelector('strong') : null;
+    if (heroText && strong) {
+      var span = document.createElement('span');
+      span.className = 'hero-para-2';
+      var nodesToWrap = [];
+      var sibling = strong.nextSibling;
+      while (sibling) {
+        var next = sibling.nextSibling;
+        if (sibling.nodeType === Node.TEXT_NODE && sibling.textContent.includes('Fill out')) break;
+        nodesToWrap.push(sibling);
+        sibling = next;
+      }
+      if (nodesToWrap.length > 0) {
+        heroText.insertBefore(span, nodesToWrap[0]);
+        nodesToWrap.forEach(function (n) { span.appendChild(n); });
+      }
     }
 
     // On mobile, swap hero-para-3 text to a shorter version with phone number
     if (window.innerWidth <= 767) {
       var heroPara3 = document.querySelector('.hero-para-3');
       if (heroPara3) {
-        heroPara3.textContent = 'Fill out the form below, or give us a call on 08 6185 1944 to chat to someone from the Tillageworx Team.';
+        heroPara3.innerHTML = 'Fill out the form below, or give us a call on 08 6185 1944 <br> to chat to someone from the Tillageworx Team.';
       }
     }
   }

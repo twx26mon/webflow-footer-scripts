@@ -1827,6 +1827,15 @@ section.navbar .image {
   color: #fff !important;
 }
 
+/* Desktop: form column defaults to the top of .hero-pages (flex-start),
+   above the heading that sits over .hero-para-1 in the left column —
+   push it down to align with .hero-para-1's own top instead. */
+@media (min-width: 992px) {
+  .hero-pages-left.w-form {
+    margin-top: 146px !important;
+  }
+}
+
 /* Stack layout and compact form on tablet and below */
 @media (max-width: 991px) {
   .hero-pages {
