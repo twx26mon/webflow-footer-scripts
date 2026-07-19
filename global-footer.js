@@ -2081,7 +2081,7 @@
             cartHeader = document.createElement("div");
             cartHeader.id = "twx-cart-header";
             cartHeader.style.cssText =
-              "padding:16px 16px 0;font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:1px;text-transform:uppercase;";
+              "padding:16px 16px 0;font-size:13px;font-weight:700;color:#c2934a;letter-spacing:1px;text-transform:uppercase;";
             DOM.cart.querySelector(".quote-cart-content")?.prepend(cartHeader);
           }
           cartHeader.textContent = `${firstName.toUpperCase()}'S CART`;
