@@ -537,8 +537,12 @@
     const navbar = document.querySelector("section.navbar");
     if (!btn || !navbar) return;
     const hamburger = navbar.querySelector(".mobile-menu-icon");
+    // insertBefore requires hamburger to be a direct child of the node
+    // you call it on — hamburger actually sits inside a .mobile-menu
+    // wrapper, not directly under section.navbar, so this must be called
+    // on hamburger's real parent, not navbar itself.
     if (hamburger) {
-      navbar.insertBefore(btn, hamburger);
+      hamburger.parentNode.insertBefore(btn, hamburger);
     } else {
       navbar.appendChild(btn);
     }
