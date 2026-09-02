@@ -1326,7 +1326,7 @@
         submitBtn.style.opacity = "";
         submitBtn.style.pointerEvents = "";
         submitBtn.textContent = "SUBMIT QUOTE →";
-        showErr("Something went wrong. Please try again or call us on 08 6185 1944.");
+        showErr("Something went wrong and your quote didn't go through. Our team has been notified — you're welcome to try again, or call us on 08 6185 1944.");
       }
     });
   }
@@ -1524,7 +1524,7 @@
           throw new Error("Submission failed");
         }
       } catch (err) {
-        errorEl.textContent = "Something went wrong. Please try again or call us on 08 6185 1944.";
+        errorEl.textContent = "Something went wrong and your order didn't go through. Our team has been notified — you're welcome to try again, or call us on 08 6185 1944.";
         errorEl.style.display = "block";
         submitBtn.style.opacity = "";
         submitBtn.style.pointerEvents = "";
