@@ -1463,13 +1463,42 @@
     const existing = document.getElementById("twx-mo-modal");
     if (existing) existing.remove();
 
-    const cartCount = state.cart.length;
-    const cartSummaryHtml = state.cart
-      .map((item) => {
+    // Shared by the pre-submit summary below and the post-submit success
+    // screen — computes per-line pricing (respecting priceStatus/newPrice
+    // the same way the cart panel does) plus subtotal/GST/total. "Total"
+    // here always excludes freight (still TBA at this stage), matching the
+    // cart panel's own "Total (inc. GST)" convention.
+    function computeCartPricing(cartArr) {
+      let subtotal = 0;
+      const lines = cartArr.map((item) => {
         const qty = Math.max(1, item.qty || 1);
+        const raw = String(item.priceStatus ? (item.newPrice || item.price || "") : (item.price || ""));
+        const unitPrice = parseFloat(raw.replace(/[^0-9.]/g, "")) || 0;
+        if (unitPrice) subtotal += unitPrice * qty;
+        return { item, qty, unitPrice };
+      });
+      const gst = subtotal * 0.1;
+      const total = subtotal + gst;
+      const money = (n) => `$${n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      return {
+        lines,
+        subtotalStr: subtotal > 0 ? money(subtotal) : "TBA",
+        gstStr: subtotal > 0 ? money(gst) : "TBA",
+        totalStr: subtotal > 0 ? money(total) : "TBA",
+      };
+    }
+
+    const cartCount = state.cart.length;
+    const pricing = computeCartPricing(state.cart);
+    const cartSummaryHtml = pricing.lines
+      .map(({ item, qty, unitPrice }) => {
+        const linePrice = unitPrice
+          ? `$${(unitPrice * qty).toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          : "";
         return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #1e1e1e;font-size:12px;font-family:Arial,sans-serif;">
           <span style="color:#ccc;flex:1;padding-right:8px;line-height:1.4;">${escapeHtml(item.name)}</span>
-          <span style="color:#686868;flex-shrink:0;">× ${qty}</span>
+          <span style="color:#686868;flex-shrink:0;padding:0 8px;">× ${qty}</span>
+          ${linePrice ? `<span style="color:#fff;flex-shrink:0;min-width:60px;text-align:right;">${linePrice}</span>` : ""}
         </div>`;
       })
       .join("");
@@ -1489,6 +1518,25 @@
         <div style="margin-bottom:16px;background:#0e0e0e;border:1px solid #1e1e1e;border-radius:8px;padding:12px 14px;">
           <div style="font-family:'Oswald',Arial,sans-serif;font-size:10px;color:#c2934a;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">YOUR ORDER (${cartCount} item${cartCount !== 1 ? "s" : ""})</div>
           ${cartSummaryHtml}
+        </div>
+
+        <div style="background:#0e0e0e;border:1px solid #1e1e1e;border-radius:8px;padding:12px 14px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;font-family:Arial,sans-serif;font-size:12px;color:#888;">
+            <span>Subtotal (ex. GST &amp; freight)</span>
+            <span style="color:#fff;">${pricing.subtotalStr}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;font-family:Arial,sans-serif;font-size:12px;color:#888;border-top:1px solid #1e1e1e;margin-top:4px;">
+            <span>Freight</span>
+            <span style="color:#c2934a;">TBA</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;font-family:Arial,sans-serif;font-size:12px;color:#888;border-top:1px solid #1e1e1e;margin-top:4px;">
+            <span>GST (10%)</span>
+            <span style="color:#fff;">${pricing.gstStr}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0 2px;font-family:'Oswald',Arial,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.5px;border-top:1px solid #2a2a2a;margin-top:4px;">
+            <span style="color:#fff;">TOTAL (INCL. GST)</span>
+            <span style="color:#c2934a;">${pricing.totalStr}</span>
+          </div>
         </div>
 
         <div style="margin-bottom:16px;">
@@ -1588,20 +1636,13 @@
           state.cart = [];
           renderCart();
 
-          // Calculate subtotal from submitted cart
-          let subtotal = 0;
-          submittedCart.forEach((item) => {
-            const qty = Math.max(1, item.qty || 1);
-            const raw = String(item.priceStatus ? (item.newPrice || item.price || "") : (item.price || ""));
-            subtotal += (parseFloat(raw.replace(/[^0-9.]/g, "")) || 0) * qty;
-          });
-          const subtotalStr = subtotal > 0 ? `$${subtotal.toFixed(2)}` : "TBA";
+          const postPricing = computeCartPricing(submittedCart);
+          const subtotalStr = postPricing.subtotalStr;
 
-          const itemsHtml = submittedCart.map((item) => {
-            const qty = Math.max(1, item.qty || 1);
-            const raw = String(item.priceStatus ? (item.newPrice || item.price || "") : (item.price || ""));
-            const unitPrice = parseFloat(raw.replace(/[^0-9.]/g, "")) || 0;
-            const linePrice = unitPrice ? `$${(unitPrice * qty).toFixed(2)}` : "";
+          const itemsHtml = postPricing.lines.map(({ item, qty, unitPrice }) => {
+            const linePrice = unitPrice
+              ? `$${(unitPrice * qty).toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+              : "";
             const imgTag = item.image
               ? `<img src="${escapeHtml(item.image)}" style="width:44px;height:44px;object-fit:cover;border-radius:4px;background:#0e0e0e;flex-shrink:0;" />`
               : `<div style="width:44px;height:44px;background:#1a1a1a;border-radius:4px;flex-shrink:0;"></div>`;
@@ -1635,7 +1676,7 @@
               </div>
               <div style="display:flex;justify-content:space-between;padding:8px 0 2px;font-family:'Oswald',Arial,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.5px;border-top:1px solid #2a2a2a;margin-top:4px;">
                 <span style="color:#fff;">TOTAL (INCL. GST)</span>
-                <span style="color:#c2934a;">TBA</span>
+                <span style="color:#c2934a;">${postPricing.totalStr}</span>
               </div>
             </div>
             <button id="twx-mo-done" type="button" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:6px;color:#aaa;font-family:Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:12px 32px;cursor:pointer;">Close</button>
