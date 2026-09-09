@@ -74,7 +74,7 @@
     }
   }
 
-  // Local copy — this IIFE (Section 1) is a separate scope from the one in
+  // Local copy — this IIFE (Section 0) is a separate scope from the one in
   // Section 2 that defines the same helper. Reads the CMS "Price Status"
   // Option field's value via a hidden text element, since Webflow can't
   // bind Option fields to data- attributes directly.
@@ -1134,7 +1134,7 @@
         type: (payload.dataset.type || "").trim(),
         image: (payload.dataset.image || "").trim(),
         price: payloadPrice || domPrice || btnData.price || "",
-        newPrice: (payload.dataset.newPrice || "").trim(),
+        newPrice: (payload.dataset.salePrice || "").trim(),
         priceStatus: readPriceStatus(payload),
         code: payloadCode || domCode || btnData.code || "",
         zoho_id: (payload.dataset.zohoId || "").trim(),
