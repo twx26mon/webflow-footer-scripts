@@ -910,7 +910,7 @@
         font-size: 9px;
         font-weight: 800;
         letter-spacing: 0.12em;
-        padding: 2px 6px;
+        padding: 1px 6px;
         border-radius: 3px;
         text-transform: uppercase;
         vertical-align: middle;
