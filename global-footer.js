@@ -74,6 +74,21 @@
     }
   }
 
+  // Local copy — this IIFE (Section 1) is a separate scope from the one in
+  // Section 2 that defines the same helper. Reads the CMS "Price Status"
+  // Option field's value via a hidden text element, since Webflow can't
+  // bind Option fields to data- attributes directly.
+  function readPriceStatus(container) {
+    if (!container) return "";
+    const hidden = container.querySelector?.(".hidden-price-status");
+    const raw = (hidden?.textContent ?? container.dataset?.priceStatus ?? "")
+      .trim()
+      .toLowerCase();
+    if (raw === "on sale" || raw === "on-sale") return "on-sale";
+    if (raw === "new price" || raw === "new-price") return "new-price";
+    return "";
+  }
+
   function injectGateStyles() {
     const style = document.createElement("style");
     style.textContent = `
@@ -312,15 +327,15 @@
         const pId   = esc(addBtn?.dataset?.id || "");
         const pCode = esc(addBtn?.dataset?.code || "");
         const pPrice = esc(addBtn?.dataset?.price || "");
-        const pSalePrice = esc(addBtn?.dataset?.salePrice || "");
-        const pOnSale = esc(addBtn?.dataset?.onSale || "");
+        const pNewPrice = esc(addBtn?.dataset?.newPrice || "");
+        const pPriceStatus = esc(readPriceStatus(card));
         const pImage = esc(addBtn?.dataset?.image || "");
         const pZohoId = esc(addBtn?.dataset?.zohoId || "");
 
         const wrap = document.createElement("div");
         wrap.className = "twx-price-gate-wrap";
         wrap.innerHTML = `
-          <div class="twx-lock-icon">🔒 Sign in to view price</div>
+          <div class="twx-lock-icon">Sign in to view price</div>
           <div class="twx-price-gate">
             <a href="${PORTAL_URL}/login?return=${returnUrl}" class="twx-view-price-btn">View Price</a>
             <button type="button"
@@ -330,8 +345,8 @@
               data-id="${pId}"
               data-code="${pCode}"
               data-price="${pPrice}"
-              data-sale-price="${pSalePrice}"
-              data-on-sale="${pOnSale}"
+              data-new-price="${pNewPrice}"
+              data-price-status="${pPriceStatus}"
               data-image="${pImage}"
               data-zoho-id="${pZohoId}">
               Add to Quote
@@ -389,7 +404,7 @@
 
         const lockIcon = document.createElement("div");
         lockIcon.className = "twx-lock-icon";
-        lockIcon.textContent = "🔒 Sign in to view price";
+        lockIcon.textContent = "Sign in to view price";
 
         const gate = document.createElement("div");
         gate.className = "twx-price-gate";
@@ -814,7 +829,10 @@
     }
   }
 
-  /* ── Sale price styles ── */
+  /* ── Price change styles ──
+     Shared by both the "On Sale" and "New Price" statuses — the was/now
+     price styling is identical, the badge (.twx-sale-badge) is only shown
+     for "On Sale". */
   (function injectSaleStyles() {
     if (document.getElementById("twx-sale-styles")) return;
     const s = document.createElement("style");
@@ -848,6 +866,36 @@
     `;
     document.head.appendChild(s);
   })();
+
+  /* ── Price status (On Sale / New Price) ──
+     Reads the CMS "Price Status" Option field's value. Webflow can't bind
+     Option fields to data- attributes directly (same limitation Switch
+     fields have), so the value is exposed via a hidden text element
+     instead: a ".hidden-price-status" element inside the card/payload,
+     containing the option's text ("On Sale" / "New Price", blank for a
+     normal-priced item). */
+  function readPriceStatus(container) {
+    if (!container) return "";
+    const hidden = container.querySelector?.(".hidden-price-status");
+    const raw = (hidden?.textContent ?? container.dataset?.priceStatus ?? "")
+      .trim()
+      .toLowerCase();
+    if (raw === "on sale" || raw === "on-sale") return "on-sale";
+    if (raw === "new price" || raw === "new-price") return "new-price";
+    return "";
+  }
+
+  /* Builds the was/now price markup shared by the cart panel, quote-review
+     table, and machine-wizard results. Shows the SALE badge only when
+     status is "on-sale" — "new-price" shows the crossed-out old price and
+     the new price with no badge. Returns null when there's nothing to show. */
+  function priceChangeMarkup(oldPrice, newPrice, status, suffix = "") {
+    if (oldPrice === null || newPrice === null || !status) return null;
+    const fmt = (n) =>
+      `$${n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const badge = status === "on-sale" ? `<span class="twx-sale-badge">SALE</span>` : "";
+    return `<span class="twx-price-was">${fmt(oldPrice)}</span><span class="twx-price-sale">${fmt(newPrice)}${suffix}</span>${badge}`;
+  }
 
   const CONFIG = {
     CART_KEY: "tillageworx_quote_cart",
@@ -1012,8 +1060,8 @@
         type: (payload.dataset.type || "").trim(),
         image: (payload.dataset.image || "").trim(),
         price: payloadPrice || domPrice || btnData.price || "",
-        salePrice: (payload.dataset.salePrice || "").trim(),
-        onSale: payload.dataset.onSale === "true",
+        newPrice: (payload.dataset.newPrice || "").trim(),
+        priceStatus: readPriceStatus(payload),
         code: payloadCode || domCode || btnData.code || "",
         zoho_id: (payload.dataset.zohoId || "").trim(),
         models: Array.from(item.querySelectorAll(".part-model-ref"))
@@ -1061,6 +1109,8 @@
       );
 
       if (!existing.price && partData.price) existing.price = partData.price;
+      if (!existing.newPrice && partData.newPrice) existing.newPrice = partData.newPrice;
+      if (!existing.priceStatus && partData.priceStatus) existing.priceStatus = partData.priceStatus;
       if (
         (!existing.code || existing.code === existing.id) &&
         partData.code &&
@@ -1087,8 +1137,8 @@
         code: partData.code || partData.id,
         image: partData.image || "",
         price: partData.price || "",
-        salePrice: partData.salePrice || "",
-        onSale: partData.onSale || false,
+        newPrice: partData.newPrice || "",
+        priceStatus: partData.priceStatus || "",
         qty: Math.min(CONFIG.MAX_CART_ITEMS, parseInt(partData.qty) || 1),
         machineContext: partData.machineContext || "",
         zoho_id: partData.zoho_id || "",
@@ -1468,16 +1518,14 @@
           let subtotal = 0;
           submittedCart.forEach((item) => {
             const qty = Math.max(1, item.qty || 1);
-            const onSale = item.onSale === "true" || item.onSale === true;
-            const raw = String(onSale ? (item.salePrice || item.price || "") : (item.price || ""));
+            const raw = String(item.priceStatus ? (item.newPrice || item.price || "") : (item.price || ""));
             subtotal += (parseFloat(raw.replace(/[^0-9.]/g, "")) || 0) * qty;
           });
           const subtotalStr = subtotal > 0 ? `$${subtotal.toFixed(2)}` : "TBA";
 
           const itemsHtml = submittedCart.map((item) => {
             const qty = Math.max(1, item.qty || 1);
-            const onSale = item.onSale === "true" || item.onSale === true;
-            const raw = String(onSale ? (item.salePrice || item.price || "") : (item.price || ""));
+            const raw = String(item.priceStatus ? (item.newPrice || item.price || "") : (item.price || ""));
             const unitPrice = parseFloat(raw.replace(/[^0-9.]/g, "")) || 0;
             const linePrice = unitPrice ? `$${(unitPrice * qty).toFixed(2)}` : "";
             const imgTag = item.image
@@ -1584,9 +1632,9 @@
         Math.min(CONFIG.MAX_CART_ITEMS, item.qty || 1),
       );
       const unitPrice = parsePrice(item.price);
-      const unitSalePrice = item.onSale ? parsePrice(item.salePrice) : null;
+      const unitNewPrice = item.priceStatus ? parsePrice(item.newPrice) : null;
       const effectiveUnitPrice =
-        unitSalePrice !== null ? unitSalePrice : unitPrice;
+        unitNewPrice !== null ? unitNewPrice : unitPrice;
       const lineTotal =
         effectiveUnitPrice !== null ? effectiveUnitPrice * safeQty : null;
 
@@ -1600,13 +1648,10 @@
       if (!getSession()) {
         priceHtml = "";
       } else if (effectiveUnitPrice !== null) {
-        if (unitSalePrice !== null && unitPrice !== null) {
+        const changeHtml = priceChangeMarkup(unitPrice, unitNewPrice, item.priceStatus, " ea");
+        if (changeHtml) {
           priceHtml = `<div class="cart-item-pricing">
-             <span class="cart-item-unit-price">
-               <span class="twx-price-was">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-               <span class="twx-price-sale">$${unitSalePrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</span>
-               <span class="twx-sale-badge">SALE</span>
-             </span>
+             <span class="cart-item-unit-price">${changeHtml}</span>
              <span class="cart-item-line-total">$${lineTotal.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
            </div>`;
         } else {
@@ -1971,25 +2016,22 @@
 
       // Display unit price on the wizard line for logged-in users only
       let unitPrice = null;
-      let unitSalePrice = null;
+      let unitNewPrice = null;
       try {
         const n = parseFloat(String(part.price || "").replace(/[^0-9.]/g, ""));
         unitPrice = isNaN(n) ? null : n;
-        if (part.onSale && part.salePrice) {
-          const s = parseFloat(String(part.salePrice).replace(/[^0-9.]/g, ""));
-          unitSalePrice = isNaN(s) ? null : s;
+        if (part.priceStatus && part.newPrice) {
+          const s = parseFloat(String(part.newPrice).replace(/[^0-9.]/g, ""));
+          unitNewPrice = isNaN(s) ? null : s;
         }
       } catch (e) {
         unitPrice = null;
       }
       let priceHtml = "";
       if (wizSession) {
-        if (unitSalePrice !== null && unitPrice !== null) {
-          priceHtml = `<div class="wiz-result-price">
-            <span class="twx-price-was">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            <span class="twx-price-sale">$${unitSalePrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</span>
-            <span class="twx-sale-badge">SALE</span>
-          </div>`;
+        const changeHtml = priceChangeMarkup(unitPrice, unitNewPrice, part.priceStatus, " ea");
+        if (changeHtml) {
+          priceHtml = `<div class="wiz-result-price">${changeHtml}</div>`;
         } else if (unitPrice !== null) {
           priceHtml = `<div class="wiz-result-price">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ea</div>`;
         }
@@ -2040,6 +2082,8 @@
           existing.price = part.price;
           updatedCount = updatedCount || 1;
         }
+        if (!existing.newPrice && part.newPrice) existing.newPrice = part.newPrice;
+        if (!existing.priceStatus && part.priceStatus) existing.priceStatus = part.priceStatus;
         if (
           (!existing.code || existing.code === existing.id) &&
           part.code &&
@@ -2052,8 +2096,8 @@
           name: part.name,
           code: part.code || part.id,
           price: part.price || "",
-          salePrice: part.salePrice || "",
-          onSale: part.onSale || false,
+          newPrice: part.newPrice || "",
+          priceStatus: part.priceStatus || "",
           image: part.image || "",
           qty: qtyToAdd,
           machineContext,
@@ -2245,8 +2289,8 @@
             id: part.id,
             code: part.code || "",
             price: part.price || "",
-            salePrice: part.salePrice || "",
-            onSale: part.onSale || false,
+            newPrice: part.newPrice || "",
+            priceStatus: part.priceStatus || "",
             qty,
             image: part.image,
             machineContext,
@@ -2404,20 +2448,12 @@
     let productId = btn.getAttribute("data-id");
     let code = btn.getAttribute("data-code") || "";
     let price = btn.getAttribute("data-price") || "";
-    let salePrice = btn.getAttribute("data-sale-price") || "";
-    let onSale = btn.getAttribute("data-on-sale") === "true";
+    let newPrice = btn.getAttribute("data-new-price") || "";
+    // Price status comes off a hidden embed div — Option fields can't be
+    // bound directly to data- attributes in Webflow (same limitation the
+    // old Switch field had). Check the card first, then the button itself.
+    let priceStatus = readPriceStatus(card) || readPriceStatus(btn);
     let zoho_id = "";
-
-    // Fallback: read onSale and salePrice from hidden embed divs
-    // (Switch fields can't be bound directly to data- attributes in Webflow)
-    if (!onSale && card) {
-      const hiddenOnSale = card.querySelector(".hidden-on-sale");
-      if (hiddenOnSale) onSale = hiddenOnSale.textContent.trim() === "true";
-    }
-    if (!salePrice && card) {
-      const hiddenSalePrice = card.querySelector(".hidden-sale-price");
-      if (hiddenSalePrice) salePrice = hiddenSalePrice.textContent.trim();
-    }
 
     const canonicalPart = indexes.partsByName.get(productName.toLowerCase());
     if (canonicalPart) {
@@ -2426,8 +2462,8 @@
       if (!imageUrl) imageUrl = canonicalPart.image;
       if (!code) code = canonicalPart.code || "";
       if (!price) price = canonicalPart.price || "";
-      if (!salePrice) salePrice = canonicalPart.salePrice || "";
-      if (!onSale) onSale = canonicalPart.onSale || false;
+      if (!newPrice) newPrice = canonicalPart.newPrice || "";
+      if (!priceStatus) priceStatus = canonicalPart.priceStatus || "";
       zoho_id = canonicalPart.zoho_id || "";
     }
 
@@ -2436,8 +2472,8 @@
       name: productName,
       code: code,
       price: price,
-      salePrice: salePrice,
-      onSale: onSale,
+      newPrice: newPrice,
+      priceStatus: priceStatus,
       image: imageUrl || "",
       qty: 1,
       zoho_id: zoho_id,
@@ -2613,6 +2649,16 @@
     return div.innerHTML;
   }
 
+  // Local copy — this IIFE (Section 3) is a separate scope from the one in
+  // Section 2 that defines the same helper. See priceChangeMarkup below.
+  function priceChangeMarkup(oldPrice, newPrice, status, suffix = "") {
+    if (oldPrice === null || newPrice === null || !status) return null;
+    const fmt = (n) =>
+      `$${n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const badge = status === "on-sale" ? `<span class="twx-sale-badge">SALE</span>` : "";
+    return `<span class="twx-price-was">${fmt(oldPrice)}</span><span class="twx-price-sale">${fmt(newPrice)}${suffix}</span>${badge}`;
+  }
+
   function getCart() {
     try {
       return JSON.parse(localStorage.getItem(CART_KEY)) || [];
@@ -2667,9 +2713,9 @@
     cart.forEach((item) => {
       const safeQty = Math.max(1, item.qty || 1);
       const unitPrice = parsePrice(item.price);
-      const unitSalePrice = item.onSale ? parsePrice(item.salePrice) : null;
+      const unitNewPrice = item.priceStatus ? parsePrice(item.newPrice) : null;
       const effectiveUnitPrice =
-        unitSalePrice !== null ? unitSalePrice : unitPrice;
+        unitNewPrice !== null ? unitNewPrice : unitPrice;
       const lineTotal =
         effectiveUnitPrice !== null ? effectiveUnitPrice * safeQty : null;
 
@@ -2684,12 +2730,10 @@
           ? `$${lineTotal.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
           : `<span style="color:#888;font-style:italic;">TBC</span>`;
 
+      const priceChangeHtml = priceChangeMarkup(unitPrice, unitNewPrice, item.priceStatus);
       let unitPriceHtml;
-      if (unitSalePrice !== null && unitPrice !== null) {
-        unitPriceHtml = `
-          <span class="twx-price-was">$${unitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          <span class="twx-price-sale">$${unitSalePrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          <span class="twx-sale-badge">SALE</span>`;
+      if (priceChangeHtml) {
+        unitPriceHtml = priceChangeHtml;
       } else if (effectiveUnitPrice !== null) {
         unitPriceHtml = `$${effectiveUnitPrice.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       } else {
