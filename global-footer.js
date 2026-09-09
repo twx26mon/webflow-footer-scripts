@@ -176,7 +176,10 @@
       }
       .quote-button-container .twx-view-price-btn,
       .quote-button-container .twx-contact-btn {
-        padding: 13px 20px;
+        /* Overrides the native Designer .add-to-quote-btn rule's fixed
+           height: 50px, which padding alone can't shrink past. */
+        height: auto;
+        padding: 10px 20px;
         font-size: 14px;
         border-radius: 4px;
         letter-spacing: 0.5px;
