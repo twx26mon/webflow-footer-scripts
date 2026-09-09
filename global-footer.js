@@ -244,11 +244,15 @@
         background: rgba(194, 147, 74, 0.1);
         border-color: #c2934a;
       }
-      /* Member "Add to Order" button on parts template — gold fill */
+      /* Member "Add to Order" button on parts template — gold fill.
+         height: auto overrides the native Designer .add-to-quote-btn
+         rule's fixed height: 50px, same fix as the guest gate buttons. */
       .twx-member-add {
         background: #c9a84c !important;
         color: #1a1a1a !important;
         border: none !important;
+        height: auto !important;
+        padding: 10px 20px !important;
         cursor: pointer;
         transition: opacity 0.15s;
       }
@@ -2506,10 +2510,16 @@
     let code = btn.getAttribute("data-code") || "";
     let price = btn.getAttribute("data-price") || "";
     let newPrice = btn.getAttribute("data-new-price") || "";
-    // Price status comes off a hidden embed div — Option fields can't be
-    // bound directly to data- attributes in Webflow (same limitation the
-    // old Switch field had). Check the card first, then the button itself.
+    // Price status and new price come off hidden embed divs — Option
+    // fields can't be bound directly to data- attributes in Webflow (same
+    // limitation the old Switch field had). Check the card first, then the
+    // button itself (single part detail page has no card wrapper).
     let priceStatus = readPriceStatus(card) || readPriceStatus(btn);
+    if (!newPrice) {
+      const hiddenNewPrice =
+        card?.querySelector(".hidden-new-price") || btn.querySelector(".hidden-new-price");
+      if (hiddenNewPrice) newPrice = hiddenNewPrice.textContent.trim();
+    }
     let zoho_id = "";
 
     const canonicalPart = indexes.partsByName.get(productName.toLowerCase());
