@@ -103,13 +103,12 @@
 
   // Local copy — mirrors Section 2's priceChangeMarkup. Builds the was/now
   // price markup shown directly on the visible price (product card, part
-  // detail page). Shows the SALE badge only for "on-sale"; "new-price"
-  // shows the crossed-out old price and the new price with no badge.
+  // detail page), with a "SALE" or "NEW PRICE" badge depending on status.
   function priceChangeMarkup(oldPrice, newPrice, status) {
     if (oldPrice === null || newPrice === null || !status) return null;
     const fmt = (n) =>
       `$${n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    const badge = status === "on-sale" ? `<span class="twx-sale-badge">SALE</span>` : "";
+    const badge = `<span class="twx-sale-badge">${status === "on-sale" ? "SALE" : "NEW PRICE"}</span>`;
     return `<span class="twx-price-was">${fmt(oldPrice)}</span><span class="twx-price-sale">${fmt(newPrice)}</span>${badge}`;
   }
 
@@ -886,8 +885,8 @@
 
   /* ── Price change styles ──
      Shared by both the "On Sale" and "New Price" statuses — the was/now
-     price styling is identical, the badge (.twx-sale-badge) is only shown
-     for "On Sale". */
+     price styling and badge (.twx-sale-badge) are identical, only the
+     badge text differs ("SALE" vs "NEW PRICE"). */
   (function injectSaleStyles() {
     if (document.getElementById("twx-sale-styles")) return;
     const s = document.createElement("style");
@@ -941,14 +940,13 @@
   }
 
   /* Builds the was/now price markup shared by the cart panel, quote-review
-     table, and machine-wizard results. Shows the SALE badge only when
-     status is "on-sale" — "new-price" shows the crossed-out old price and
-     the new price with no badge. Returns null when there's nothing to show. */
+     table, and machine-wizard results, with a "SALE" or "NEW PRICE" badge
+     depending on status. Returns null when there's nothing to show. */
   function priceChangeMarkup(oldPrice, newPrice, status, suffix = "") {
     if (oldPrice === null || newPrice === null || !status) return null;
     const fmt = (n) =>
       `$${n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    const badge = status === "on-sale" ? `<span class="twx-sale-badge">SALE</span>` : "";
+    const badge = `<span class="twx-sale-badge">${status === "on-sale" ? "SALE" : "NEW PRICE"}</span>`;
     return `<span class="twx-price-was">${fmt(oldPrice)}</span><span class="twx-price-sale">${fmt(newPrice)}${suffix}</span>${badge}`;
   }
 
@@ -2710,7 +2708,7 @@
     if (oldPrice === null || newPrice === null || !status) return null;
     const fmt = (n) =>
       `$${n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    const badge = status === "on-sale" ? `<span class="twx-sale-badge">SALE</span>` : "";
+    const badge = `<span class="twx-sale-badge">${status === "on-sale" ? "SALE" : "NEW PRICE"}</span>`;
     return `<span class="twx-price-was">${fmt(oldPrice)}</span><span class="twx-price-sale">${fmt(newPrice)}${suffix}</span>${badge}`;
   }
 
