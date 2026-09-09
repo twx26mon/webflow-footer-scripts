@@ -89,6 +89,30 @@
     return "";
   }
 
+  function readHiddenNewPrice(container) {
+    if (!container) return "";
+    const hidden = container.querySelector?.(".hidden-new-price");
+    return (hidden?.textContent ?? container.dataset?.newPrice ?? "").trim();
+  }
+
+  function parsePriceText(str) {
+    if (!str) return null;
+    const n = parseFloat(String(str).replace(/[^0-9.]/g, ""));
+    return isNaN(n) ? null : n;
+  }
+
+  // Local copy — mirrors Section 2's priceChangeMarkup. Builds the was/now
+  // price markup shown directly on the visible price (product card, part
+  // detail page). Shows the SALE badge only for "on-sale"; "new-price"
+  // shows the crossed-out old price and the new price with no badge.
+  function priceChangeMarkup(oldPrice, newPrice, status) {
+    if (oldPrice === null || newPrice === null || !status) return null;
+    const fmt = (n) =>
+      `$${n.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const badge = status === "on-sale" ? `<span class="twx-sale-badge">SALE</span>` : "";
+    return `<span class="twx-price-was">${fmt(oldPrice)}</span><span class="twx-price-sale">${fmt(newPrice)}</span>${badge}`;
+  }
+
   function injectGateStyles() {
     const style = document.createElement("style");
     style.textContent = `
@@ -312,6 +336,19 @@
           addBtn.style.display = "";
           // Don't overwrite innerHTML — keep Webflow's cart icon as-is
         }
+
+        // Was/now price display — guarded so repeated gate passes (e.g. on
+        // DOM mutation) don't re-wrap an already-rewritten price.
+        if (!priceEl.dataset.twxPriceApplied) {
+          const status = readPriceStatus(addBtn);
+          const oldPrice = parsePriceText(priceEl.textContent);
+          const newPrice = parsePriceText(readHiddenNewPrice(addBtn));
+          const changeHtml = priceChangeMarkup(oldPrice, newPrice, status);
+          if (changeHtml) {
+            priceEl.innerHTML = changeHtml;
+            priceEl.dataset.twxPriceApplied = "true";
+          }
+        }
       } else {
         // Guest: hide price, stk, and native add btn
         priceEl.style.display = "none";
@@ -367,6 +404,24 @@
     document.querySelectorAll(".product-price-stk, .product-price").forEach((el) => {
       el.style.display = session ? "" : "none";
     });
+
+    // Was/now price display on the main price amount — both add-to-quote
+    // buttons on this template carry the same hidden price-status/new-price
+    // data, so the first one found is enough.
+    if (session) {
+      const refBtn = document.querySelector(".add-to-quote-btn");
+      document.querySelectorAll(".product-price-amount").forEach((amountEl) => {
+        if (amountEl.dataset.twxPriceApplied) return;
+        const status = readPriceStatus(refBtn);
+        const oldPrice = parsePriceText(amountEl.textContent);
+        const newPrice = parsePriceText(readHiddenNewPrice(refBtn));
+        const changeHtml = priceChangeMarkup(oldPrice, newPrice, status);
+        if (changeHtml) {
+          amountEl.innerHTML = changeHtml;
+          amountEl.dataset.twxPriceApplied = "true";
+        }
+      });
+    }
 
     document.querySelectorAll(".add-to-quote-btn").forEach((btn) => {
       // Skip brands card add buttons — handled by gateProductCards, not here
