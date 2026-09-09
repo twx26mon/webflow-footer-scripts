@@ -112,6 +112,19 @@
     return `<span class="twx-price-was">${fmt(oldPrice)}</span><span class="twx-price-sale">${fmt(newPrice)}</span>${badge}`;
   }
 
+  // Sets a button's visible label without destroying the hidden
+  // .hidden-price-status/.hidden-new-price data elements living inside it.
+  // btn.textContent = "..." would wipe out ALL child nodes, including
+  // those — which is exactly what was happening here before this fix,
+  // silently deleting the price data on every page load.
+  function setButtonLabel(btn, label) {
+    const hiddenEls = Array.from(
+      btn.querySelectorAll(".hidden-price-status, .hidden-new-price"),
+    );
+    btn.textContent = label;
+    hiddenEls.forEach((el) => btn.appendChild(el));
+  }
+
   function injectGateStyles() {
     const style = document.createElement("style");
     style.textContent = `
@@ -445,7 +458,7 @@
           container.remove();
         }
         btn.style.display = "";
-        btn.textContent = "Add to Order";
+        setButtonLabel(btn, "Add to Order");
         btn.classList.remove("twx-contact-btn");
         btn.classList.add("twx-member-add");
       } else {
@@ -453,7 +466,7 @@
         if (btn.closest(".twx-price-gate-wrap, .twx-price-gate")) return;
 
         btn.style.display = "";
-        btn.textContent = "Add to Quote";
+        setButtonLabel(btn, "Add to Quote");
         if (!btn.dataset.addToQuote) btn.dataset.addToQuote = btn.dataset.name || "";
         // Swap Webflow's .w-button styles out for our gate button styles
         btn.classList.remove("w-button");
