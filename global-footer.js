@@ -909,6 +909,7 @@
         color: #c2934a;
         font-size: 9px;
         font-weight: 800;
+        line-height: 1;
         letter-spacing: 0.12em;
         padding: 1px 6px;
         border-radius: 3px;
