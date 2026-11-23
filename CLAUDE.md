@@ -1,76 +1,66 @@
-# Tillageworx Customer Portal & Website — Claude Code Project Brief
-_Adapted from chat handoff doc, 29 June 2026 → for Claude Code, 2 July 2026. Trimmed 6 July 2026 — full technical reference moved to `docs/reference.md`._
+# Tillageworx Website Scripts - Claude Code brief
 
-> **Read this whole file before touching any code.** This is Moni's live business — real customers, real orders, real invoices. Don't guess at conventions. Detailed technical reference (routes, gotchas, file structure, section maps) lives in `docs/reference.md` — open that when you're actually working in the relevant area, it doesn't need to be read every session.
+> **Repo: `webflow-footer-scripts` (public website code). Folder: `C:\dev\webflow-footer-scripts`. Branches: `main` (live), `staging` (test).**
+> Updated 23 Nov 2026. Detailed reference: `docs/reference.md`. Look and wording: `docs/brand.md`.
 
----
+## Wrong-window check (do this first, every session)
+This repo is ONLY the JS/CSS injected into the public Webflow site www.tillageworx.com.au: `global-footer.js`, `global-styles.css`.
 
-## How to work with me (read first)
+It is NOT:
+- the customer portal or its Worker (`twx-order-app` repo)
+- the Worx inventory system (`twx-inventory-build` / `twx-build-track`)
 
-- I have ADHD — keep instructions clear and step-by-step, minimal unexplained jargon.
-- I'm learning React as I go — this is my first real React project. When you make a non-trivial change, briefly say *what* you changed and *why* in plain English alongside the code.
-- I work in VS Code on Windows, PowerShell terminal, GitHub Desktop for some deploys.
-- **Ask before:** pushing to GitHub, deploying (Cloudflare Pages/Workers), or publishing the Webflow site. I'll confirm each time — don't chain these together automatically.
-- **Branching:** I commit directly to `main` for normal work. For bigger/riskier changes, I test on a `staging` branch first before merging to `main`. Before committing, weigh up whether the change is big enough to warrant staging (e.g. touches multiple pages, changes shared components like TopNav, touches auth/payment-adjacent logic) vs small enough for `main` directly (e.g. a copy tweak, a CSS fix) — flag your reasoning to me, then **always confirm with me before actually committing**, regardless of which branch.
-- **Commit messages:** fine for you to write these yourself.
-- **Never** put real API keys, secrets, or tokens directly in code or commit them. Reference the password manager entry name instead (see `docs/reference.md`). If you need a secret's actual value to test something, ask me to paste it into the terminal/env directly — not into chat.
-- If you hit something ambiguous (e.g. two components could reasonably own a piece of logic), stop and ask rather than picking one and running with it.
-- **Keeping this file current:** at the end of every session, update this `CLAUDE.md` and `docs/reference.md` to reflect the current state — move ✅/⚠️ markers as things get finished, add new gotchas to `docs/reference.md` (not here), remove or update anything in "Open questions" that got answered, re-order "Current priorities" if things shipped. Edit sections in place — don't append a session log or dated notes. Keep this core file lean: if something is reference detail rather than "what to do next," it belongs in `docs/reference.md`, not here.
-- **Always state the commit hash** when on staging so Moni knows exactly which version to test.
+If Moni's request is about portal pages, `worker.js`, Supabase, Zoho routes or Resend, or about Worx screens/Xero: **STOP. Say "this looks like it belongs in the [portal / Worx] window" and do nothing else.** Check the terminal path is `C:\dev\webflow-footer-scripts` before editing.
 
----
+## How to work with Moni
+- ADHD: short, clear, step-by-step. No unexplained jargon.
+- Learning JavaScript/React: explain non-trivial changes in plain English (what and why).
+- VS Code on Windows, PowerShell.
+- **Ask before:** pushing, and before anything that makes code live. Never chain. Always confirm before committing; say whether it suits `staging` or `main`.
+- Commit messages: you can write them. State the commit hash.
+- **IMPORTANT: `main` IS LIVE.** A Cloudflare Worker serves `main` from raw GitHub, so a push to `main` is an instant deploy to real customers. Normal flow: commit to `staging`, test, then Moni approves merging to `main`.
+- Testing `staging` on the Webflow preview: point the footer custom code at jsDelivr pinned to the exact commit hash (not a branch name, it caches). Moni changes the Webflow footer code herself; remind her to put it back to the Worker URL afterwards.
+- Never put secrets/keys in code or chat.
+- Edit with Edit/Write tools, never shell redirection. Keep LF line endings (`git config core.autocrlf input`).
+- At the end of a session update this file and `docs/reference.md` IN PLACE. No session logs.
 
 ## Business context
+Tillageworx Pty Ltd, Perth WA. Aftermarket tillage wear parts for European machinery, AU/NZ. The site showed prices and enquiries dropped, so prices are now gated behind a free customer account (`GATING_ENABLED = true`). Anonymous visitors must not see prices.
 
-Tillageworx Pty Ltd — Perth, WA. I import and sell aftermarket tillage wear parts (disc blades, points, wings, shins) for European machinery brands (Horsch, Väderstad, Lemken, Amazone) to AU/NZ broad-acre cropping customers. I run the business largely solo.
+## Where things are
+- Local: `C:\dev\webflow-footer-scripts` (moved out of OneDrive Nov 2026; old copy is `-OLD`, don't use it).
+- GitHub: `twx26mon/webflow-footer-scripts`.
+- Webflow itself (Designer, CMS, publishing) is done by Moni in Webflow. Don't publish the site; ask.
+- Scripts call the portal's Worker `https://twx-zoho-proxy.monica-6b5.workers.dev` (`/orders`, `/quotes`, `/contact-form`, newsletter).
+- `global-footer.js` section map and `global-styles.css` section map are in `docs/reference.md`. Read the relevant section before editing.
 
-**Why this portal exists:** Since adding prices + a quote cart to the public Webflow site, enquiries dropped — visitors see prices and leave without contacting us. The portal gates pricing behind a free customer account signup.
+## How this connects to the other repos
+- **Portal**: owns the Worker and customer accounts. If a change needs a new/changed Worker route, say so and stop; the change is made in the portal window.
+- **Worx** (inventory): later the website quote form will feed Worx "Website requests"/Leads instead of Zoho. Don't build that here yet.
 
-**Brand language:** "Customer Accounts" — never "trade accounts" or "user accounts". CTA: "Create a customer account". Login button: "Customer login".
+## Design rules
+Follow `docs/brand.md`: gold `#C2934A`, black backgrounds, "Customer Accounts" wording, Australian English. The nav is styled to match the portal `TopNav`. Mobile (390px) must work: hamburger, floating cart button.
 
----
+## Do
+- Escape any user-supplied text before putting it in HTML (a self-XSS in the greeting was fixed once).
+- Keep honeypot fields wired on every form.
+- Use `textContent` carefully: it wipes child elements (known gotcha, see reference).
+- Add `e.stopPropagation()` after `preventDefault()` on custom form submit handlers (Webflow handlers otherwise double-fire).
+- Test on the `.webflow.io` preview before production.
 
-## Two repos, two jobs
+## Don't
+- Don't push to `main` without Moni's yes.
+- Don't commit stray files (e.g. `ID 1000...` file, `*.patch`, key files). Check `git status` first.
+- Don't trust client-side prices; the Worker re-resolves them.
+- Don't edit portal or Worx files.
+- Don't use the dead `code-embed-6`; cart panel is JS-created.
 
-| Repo | Purpose | Local path |
-|---|---|---|
-| `twx-order-app` | React/Vite customer portal (accounts, orders, invoices) | `C:\Users\61451\OneDrive - tillageworx.com\Desktop\Tillageworx\twx-order-app` |
-| `twx26mon/webflow-footer-scripts` | Global JS/CSS injected into the public Webflow site — price gate, cart logic, site nav styling | `C:\Users\61451\OneDrive - tillageworx.com\Desktop\Tillageworx\Webflow Code\Github\webflow-footer-scripts` |
+## Current priorities
+1. Dealer enquiry form submit (`initDealerEnquirySubmit`) is committed on `staging`: test on preview, then Moni decides on merge to `main`.
+2. Housekeeping: delete disabled `code-embed-6` in Webflow Designer; add inline `<style>` for the mobile info-header flash (see reference); delete old `ON SALE` Switch field on Parts CMS (Webflow refused: "used in bindings", look for a leftover in a Brands template code-embed); add `.gitignore`; remove stray file from folder.
+3. Backlog: cart-abandonment alert (needs Cloudflare KV + Cron, design in portal `docs/reference.md`).
 
-Full stack details, Supabase project info, Worker routes/env vars, file structure, and section maps → **`docs/reference.md`**.
-
----
-
-## Current priorities (in order)
-
-1. **Fix mobile nav regression** ⚠️ BLOCKING — latest staging commit is `dea06ae`. Current reported issues:
-   - Nav reverted to old styles, cart icon missing from navbar
-   - X close button unresponsive / won't close menu
-   - Info header flashes on page load (see `docs/reference.md` gotchas — needs inline `<style>` in Webflow Head Code)
-   - No Customer login / Create account links visible in mobile panel
-
-   **First thing to check:** Are the Webflow head/body code jsDelivr URLs pointing to `dea06ae`? Is the updated `quote-cart-site-head-code.css` pasted into Webflow Site Settings → Head Code? Both are required for latest changes to take effect.
-
-   **Then check:** Open browser DevTools on mobile (or device emulation) → Console tab for JS errors → Network tab to confirm the right JS/CSS files are loading.
-
-2. **Deploy portal** ⚠️ — `Login.jsx` and `Signup.jsx` have local changes (`?return=` redirect logic) not yet built or deployed. After mobile nav is confirmed working: `npm run build` → drag `dist` to Cloudflare Pages.
-
-3. **Migrate Orders, Invoices, Account to `TopNav`** — these three pages still use the old Sidebar layout. Swap in `<TopNav />`, remove the old sidebar+main flex row, match the `90rem`/`1.75rem` container pattern already used in Dashboard. Touches three files — worth doing on `staging` branch.
-
-4. **Ship Webflow nav redesign** ⚠️ in progress — nav section in `global-styles.css` is on `staging` branch. Moni completing Webflow Designer tweaks. Next steps: (a) confirm staging looks right, (b) merge `staging` → `main` in webflow-footer-scripts, (c) update Cloudflare Worker `empty-cake-b32dtwx-assets` with new CSS content, (d) restore `<link>` in Webflow head code to worker URL.
-
-5. **After step 3 verified live** — merge `global-footer.js` staging → main (price gate + cart guest/member mode) and publish in Webflow Designer.
-
-6. **Backlog (not urgent):** attach sales order PDFs to order cards; order status progress bar; ability to leave order messages visible to customers; Invoices page visual polish to match Orders; tooltips/helper text on Account address fields.
-
----
-
-## Open questions — still need answers
-
-1. **Testing** — there's no automated test suite currently — verification is manual via localhost + live site check. Should we add basic tests as we go, or keep it manual for now given the size of the app?
-
----
-
-## Reference doc index
-
-`docs/reference.md` contains: tech stack & live URLs, Supabase project details, Cloudflare Worker routes/env vars, React app file structure, what's already built, Zoho custom fields, signup field mapping, key gotchas, `global-footer.js` section map, `global-styles.css` section map, credentials reference (names only). Open it when a task touches that area — no need to read it start-to-finish every session.
+## Recently shipped (3-4 lines each)
+- Order confirmation pricing fix, 9 Sep 2026 (`computeCartPricing()` shared by both order screens).
+- On Sale / New Price display, 9 Sep 2026 (member-only crossed-out price + gold badge).
+- Nav redesign, price gating live, security pass, 19 Jul 2026.
