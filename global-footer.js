@@ -742,6 +742,9 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      // Stops Webflow's own (document-level) form handler too — without this
+      // every real submission was ALSO sent to Webflow, double-emailing sales@.
+      e.stopPropagation();
 
       var formData = new FormData(form);
       var fields = {};
@@ -795,6 +798,9 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      // Stops Webflow's own (document-level) form handler too — without this
+      // every real submission was ALSO sent to Webflow, double-emailing sales@.
+      e.stopPropagation();
 
       var formData = new FormData(form);
       var email = '';
@@ -835,6 +841,86 @@
     });
   }
 
+  // "Become a Dealer" popup on /find-a-dealer — the popup itself is built by
+  // that page's own custom code in Webflow, which used to copy the values into
+  // a hidden Webflow form and submit that (bots posted straight to Webflow's
+  // endpoint, bypassing the honeypot). This takes over the submit and sends
+  // it via the Worker instead. Listens on document in the capture phase so it
+  // works whether the popup is built before or after this script runs, and
+  // fires before the page's own submit handler (which it stops).
+  function initDealerEnquirySubmit() {
+    if (document.documentElement.dataset.twxDealerSubmit) return;
+    document.documentElement.dataset.twxDealerSubmit = '1';
+
+    document.addEventListener('submit', function (e) {
+      var form = e.target;
+      if (!form || form.id !== 'dealer-enquiry-form') return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      // The popup's inputs have no name attributes — they're in a fixed order
+      var inputs = form.querySelectorAll('input:not(.twx-global-honeypot), textarea');
+      var labels = ['Name', 'Phone', 'Email', 'Location', 'Message'];
+      var fields = {};
+      labels.forEach(function (label, i) {
+        if (inputs[i]) fields[label] = inputs[i].value;
+      });
+      var hp = form.querySelector('.twx-global-honeypot');
+      var honeypot = hp ? hp.value : '';
+      if (honeypot) return; // bot — silently drop, same as Section 9
+
+      var submitBtn = form.querySelector('[type="submit"]');
+      var originalLabel = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'SENDING...';
+      }
+
+      fetch('https://twx-zoho-proxy.monica-6b5.workers.dev/contact-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ honeypot: honeypot, form: 'dealer', fields: fields }),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Dealer enquiry submission failed');
+          var modal = document.getElementById('dealer-modal');
+          var formContent = document.getElementById('modal-form-content');
+          var successMsg = document.getElementById('modal-success-msg');
+          var errEl = form.querySelector('.twx-dealer-error');
+          if (errEl) errEl.remove();
+          if (formContent) formContent.style.display = 'none';
+          if (successMsg) successMsg.style.display = 'block';
+          setTimeout(function () {
+            if (modal) modal.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(function () {
+              form.reset();
+              if (formContent) formContent.style.display = 'block';
+              if (successMsg) successMsg.style.display = 'none';
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalLabel;
+              }
+            }, 300);
+          }, 3000);
+        })
+        .catch(function () {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalLabel;
+          }
+          var errEl = form.querySelector('.twx-dealer-error');
+          if (!errEl) {
+            errEl = document.createElement('div');
+            errEl.className = 'twx-dealer-error';
+            errEl.style.cssText = 'color:#e74c3c;font-size:13px;margin-top:10px;line-height:1.5;';
+            form.appendChild(errEl);
+          }
+          errEl.textContent = 'Something went wrong. Please call us on 08 6185 1944 or email sales@tillageworx.com';
+        });
+    }, true);
+  }
+
   // Run after DOM is ready and after Webflow collection renders
   function init() {
     injectGateStyles();
@@ -850,6 +936,7 @@
     initContactPage();
     initContactFormSubmit();
     initNewsletterFormSubmit();
+    initDealerEnquirySubmit();
 
     // Re-run after Webflow collection list renders (it's async)
     const observer = new MutationObserver(() => {
