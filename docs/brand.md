@@ -10,6 +10,16 @@ _One source of truth for look and wording. Same file lives in `docs/brand.md` in
 | Muted grey text | `#686868` | Secondary text on dark. |
 | White | `#FFFFFF` | Main text on dark, cards on light pages. |
 
+### Order status colours (portal order cards)
+| Status | Colour |
+|---|---|
+| Confirmed | Green |
+| Delivered | Blue |
+| Awaiting approval | Orange |
+| Draft | Grey |
+
+Exact hex values not recorded yet (confirm from the portal order card CSS). Don't reuse these colours for anything else, and don't use colour alone: always show the status word too.
+
 Rules: one gold accent, never a second brand colour. Gold-filled button = the main action on a screen; only one per area. Don't tint gold or invent new golds.
 
 ## Fonts (confirm which are loaded where)
