@@ -1927,15 +1927,12 @@ section.navbar .image {
   filter: brightness(0.85) !important;
 }
 
-.form-block .w-form-done,
-.form-block .w-form-fail {
-  font-family: Arial, sans-serif !important;
-  font-size: 13px !important;
-  color: #aaa !important;
-}
-
-.form-block .w-form-fail {
-  color: #e8722a !important;
+/* Newsletter success/fail messages use the shared look (see "SHARED FORM
+   LOOK" at the end of this file), just more compact to fit the CTA card. */
+#wf-form-Newsletter-Form ~ .w-form-done,
+#wf-form-Newsletter-Form ~ .w-form-fail {
+  padding: 12px 16px !important;
+  font-size: 14px !important;
 }
 
 @media (max-width: 767px) {
@@ -1949,6 +1946,227 @@ section.navbar .image {
   }
   .text-field.w-input,
   .btn-primary.w-button {
+    width: 100% !important;
+  }
+}
+
+/* ── SHARED FORM LOOK (24 Nov 2026) ──────────────────────────────
+   One look for every customer form, based on the /testimonial page:
+   square corners, #0E0E0E fields on #1A1A1A panels, gold uppercase
+   labels, flat gold button with dark Oswald text (white on hover), and
+   one message panel style for success (gold bar) and errors (red bar).
+   Covers: Contact + Testimonial (#email-form), Dealer popup
+   (#dealer-enquiry-form), Quote Review (#qr-form-section), Newsletter
+   (#wf-form-Newsletter-Form), plus .twx-msg for messages built in
+   global-footer.js. !important because several of these forms carry
+   inline styles from Webflow page code that we can't edit from here. ── */
+
+/* Panels */
+.twx-form-panel {
+  background: #1a1a1a !important;
+  border: 1px solid #2a2a2a !important;
+  border-top: 4px solid #c2934a !important;
+  border-radius: 0 !important;
+  padding: 40px !important;
+}
+
+.dealer-modal {
+  border-radius: 0 !important;
+  border-top: 4px solid #c2934a !important;
+}
+
+/* Fields */
+#email-form input:not([type="checkbox"]):not([type="submit"]):not(.twx-global-honeypot),
+#email-form textarea,
+#dealer-enquiry-form input:not(.twx-global-honeypot),
+#dealer-enquiry-form textarea,
+#qr-form-section input[type="text"],
+#qr-form-section input[type="email"],
+#qr-form-section input[type="tel"],
+#qr-form-section textarea,
+#qr-form-section select,
+#wf-form-Newsletter-Form input[type="email"],
+#wf-form-Newsletter-Form input[type="text"]:not(.twx-global-honeypot),
+#twx-gq-modal input:not([type="checkbox"]):not([id$="-honeypot"]),
+#twx-gq-modal textarea,
+#twx-mo-modal textarea {
+  box-sizing: border-box !important;
+  background-color: #0e0e0e !important;
+  border: 1px solid #2a2a2a !important;
+  border-radius: 0 !important;
+  color: #fff !important;
+  padding: 14px 16px !important;
+  font-family: "Open Sans", Arial, sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.4 !important;
+}
+
+/* Full-width fields on the stacked forms (not the newsletter's one-row layout) */
+#email-form input:not([type="checkbox"]):not([type="submit"]):not(.twx-global-honeypot),
+#email-form textarea,
+#dealer-enquiry-form input:not(.twx-global-honeypot),
+#dealer-enquiry-form textarea {
+  display: block;
+  width: 100%;
+}
+
+#email-form textarea {
+  min-height: 140px;
+}
+
+#email-form input:focus,
+#email-form textarea:focus,
+#dealer-enquiry-form input:focus,
+#dealer-enquiry-form textarea:focus,
+#qr-form-section input:focus,
+#qr-form-section textarea:focus,
+#qr-form-section select:focus,
+#wf-form-Newsletter-Form input:focus,
+#twx-gq-modal input:focus,
+#twx-gq-modal textarea:focus,
+#twx-mo-modal textarea:focus {
+  outline: none !important;
+  border-color: #c2934a !important;
+  box-shadow: 0 0 0 3px rgba(194, 147, 74, 0.15) !important;
+}
+
+#email-form ::placeholder,
+#dealer-enquiry-form ::placeholder,
+#qr-form-section ::placeholder,
+#wf-form-Newsletter-Form ::placeholder {
+  color: #686868 !important;
+}
+
+#email-form input[type="checkbox"],
+#qr-form-section input[type="checkbox"] {
+  accent-color: #c2934a;
+}
+
+/* Cart quote / order modal labels: gold like the page forms */
+#twx-gq-modal label,
+#twx-mo-modal label {
+  color: #c2934a !important;
+}
+
+/* Submit buttons */
+#email-form [type="submit"],
+#dealer-enquiry-form [type="submit"],
+#qr-submit-btn,
+#wf-form-Newsletter-Form [type="submit"],
+#twx-gq-submit,
+#twx-mo-submit {
+  width: 100% !important;
+  background: #c2934a !important;
+  color: #111 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  padding: 14px 24px !important;
+  font-family: "Oswald", Arial, sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s !important;
+}
+
+#wf-form-Newsletter-Form [type="submit"] {
+  width: auto !important;
+  font-size: 16px !important;
+}
+
+#email-form [type="submit"]:hover,
+#email-form [type="submit"]:focus-visible,
+#dealer-enquiry-form [type="submit"]:hover,
+#dealer-enquiry-form [type="submit"]:focus-visible,
+#qr-submit-btn:hover,
+#qr-submit-btn:focus-visible,
+#wf-form-Newsletter-Form [type="submit"]:hover,
+#wf-form-Newsletter-Form [type="submit"]:focus-visible,
+#twx-gq-submit:hover,
+#twx-gq-submit:focus-visible,
+#twx-mo-submit:hover,
+#twx-mo-submit:focus-visible {
+  background: #fff !important;
+  color: #111 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Messages: Webflow's success/fail blocks, the dealer popup's success
+   block, and .twx-msg (built in global-footer.js). Never set display
+   here; Webflow and the scripts show/hide these. */
+.w-form-done,
+.w-form-fail,
+#modal-success-msg,
+.twx-msg {
+  box-sizing: border-box !important;
+  background: #0e0e0e !important;
+  border: 1px solid #2a2a2a !important;
+  border-left: 4px solid #c2934a !important;
+  border-radius: 0 !important;
+  color: #fff !important;
+  text-align: left !important;
+  padding: 20px 24px !important;
+  margin: 16px 0 0 !important;
+  font-family: "Open Sans", Arial, sans-serif !important;
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+}
+
+.w-form-fail,
+.twx-msg--error {
+  border-left-color: #e05050 !important;
+}
+
+.w-form-done *,
+.w-form-fail * {
+  color: inherit !important;
+  font: inherit !important;
+  text-align: left !important;
+}
+
+#modal-success-msg h3,
+.twx-msg-title {
+  margin: 0 0 8px !important;
+  color: #c2934a !important;
+  font-family: "Oswald", Arial, sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 500 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+}
+
+#modal-success-msg p,
+.twx-msg p {
+  margin: 0 0 8px !important;
+  color: #d0d0d0 !important;
+}
+
+.twx-msg p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.twx-msg a {
+  color: #c2934a !important;
+  font-weight: 700;
+}
+
+@media (max-width: 767px) {
+  .twx-form-panel {
+    padding: 24px 16px !important;
+  }
+  .w-form-done,
+  .w-form-fail,
+  #modal-success-msg,
+  .twx-msg {
+    padding: 16px 18px !important;
+    font-size: 15px !important;
+  }
+  #wf-form-Newsletter-Form [type="submit"] {
     width: 100% !important;
   }
 }

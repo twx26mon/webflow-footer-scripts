@@ -977,8 +977,7 @@
           var errEl = form.querySelector('.twx-dealer-error');
           if (!errEl) {
             errEl = document.createElement('div');
-            errEl.className = 'twx-dealer-error';
-            errEl.style.cssText = 'color:#e74c3c;font-size:13px;margin-top:10px;line-height:1.5;';
+            errEl.className = 'twx-dealer-error twx-msg twx-msg--error';
             form.appendChild(errEl);
           }
           errEl.textContent = 'Something went wrong. Please call us on 08 6185 1944 or email sales@tillageworx.com';
@@ -1501,7 +1500,7 @@
 
         <input id="twx-gq-honeypot" type="text" name="company_website_url" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;">
 
-        <div id="twx-gq-error" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:12px;padding:10px 12px;background:rgba(231,76,60,0.1);border-radius:4px;font-family:Arial,sans-serif;line-height:1.5;"></div>
+        <div id="twx-gq-error" class="twx-msg twx-msg--error" style="display:none;margin:0 0 12px !important;font-size:14px !important;padding:12px 16px !important;"></div>
 
         <button id="twx-gq-submit" type="button" style="display:block;width:100%;background:#c2934a;border:none;border-radius:6px;color:#111;text-align:center;font-weight:700;font-family:Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:14px 24px;cursor:pointer;transition:background 0.15s;box-sizing:border-box;">SUBMIT QUOTE →</button>
 
@@ -1582,18 +1581,13 @@
 
           const modalInner = modal.querySelector("div");
           modalInner.innerHTML = `
-            <div style="text-align:center;padding:20px 0;">
-              <div style="font-size:48px;margin-bottom:16px;">✅</div>
-              <div style="font-family:'Oswald',Arial,sans-serif;color:#c2934a;font-size:20px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Quote Submitted!</div>
-              <p style="font-family:Arial,sans-serif;color:#ccc;font-size:14px;line-height:1.7;margin-bottom:8px;">
-                Thanks ${escapeHtml(firstNameVal)}! We'll email a quote with freight included ASAP.
-              </p>
-              <p style="font-family:Arial,sans-serif;color:#686868;font-size:13px;margin-bottom:24px;">
-                Check your inbox at ${escapeHtml(emailVal)}
-              </p>
-              <p style="font-family:Arial,sans-serif;color:#888;font-size:13px;margin-bottom:20px;">Questions? Call us on <a href="tel:0861851944" style="color:#c2934a;font-weight:700;">08 6185 1944</a></p>
-              <button type="button" id="twx-gq-done" style="background:#1e1e1e;border:1px solid #2a2a2a;border-radius:6px;color:#aaa;font-family:Arial,sans-serif;font-size:13px;letter-spacing:1px;padding:12px 32px;cursor:pointer;">Close</button>
+            <div class="twx-msg" style="margin:0 0 16px !important;">
+              <div class="twx-msg-title">Quote submitted</div>
+              <p>Thanks ${escapeHtml(firstNameVal)}! We'll email a quote with freight included ASAP.</p>
+              <p>Check your inbox at ${escapeHtml(emailVal)}</p>
+              <p>Questions? Call us on <a href="tel:0861851944">08 6185 1944</a></p>
             </div>
+            <button type="button" id="twx-gq-done" style="width:100%;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:0;color:#aaa;font-family:Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:12px 32px;cursor:pointer;">Close</button>
           `;
           document.getElementById("twx-gq-done")?.addEventListener("click", closeModal);
         } else {
@@ -1699,7 +1693,7 @@
 
         <input id="twx-mo-honeypot" type="text" name="company_website_url" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;">
 
-        <div id="twx-mo-error" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:12px;padding:10px 12px;background:rgba(231,76,60,0.1);border-radius:4px;font-family:Arial,sans-serif;line-height:1.5;"></div>
+        <div id="twx-mo-error" class="twx-msg twx-msg--error" style="display:none;margin:0 0 12px !important;font-size:14px !important;padding:12px 16px !important;"></div>
 
         <div style="display:flex;gap:10px;">
           <button id="twx-mo-cancel" type="button" style="flex:1;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#666;font-family:Arial,sans-serif;font-size:13px;padding:13px 16px;cursor:pointer;">Cancel</button>
@@ -3444,9 +3438,7 @@
       let err = sec.querySelector(".qr-submit-error");
       if (!err) {
         err = document.createElement("div");
-        err.className = "qr-submit-error";
-        err.style.cssText =
-          "margin-top:16px;padding:14px 18px;background:rgba(220,50,50,0.1);border-left:3px solid #e05050;border-radius:0 6px 6px 0;color:#e08080;font-size:13px;";
+        err.className = "qr-submit-error twx-msg twx-msg--error";
         submitBtn.parentNode.insertBefore(err, submitBtn.nextSibling);
       }
       err.textContent = msg;
@@ -3581,18 +3573,10 @@
 
           // Show success screen
           sec.innerHTML = `
-            <div style="padding:40px 24px;text-align:center;">
-              <div style="font-size:48px;margin-bottom:16px;">✅</div>
-              <h3 style="color:#c2934a;font-size:20px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
-                Quote Requested!
-              </h3>
-              <p style="color:#ccc;font-size:15px;line-height:1.7;margin-bottom:24px;">
-                Thanks ${firstNameVal}, your quote request has been received!<br>
-                We'll email you a Quote with freight included ASAP.
-              </p>
-              <p style="color:#888;font-size:13px;">
-                Questions? Call us on <a href="tel:0861851944" style="color:#c2934a;font-weight:700;">08 6185 1944</a>
-              </p>
+            <div class="twx-msg">
+              <div class="twx-msg-title">Quote requested</div>
+              <p>Thanks ${escapeHtml(firstNameVal)}, your quote request has been received! We'll email you a quote with freight included ASAP.</p>
+              <p>Questions? Call us on <a href="tel:0861851944">08 6185 1944</a></p>
             </div>
           `;
           window.scrollTo({ top: 0, behavior: "smooth" });
@@ -3718,12 +3702,11 @@
     const form = document.querySelector(".w-form form");
     if (!form) return;
 
-    // Style the form wrapper
+    // Panel, fields, button and messages are styled by the "SHARED FORM
+    // LOOK" section of global-styles.css (24 Nov 2026). This function only
+    // handles labels and the side-by-side layout.
     const formBlock = form.closest(".w-form");
-    if (formBlock) {
-      formBlock.style.cssText =
-        "background:#0e0e0e;padding:32px;border-radius:8px;border:1px solid #1c1c1c";
-    }
+    if (formBlock) formBlock.classList.add("twx-form-panel");
 
     // Find fields dynamically to handle Webflow ID changes
     const getField = (selectors) => {
@@ -3828,41 +3811,14 @@
     wrapSideBySide(fnField, lnField);
     wrapSideBySide(emField, phField);
 
-    // Style all inputs and textarea
+    // Spacing between fields (look comes from global-styles.css)
     form
       .querySelectorAll(
         "input[type=text], input[type=email], input[type=tel], textarea",
       )
       .forEach((el) => {
-        el.style.cssText =
-          "width:100%;box-sizing:border-box;background:#1a1a1a;color:#fff;border:1px solid #3a3a3a;border-radius:6px;padding:14px 16px;font-size:14px;line-height:1.4;transition:border-color 0.2s,box-shadow 0.2s;margin-bottom:12px;display:block";
-        el.addEventListener("focus", () => {
-          el.style.borderColor = "#c2934a";
-          el.style.boxShadow = "0 0 0 3px rgba(194,147,74,0.15)";
-          el.style.outline = "none";
-        });
-        el.addEventListener("blur", () => {
-          el.style.borderColor = "#3a3a3a";
-          el.style.boxShadow = "";
-        });
+        el.style.marginBottom = "12px";
       });
-
-    // Style submit button
-    const submit = form.querySelector("input[type=submit]");
-    if (submit) {
-      submit.style.cssText =
-        "width:100%;background:linear-gradient(135deg,#b8833e 0%,#d4a55c 40%,#e8b86d 60%,#c2934a 100%);background-size:200% auto;color:#111;font-size:14px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;border:none;border-radius:8px;padding:18px 24px;cursor:pointer;margin-top:8px;box-shadow:0 4px 20px rgba(194,147,74,0.4);display:block";
-      submit.addEventListener("mouseover", () => {
-        submit.style.backgroundPosition = "right center";
-        submit.style.boxShadow = "0 6px 28px rgba(194,147,74,0.55)";
-        submit.style.transform = "translateY(-1px)";
-      });
-      submit.addEventListener("mouseout", () => {
-        submit.style.backgroundPosition = "";
-        submit.style.boxShadow = "0 4px 20px rgba(194,147,74,0.4)";
-        submit.style.transform = "";
-      });
-    }
   }
 
   if (document.readyState === "loading") {
