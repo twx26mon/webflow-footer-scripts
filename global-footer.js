@@ -841,6 +841,71 @@
     });
   }
 
+  // Testimonial page form (/testimonial) — POST via the Worker's
+  // /testimonial-form route instead of Webflow's native form handling
+  // (native handling emailed it as a "Quote Request"). Same technique as
+  // initContactFormSubmit(). The Webflow field names are messy ("Name 2",
+  // "Field"), so fields are read by element id and sent with clear names.
+  // If a field id is changed in Webflow, update the map below.
+  function initTestimonialFormSubmit() {
+    if (!window.location.pathname.includes('/testimonial')) return;
+    var form = document.getElementById('email-form');
+    if (!form || form.dataset.twxWorkerSubmit) return;
+    form.dataset.twxWorkerSubmit = '1';
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      var val = function (id) {
+        var el = document.getElementById(id);
+        return el ? String(el.value || '').trim() : '';
+      };
+      var consentEl = document.getElementById('testimonial-consent');
+      var hp = form.querySelector('.twx-global-honeypot');
+
+      var payload = {
+        honeypot: hp ? hp.value : '',
+        first_name: val('name'),
+        last_name: val('name-2'),
+        email: val('email'),
+        phone: val('Phone-Number'),
+        testimonial: val('field'),
+        consent: !!(consentEl && consentEl.checked),
+      };
+
+      var submitBtn = form.querySelector('[type="submit"]');
+      var originalLabel = submitBtn ? submitBtn.value : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        if ('value' in submitBtn) submitBtn.value = 'Sending...';
+      }
+
+      var formBlock = form.closest('.w-form');
+      var errorEl = formBlock && formBlock.querySelector('.w-form-fail');
+      if (errorEl) errorEl.style.display = 'none';
+
+      fetch('https://twx-zoho-proxy.monica-6b5.workers.dev/testimonial-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Testimonial submission failed');
+          form.style.display = 'none';
+          var success = formBlock && formBlock.querySelector('.w-form-done');
+          if (success) success.style.display = 'block';
+        })
+        .catch(function () {
+          if (errorEl) errorEl.style.display = 'block';
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            if ('value' in submitBtn) submitBtn.value = originalLabel;
+          }
+        });
+    });
+  }
+
   // "Become a Dealer" popup on /find-a-dealer — the popup itself is built by
   // that page's own custom code in Webflow, which used to copy the values into
   // a hidden Webflow form and submit that (bots posted straight to Webflow's
@@ -936,6 +1001,7 @@
     initContactPage();
     initContactFormSubmit();
     initNewsletterFormSubmit();
+    initTestimonialFormSubmit();
     initDealerEnquirySubmit();
 
     // Re-run after Webflow collection list renders (it's async)
