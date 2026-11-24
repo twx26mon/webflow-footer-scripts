@@ -19,7 +19,9 @@ If Moni's request is about portal pages, `worker.js`, Supabase, Zoho routes or R
 - **Ask before:** pushing, and before anything that makes code live. Never chain. Always confirm before committing; say whether it suits `staging` or `main`.
 - Commit messages: you can write them. State the commit hash.
 - **IMPORTANT: `main` IS LIVE.** A Cloudflare Worker serves `main` from raw GitHub, so a push to `main` is an instant deploy to real customers. Normal flow: commit to `staging`, test, then Moni approves merging to `main`.
-- Testing `staging` on the Webflow preview: point the footer custom code at jsDelivr pinned to the exact commit hash (not a branch name, it caches). Moni changes the Webflow footer code herself; remind her to put it back to the Worker URL afterwards.
+- Testing `staging` on the Webflow preview: point the footer custom code (and the head CSS link, if CSS changed) at jsDelivr pinned to the exact commit hash (not a branch name, it caches), e.g. `https://cdn.jsdelivr.net/gh/twx26mon/webflow-footer-scripts@<hash>/global-footer.js`. Moni changes the Webflow code herself; remind her to put both back afterwards:
+  - Head: `<link rel="stylesheet" href="https://empty-cake-b32dtwx-assets.monica-6b5.workers.dev/global-styles.css"/>`
+  - Footer: `<script src="https://empty-cake-b32dtwx-assets.monica-6b5.workers.dev/global-footer.js"></script>`
 - Never put secrets/keys in code or chat.
 - Edit with Edit/Write tools, never shell redirection. Keep LF line endings (`git config core.autocrlf input`).
 - At the end of a session update this file and `docs/reference.md` IN PLACE. No session logs.
