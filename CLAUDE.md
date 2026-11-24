@@ -1,7 +1,7 @@
 # Tillageworx Website Scripts - Claude Code brief
 
 > **Repo: `webflow-footer-scripts` (public website code). Folder: `C:\dev\webflow-footer-scripts`. Branches: `main` (live), `staging` (test).**
-> Updated 23 Nov 2026. Detailed reference: `docs/reference.md`. Look and wording: `docs/brand.md`.
+> Updated 24 Nov 2026. Detailed reference: `docs/reference.md`. Look and wording: `docs/brand.md`.
 
 ## Wrong-window check (do this first, every session)
 This repo is ONLY the JS/CSS injected into the public Webflow site www.tillageworx.com.au: `global-footer.js`, `global-styles.css`.
@@ -43,7 +43,7 @@ Follow `docs/brand.md`: gold `#C2934A`, black backgrounds, "Customer Accounts" w
 
 ## Do
 - Escape any user-supplied text before putting it in HTML (a self-XSS in the greeting was fixed once).
-- Keep honeypot fields wired on every form.
+- Keep honeypot fields wired on every form. Every form must post to the Worker; never re-enable Webflow's native "Send to" (bots post straight to Webflow and skip our JS).
 - Use `textContent` carefully: it wipes child elements (known gotcha, see reference).
 - Add `e.stopPropagation()` after `preventDefault()` on custom form submit handlers (Webflow handlers otherwise double-fire).
 - Test on the `.webflow.io` preview before production.
@@ -56,11 +56,12 @@ Follow `docs/brand.md`: gold `#C2934A`, black backgrounds, "Customer Accounts" w
 - Don't use the dead `code-embed-6`; cart panel is JS-created.
 
 ## Current priorities
-1. Dealer enquiry form submit (`initDealerEnquirySubmit`) is committed on `staging`: test on preview, then Moni decides on merge to `main`.
+1. Watch for spam now that Webflow form notifications are off. If spam arrives via Worker emails, add Cloudflare Turnstile (portal window). Portal follow-up: `/testimonial-form` should 400 on a malformed email instead of 500 (see reference gotchas).
 2. Housekeeping: delete disabled `code-embed-6` in Webflow Designer; add inline `<style>` for the mobile info-header flash (see reference); delete old `ON SALE` Switch field on Parts CMS (Webflow refused: "used in bindings", look for a leftover in a Brands template code-embed); add `.gitignore`; remove stray file from folder.
 3. Backlog: cart-abandonment alert (needs Cloudflare KV + Cron, design in portal `docs/reference.md`).
 
 ## Recently shipped (3-4 lines each)
+- Testimonial page + all forms via Worker, 24 Nov 2026 (`ebdbdd0`). `/testimonial` embed (source `docs/embeds/testimonial-page-embed.html`), `initTestimonialFormSubmit()` → `/testimonial-form`, dealer popup live. Webflow Email Notifications + Zoho Flow removed from form "Send to" to stop bot spam that bypassed the page.
 - Order confirmation pricing fix, 9 Sep 2026 (`computeCartPricing()` shared by both order screens).
 - On Sale / New Price display, 9 Sep 2026 (member-only crossed-out price + gold badge).
 - Nav redesign, price gating live, security pass, 19 Jul 2026.
